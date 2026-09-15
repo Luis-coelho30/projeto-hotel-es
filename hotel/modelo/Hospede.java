@@ -8,26 +8,11 @@ public class Hospede {
     private String email;
 
     public Hospede(String cpf, String nome, String endereco, String celular, String email) {
-        if(cpf == null) {
-            throw new IllegalArgumentException("CPF nao pode ser nulo");
-        }
-        if(nome == null) {
-            throw new IllegalArgumentException("Nome nao pode ser nulo");
-        } 
-        if(endereco == null) {
-            throw new IllegalArgumentException("Endereco nao pode ser nulo");
-        } 
-        if(celular == null) {
-            throw new IllegalArgumentException("Celular nao pode ser nulo");
-        } 
-        if(email == null) {
-            throw new IllegalArgumentException("Email nao pode ser nulo");
-        } 
-        this.cpf = cpf;
-        this.nome = nome;
-        this.endereco = endereco;
-        this.celular = celular;
-        this.email = email;
+        this.cpf = validarCampo(cpf, "CPF");
+        this.nome = validarCampo(nome, "Nome");
+        this.endereco = validarCampo(endereco, "Endereco");
+        this.celular = validarCampo(celular, "Celular");
+        this.email = validarCampo(email, "Email");
     }
 
     public String getCpf() { return cpf; }
@@ -39,5 +24,20 @@ public class Hospede {
     @Override
     public String toString() {
         return nome + " (CPF: " + cpf + ")";
+    }
+
+    /**
+     * Valida um campo de texto, verificando se ele não é nulo e retornando seu valor
+     * 
+     * @param valor Valor do campo a ser validado
+     * @param campo Nome do campo, utilizado na mensagem de erro
+     * @return O valor validado
+     * @throws IllegalArgumentException se o valor for nulo
+     */
+    private String validarCampo(String valor, String campo) {
+        if (valor == null)
+            throw new IllegalArgumentException(campo + " nao pode ser nulo");
+        
+        return valor;
     }
 }
