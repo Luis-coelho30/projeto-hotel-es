@@ -27,6 +27,27 @@ public class Hospede {
     }
 
     /**
+     * Verifica se um objeto é igual a esta instância com base no CPF.
+     * 
+     * @param obj Objeto a ser comparado
+     * @return true se o objeto for um Hospede com o mesmo CPF;
+     *         false caso o contrário
+     */
+    @Override 
+    public boolean equals(Object obj) {
+        if(this == obj) {
+            return true;
+        }
+        if(obj instanceof Hospede hospede) {
+            if(this.cpf.equals(hospede.cpf)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Valida um campo de texto, verificando se ele não é nulo e retornando seu valor
      * 
      * @param valor Valor do campo a ser validado
