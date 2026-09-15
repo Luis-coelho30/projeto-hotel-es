@@ -18,6 +18,9 @@ public class HotelTest {
         testarCadastroHospedeEnderecoNull();
         testarCadastroHospedeCelularNull();
         testarCadastroHospedeEmailNull();
+        testarEqualsHospedeValido();
+        testarEqualsHospedeDistinto();
+        testarEqualsHospedeNull();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -149,6 +152,59 @@ public class HotelTest {
             passou++;
         } catch (Exception e) {
             System.out.println("FALHOU: testarCadastroHospedeEmailNull - Excecao inesperada " + e.getMessage());
+        }
+    }
+
+    static void testarEqualsHospedeValido() {
+        total++;
+
+        try {
+            Hospede h1 = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+            Hospede h2 = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+
+            if(h1.equals(h2)) {
+                passou++;
+            } 
+            else {
+                System.out.println("FALHOU: testarEqualsHospedeValido - Mesmo CPF deve ser igual");
+            } 
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEqualsHospedeValido - Excecao inesperada " + e.getMessage());
+        }
+    }
+
+    static void testarEqualsHospedeDistinto() {
+        total++;
+
+        try {
+            Hospede h1 = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+            Hospede h2 = new Hospede("234", "Joao", "Rua X", "9999", "joao@x");
+
+            if(!h1.equals(h2)) {
+                passou++;
+            } 
+            else {
+                System.out.println("FALHOU: testarEqualsHospedeDistinto - CPFs diferentes devem ser distintos");
+            } 
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEqualsHospedeDistinto - Excecao inesperada " + e.getMessage());
+        }
+    }
+
+    static void testarEqualsHospedeNull() {
+        total++;
+
+        try {
+            Hospede hospede = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+
+            if(!hospede.equals(null)) {
+                passou++;
+            } 
+            else {
+                System.out.println("FALHOU: testarEqualsHospedeNull - Equals com null deve retornar false");
+            } 
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEqualsHospedeNull - Excecao inesperada " + e.getMessage());
         }
     }
 }
