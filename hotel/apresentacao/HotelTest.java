@@ -2,6 +2,7 @@ package hotel.apresentacao;
 
 import hotel.modelo.*;
 import hotel.negocio.Hotel;
+
 public class HotelTest {
     private static int passou = 0;
     private static int total = 0;
@@ -11,6 +12,12 @@ public class HotelTest {
         // testarReservarAptoLivre();
         // testarReservarAptoOcupadoFalha();
         // ...
+        testarCadastroHospedeValido();
+        testarCadastroHospedeCpfNull();
+        testarCadastroHospedeNomeNull();
+        testarCadastroHospedeEnderecoNull();
+        testarCadastroHospedeCelularNull();
+        testarCadastroHospedeEmailNull();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -24,6 +31,124 @@ public class HotelTest {
             passou++;
         } else {
             System.out.println("FALHOU: testarReservarAptoLivre");
+        }
+    }
+
+    static void testarCadastroHospedeValido() {
+        total++;
+        String cpf = "123";
+        String nome = "Joao";
+        String endereco = "Rua X";
+        String celular = "9999";
+        String email = "joao@x";
+        try {
+            Hospede hospede = new Hospede(cpf, nome, endereco, celular, email);
+
+            if(!cpf.equals(hospede.getCpf())) {
+                System.out.println("FALHOU: testarCadastroHospedeValido - CPF incorreto");
+            }
+            else if(!nome.equals(hospede.getNome())) {
+                System.out.println("FALHOU: testarCadastroHospedeValido - Nome incorreto");
+            }
+            else if(!endereco.equals(hospede.getEndereco())) {
+                System.out.println("FALHOU: testarCadastroHospedeValido - Endereco incorreto");
+            }
+            else if(!celular.equals(hospede.getCelular())) {
+                System.out.println("FALHOU: testarCadastroHospedeValido - Celular incorreto");
+            }
+            else if(!email.equals(hospede.getEmail())) {
+                System.out.println("FALHOU: testarCadastroHospedeValido - Email incorreto");
+            }
+            else {
+                passou++;
+            }
+        } catch(Exception e) {
+            System.out.println("FALHOU: testarCadastroHospedeValido - Excecao inesperada: " + e.getMessage());
+        }        
+    }
+
+    static void testarCadastroHospedeCpfNull() {
+        total++;
+        String cpf = null;
+        String nome = "Joao";
+        String endereco = "Rua X";
+        String celular = "9999";
+        String email = "joao@x";
+        try {
+            Hospede hospede = new Hospede(cpf, nome, endereco, celular, email);
+            System.out.println("FALHOU: testarCadastroHospedeCpfNull - CPF nao pode ser null");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCadastroHospedeCpfNull - Excecao inesperada " + e.getMessage());
+        }
+    }
+
+    static void testarCadastroHospedeNomeNull() {
+        total++;
+        String cpf = "123";
+        String nome = null;
+        String endereco = "Rua X";
+        String celular = "9999";
+        String email = "joao@x";
+        try {
+            Hospede hospede = new Hospede(cpf, nome, endereco, celular, email);
+            System.out.println("FALHOU: testarCadastroHospedeNomeNull - Nome nao pode ser null");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCadastroHospedeNomeNull - Excecao inesperada " + e.getMessage());
+        }
+    }
+
+    static void testarCadastroHospedeEnderecoNull() {
+        total++;
+        String cpf = "123";
+        String nome = "Joao";
+        String endereco = null;
+        String celular = "9999";
+        String email = "joao@x";
+        try {
+            Hospede hospede = new Hospede(cpf, nome, endereco, celular, email);
+            System.out.println("FALHOU: testarCadastroHospedeEnderecoNull - Endereco nao pode ser null");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCadastroHospedeEnderecoNull - Excecao inesperada " + e.getMessage());
+        }
+    }
+
+    static void testarCadastroHospedeCelularNull() {
+        total++;
+        String cpf = "123";
+        String nome = "Joao";
+        String endereco = "Rua X";
+        String celular = null;
+        String email = "joao@x";
+        try {
+            Hospede hospede = new Hospede(cpf, nome, endereco, celular, email);
+            System.out.println("FALHOU: testarCadastroHospedeCelularNull - Celular nao pode ser null");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCadastroHospedeCelularNull - Excecao inesperada " + e.getMessage());
+        }
+    }
+
+    static void testarCadastroHospedeEmailNull() {
+        total++;
+        String cpf = "123";
+        String nome = "Joao";
+        String endereco = "Rua X";
+        String celular = "9999";
+        String email = null;
+        try {
+            Hospede hospede = new Hospede(cpf, nome, endereco, celular, email);
+            System.out.println("FALHOU: testarCadastroHospedeEmailNull - Email nao pode ser null");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCadastroHospedeEmailNull - Excecao inesperada " + e.getMessage());
         }
     }
 }
