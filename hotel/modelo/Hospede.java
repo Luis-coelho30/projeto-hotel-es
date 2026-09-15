@@ -8,6 +8,21 @@ public class Hospede {
     private String email;
 
     public Hospede(String cpf, String nome, String endereco, String celular, String email) {
+        if(cpf == null) {
+            throw new IllegalArgumentException("CPF nao pode ser nulo");
+        }
+        if(nome == null) {
+            throw new IllegalArgumentException("Nome nao pode ser nulo");
+        } 
+        if(endereco == null) {
+            throw new IllegalArgumentException("Endereco nao pode ser nulo");
+        } 
+        if(celular == null) {
+            throw new IllegalArgumentException("Celular nao pode ser nulo");
+        } 
+        if(email == null) {
+            throw new IllegalArgumentException("Email nao pode ser nulo");
+        } 
         this.cpf = cpf;
         this.nome = nome;
         this.endereco = endereco;
