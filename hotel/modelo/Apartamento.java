@@ -80,9 +80,21 @@ public class Apartamento {
         this.hospede = h;
     }
 
+    /**
+     * realiza o check-out do apartamento, liberando-o e mudando seu status para LIVRE
+     *
+     * @throws IllegalStateException se o apartamento não estiver OCUPADO
+     *
+     * @pre o apartamento deve existir
+     * @post o status do apartamento muda para LIVRE e o hóspede é removido (ficando nulo)
+     */
     public void checkout() {
-        throw new UnsupportedOperationException("Implementar: OCUPADO -> LIVRE");
-    } // TDD
+        if (this.status != Status.OCUPADO) {
+            throw new IllegalStateException("apartamento não está ocupado");
+        }
+        this.status = Status.LIVRE;
+        this.hospede = null;
+    }
 
     public void cancelarReserva() {
         throw new UnsupportedOperationException("Implementar: RESERVADO -> LIVRE");
