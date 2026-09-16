@@ -37,6 +37,10 @@ public class HotelTest {
         testarCheckoutAptoLivreFalha();
         testarCheckoutAptoReservadoFalha();
 
+        testarCancelarReservaAptoReservado();
+        testarCancelarReservaAptoLivreFalha();
+        testarCancelarReservaAptoOcupadoFalha();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -413,5 +417,51 @@ public class HotelTest {
         }
     }
 
+    // cancelarReserva - caso feliz
+    static void testarCancelarReservaAptoReservado() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        apto.reservar(h);
+        apto.cancelarReserva();
+        if (apto.estaLivre() && apto.getHospede() == null) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarCancelarReservaAptoReservado");
+        }
+    }
 
+    // cancelarReserva - caso triste
+    static void testarCancelarReservaAptoLivreFalha() {
+        total++;
+        Apartamento apto = new Apartamento();
+        try {
+            apto.cancelarReserva();
+            System.out.println("FALHOU: testarCancelarReservaAptoLivreFalha");
+        }
+        catch (IllegalStateException e) {
+            passou++;
+        }
+        catch (Exception e) {
+            System.out.println("FALHOU: testarCancelarReservaAptoLivreFalha - exceção inesperada");
+        }
+    }
+
+    // cancelarReserva - caso triste
+    static void testarCancelarReservaAptoOcupadoFalha() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        apto.checkin(h);
+        try {
+            apto.cancelarReserva();
+            System.out.println("FALHOU: testarCancelarReservaAptoOcupadoFalha");
+        }
+        catch (IllegalStateException e) {
+            passou++;
+        }
+        catch (Exception e) {
+            System.out.println("FALHOU: testarCancelarReservaAptoOcupadoFalha - exceção inesperada");
+        }
+    }
 }
