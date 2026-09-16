@@ -7,6 +7,16 @@ public class Hospede {
     private String celular;
     private String email;
 
+    /**
+     * Cria uma nova instância de Hospede com os dados informados
+     * 
+     * @param cpf CPF do Hospede
+     * @param nome Nome do Hospede
+     * @param endereco Endereço do Hospede
+     * @param celular Número de celular do Hospede
+     * @param email Endereço de email do Hospede
+     * @throws IllegalArgumentException se algum dos campos for null
+     */
     public Hospede(String cpf, String nome, String endereco, String celular, String email) {
         this.cpf = validarCampo(cpf, "CPF");
         this.nome = validarCampo(nome, "Nome");
@@ -15,12 +25,46 @@ public class Hospede {
         this.email = validarCampo(email, "Email");
     }
 
+    /**
+     * Retorna o CPF do Hospede
+     * 
+     * @return O CPF do Hospede
+     */
     public String getCpf() { return cpf; }
+    
+    /**
+     * Retorna o nome do Hospede
+     * 
+     * @return O Nome do Hospede
+     */
     public String getNome() { return nome; }
+    
+    /**
+     * Retorna o endereço do Hospede
+     * 
+     * @return O Endereço do Hospede 
+     */
     public String getEndereco() { return endereco; }
+    
+    /**
+     * Retorna o celular do Hospede
+     * 
+     * @return O Celular do Hospede
+     */
     public String getCelular() { return celular; }
+    
+    /**
+     * Retorna o email do Hospede
+     * 
+     * @return O Email do Hospede
+     */
     public String getEmail() { return email; }
 
+    /**    
+     * Retorna uma representação em texto do Hospede, contendo seu nome e CPF
+     * 
+     * @return Nome e CPF do Hospede
+     */
     @Override
     public String toString() {
         return nome + " (CPF: " + cpf + ")";
