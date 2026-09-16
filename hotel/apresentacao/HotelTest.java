@@ -33,6 +33,10 @@ public class HotelTest {
         testarCheckinAptoOcupado();
         testarCheckinHospedeNuloFalha();
 
+        testarCheckoutAptoOcupado();
+        testarCheckoutAptoLivreFalha();
+        testarCheckoutAptoReservadoFalha();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -359,4 +363,55 @@ public class HotelTest {
             System.out.println("FALHOU: testarCheckinHospedeNuloFalha - exceção inesperada");
         }
     }
+
+    // checkout - caso feliz
+    static void testarCheckoutAptoOcupado() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        apto.checkin(h);
+        apto.checkout();;
+        if (apto.estaLivre() && apto.getHospede() == null) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarCheckoutAptoOcupado");
+        }
+    }
+
+    // checkout - caso triste
+    static void testarCheckoutAptoLivreFalha() {
+        total++;
+        Apartamento apto = new Apartamento();
+        try {
+            apto.checkout();
+            System.out.println("FALHOU: testarCheckoutAptoLivreFalha");
+        }
+        catch (IllegalStateException e) {
+            passou++;
+        }
+        catch (Exception e) {
+            System.out.println("FALHOU: testarCheckoutAptoLivreFalha - exceção inesperada");
+        }
+    }
+
+    // checkout - caso triste
+    static void testarCheckoutAptoReservadoFalha() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        apto.reservar(h);
+        try {
+            apto.checkout();
+            System.out.println("FALHOU: testarCheckoutAptoReservadoFalha");
+        }
+        catch (IllegalStateException e) {
+            passou++;
+        }
+        catch (Exception e) {
+            System.out.println("FALHOU: testarCheckoutAptoReservadoFalha - exceção inesperada");
+        }
+    }
+
+
 }
