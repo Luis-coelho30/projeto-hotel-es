@@ -96,24 +96,80 @@ public class Apartamento {
         this.hospede = null;
     }
 
+    /**
+     * cancela a reserva do apartamento, mudando seu status de RESERVADO para LIVRE
+     *
+     * @throws IllegalStateException se o apartamento não estiver RESERVADO
+     *
+     * @pre o apartamento deve existir
+     * @post o status muda para LIVRE e o hóspede é removido
+     */
     public void cancelarReserva() {
-        throw new UnsupportedOperationException("Implementar: RESERVADO -> LIVRE");
-    } // TDD
+        if (this.status != Status.RESERVADO) {
+            throw new IllegalStateException("apartamento não está reservado");
+        }
+        this.status = Status.LIVRE;
+        this.hospede = null;
+    }
 
+    /**
+     * verifica se o apartamento está com status LIVRE
+     *
+     * @return true se o status for LIVRE, false caso contrário
+     *
+     * @pre (nenhuma)
+     * @post nenhuma alteração de estado
+     */
     public boolean estaLivre() {
         return status == Status.LIVRE;
     }
+
+    /**
+     * verifica se o apartamento está com status RESERVADO
+     *
+     * @return true se o status for RESERVADO, false caso contrário
+     *
+     * @pre (nenhuma)
+     * @post nenhuma alteração de estado
+     */
     public boolean estaReservado() {
         return status == Status.RESERVADO;
     }
+
+    /**
+     * verifica se o apartamento está com status OCUPADO
+     *
+     * @return true se o status for OCUPADO, false caso contrário
+     *
+     * @pre (nenhuma)
+     * @post nenhuma alteração de estado
+     */
     public boolean estaOcupado() {
         return status == Status.OCUPADO;
     }
 
+    /**
+     * retorna o preço da diária do apartamento. retorna 0 na classe base,
+     * já que o preço é definido pelas subclasses ApartamentoSimples e ApartamentoPremium
+     *
+     * @return 0f, valor padrão para a classe base
+     *
+     * @pre (nenhuma)
+     * @post nenhuma alteração de estado
+     */
     public float getPrecoDiaria() {
         return 0f;
     }
 
+    /**
+     * retorna o símbolo correspondente ao status atual do apartamento,
+     * usado na exibição do mapa de ocupação do hotel
+     *
+     * @return '.' se LIVRE, 'R' se RESERVADO, 'O' se OCUPADO, '?' em caso de status desconhecido
+     *
+     * @pre (nenhuma)
+     * @post nenhuma alteração de estado
+     */
     public char getSymbol() {
         switch (status) {
             case LIVRE: return '.';
