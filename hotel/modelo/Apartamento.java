@@ -51,9 +51,7 @@ public class Apartamento {
         if (h == null) {
             throw new IllegalArgumentException("hóspede não pode ser nulo ao reservar um apartamento");
         }
-        if (this.status != Status.LIVRE) {
-            throw new IllegalStateException("apartamento não está livre para reserva");
-        }
+        validarStatus(Status.LIVRE, "apartamento não está livre para reserva");
         this.status = Status.RESERVADO;
         this.hospede = h;
     }
@@ -67,7 +65,7 @@ public class Apartamento {
      * @throws IllegalStateException se o apartamento já estiver com status OCUPADO
      *
      * @pre o apartamento deve existir
-     * @pos se bem-sucedido, o status do apartamento muda para OCUPADO e o hóspede é armazenado
+     * @post se bem-sucedido, o status do apartamento muda para OCUPADO e o hóspede é armazenado
      */
     public void checkin(Hospede h) {
         if (h == null) {
@@ -89,9 +87,7 @@ public class Apartamento {
      * @post o status do apartamento muda para LIVRE e o hóspede é removido (ficando nulo)
      */
     public void checkout() {
-        if (this.status != Status.OCUPADO) {
-            throw new IllegalStateException("apartamento não está ocupado");
-        }
+        validarStatus(Status.OCUPADO, "apartamento não está ocupado");
         this.status = Status.LIVRE;
         this.hospede = null;
     }
@@ -105,9 +101,7 @@ public class Apartamento {
      * @post o status muda para LIVRE e o hóspede é removido
      */
     public void cancelarReserva() {
-        if (this.status != Status.RESERVADO) {
-            throw new IllegalStateException("apartamento não está reservado");
-        }
+        validarStatus(Status.RESERVADO, "apartamento não está reservado");
         this.status = Status.LIVRE;
         this.hospede = null;
     }
@@ -176,6 +170,12 @@ public class Apartamento {
             case RESERVADO: return 'R';
             case OCUPADO: return 'O';
             default: return '?';
+        }
+    }
+
+    private void validarStatus(Status esperado, String mensagemErro) {
+        if (this.status != esperado) {
+            throw new IllegalStateException(mensagemErro);
         }
     }
 }
