@@ -21,6 +21,8 @@ public class HotelTest {
         testarEqualsHospedeValido();
         testarEqualsHospedeDistinto();
         testarEqualsHospedeNull();
+        testarHashcodeHospedeValido();
+        testarHashcodeHospedeDistinto();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -205,6 +207,42 @@ public class HotelTest {
             } 
         } catch (Exception e) {
             System.out.println("FALHOU: testarEqualsHospedeNull - Excecao inesperada " + e.getMessage());
+        }
+    }
+
+    static void testarHashcodeHospedeValido() {
+        total++;
+
+        try {
+            Hospede h1 = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+            Hospede h2 = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+
+            if(h1.hashCode() == h2.hashCode()) {
+                passou++;
+            } 
+            else {
+                System.out.println("FALHOU: testarHashcodeHospedeValido - Mesmo CPF deve ter mesmo hashCode");
+            } 
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarHashcodeHospedeValido - Excecao inesperada " + e.getMessage());
+        }
+    }
+
+    static void testarHashcodeHospedeDistinto() {
+        total++;
+
+        try {
+            Hospede h1 = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+            Hospede h2 = new Hospede("234", "Joao", "Rua X", "9999", "joao@x");
+
+            if(h1.hashCode() != h2.hashCode()) {
+                passou++;
+            } 
+            else {
+                System.out.println("FALHOU: testarHashcodeHospedeDistinto - CPFs diferentes devem ter hashCodes diferentes");
+            } 
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarHashcodeHospedeDistinto - Excecao inesperada " + e.getMessage());
         }
     }
 }
