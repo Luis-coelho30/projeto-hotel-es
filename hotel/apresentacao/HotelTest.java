@@ -28,6 +28,11 @@ public class HotelTest {
         testarReservarAptoNaoLivreFalha();
         testarReservarHospedeNuloFalha();
 
+        testarCheckinAptoLivre();
+        testarCheckinAptoReservado();
+        testarCheckinAptoOcupado();
+        testarCheckinHospedeNuloFalha();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -291,4 +296,67 @@ public class HotelTest {
         }
     }
 
+    // checkin - caso feliz
+    static void testarCheckinAptoLivre() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        apto.checkin(h);
+        if (apto.estaOcupado() && apto.getHospede() == h) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarCheckinAptoLivre");
+        }
+    }
+
+    // checkin - caso feliz
+    static void testarCheckinAptoReservado() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        apto.reservar(h);
+        apto.checkin(h);
+        if (apto.estaOcupado() && apto.getHospede() == h) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarCheckinAptoReservado");
+        }
+    }
+
+    // checkin - caso triste
+    static void testarCheckinAptoOcupado() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h1 = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        Hospede h2 = new Hospede("456", "Maria", "Rua Y", "8888", "maria@x");
+        apto.checkin(h1);
+        try {
+            apto.checkin(h2);
+            System.out.println("FALHOU: testarCheckinAptoOcupado");
+        }
+        catch (IllegalStateException e) {
+            passou++;
+        }
+        catch (Exception e) {
+            System.out.println("FALHOU: testarCheckinAptoOcupado - exceção inesperada");
+        }
+    }
+
+    // checkin - caso triste
+    static void testarCheckinHospedeNuloFalha() {
+        total++;
+        Apartamento apto = new Apartamento();
+        try {
+            apto.checkin(null);
+            System.out.println("FALHOU: testarCheckinHospedeNuloFalha");
+        }
+        catch (IllegalArgumentException e) {
+            passou++;
+        }
+        catch (Exception e) {
+            System.out.println("FALHOU: testarCheckinHospedeNuloFalha - exceção inesperada");
+        }
+    }
 }
