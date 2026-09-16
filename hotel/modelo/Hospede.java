@@ -48,6 +48,16 @@ public class Hospede {
     }
 
     /**
+     * Retorna o código hash desta instância com base no CPF
+     * 
+     * @return Código hash baseado no CPF
+     */
+    @Override
+    public int hashCode() {
+        return this.cpf.hashCode();
+    }
+
+    /**
      * Valida um campo de texto, verificando se ele não é nulo e retornando seu valor
      * 
      * @param valor Valor do campo a ser validado
