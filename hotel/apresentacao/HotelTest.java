@@ -24,19 +24,24 @@ public class HotelTest {
         testarHashcodeHospedeValido();
         testarHashcodeHospedeDistinto();
 
-        System.out.println(passou + "/" + total + " testes passaram");
-    }
+        testarReservarAptoLivre();
+        testarReservarAptoNaoLivreFalha();
+        testarReservarHospedeNuloFalha();
 
-    // Exemplo de metodo de teste:
-    static void testarReservarAptoLivre() {
-        total++;
-        Hotel hotel = new Hotel();
-        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
-        if (hotel.reservarApartamento(0, 0, h) && hotel.getApartamento(0, 0).estaReservado()) {
-            passou++;
-        } else {
-            System.out.println("FALHOU: testarReservarAptoLivre");
-        }
+        testarCheckinAptoLivre();
+        testarCheckinAptoReservado();
+        testarCheckinAptoOcupado();
+        testarCheckinHospedeNuloFalha();
+
+        testarCheckoutAptoOcupado();
+        testarCheckoutAptoLivreFalha();
+        testarCheckoutAptoReservadoFalha();
+
+        testarCancelarReservaAptoReservado();
+        testarCancelarReservaAptoLivreFalha();
+        testarCancelarReservaAptoOcupadoFalha();
+
+        System.out.println(passou + "/" + total + " testes passaram");
     }
 
     static void testarCadastroHospedeValido() {
@@ -243,6 +248,220 @@ public class HotelTest {
             } 
         } catch (Exception e) {
             System.out.println("FALHOU: testarHashcodeHospedeDistinto - Excecao inesperada " + e.getMessage());
+        }
+    }
+
+
+    // testes de Apartamento
+
+    // reserva - caso feliz
+    static void testarReservarAptoLivre() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        apto.reservar(h);
+
+        if (apto.estaReservado() && apto.getHospede() == h) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarReservarAptoLivre");
+        }
+    }
+
+    // reserva - caso triste
+    static void testarReservarAptoNaoLivreFalha() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h1 = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        Hospede h2 = new Hospede("456", "Fuba", "Rua Y", "1111", "fuba@x");
+        apto.reservar(h1);
+
+        try {
+            apto.reservar(h2);
+            System.out.println("FALHOU: testarReservarAptoNaoLivreFalha");
+        } catch (IllegalStateException e) {
+            passou++;
+        }
+        catch (Exception e) {
+            System.out.println("FALHOU: testarReservarAptoNaoLivreFalha - exceção inesperada");
+        }
+    }
+
+    // reserva - caso triste
+    static void testarReservarHospedeNuloFalha() {
+        total++;
+        Apartamento apto = new Apartamento();
+
+        try {
+            apto.reservar(null);
+            System.out.println("FALHOU: testarReservarHospedeNuloFalha");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        }
+        catch (Exception e) {
+            System.out.println("FALHOU: testarReservarHospedeNuloFalha - exceção inesperada");
+        }
+    }
+
+    // checkin - caso feliz
+    static void testarCheckinAptoLivre() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        apto.checkin(h);
+        if (apto.estaOcupado() && apto.getHospede() == h) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarCheckinAptoLivre");
+        }
+    }
+
+    // checkin - caso feliz
+    static void testarCheckinAptoReservado() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        apto.reservar(h);
+        apto.checkin(h);
+        if (apto.estaOcupado() && apto.getHospede() == h) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarCheckinAptoReservado");
+        }
+    }
+
+    // checkin - caso triste
+    static void testarCheckinAptoOcupado() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h1 = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        Hospede h2 = new Hospede("456", "Maria", "Rua Y", "8888", "maria@x");
+        apto.checkin(h1);
+        try {
+            apto.checkin(h2);
+            System.out.println("FALHOU: testarCheckinAptoOcupado");
+        }
+        catch (IllegalStateException e) {
+            passou++;
+        }
+        catch (Exception e) {
+            System.out.println("FALHOU: testarCheckinAptoOcupado - exceção inesperada");
+        }
+    }
+
+    // checkin - caso triste
+    static void testarCheckinHospedeNuloFalha() {
+        total++;
+        Apartamento apto = new Apartamento();
+        try {
+            apto.checkin(null);
+            System.out.println("FALHOU: testarCheckinHospedeNuloFalha");
+        }
+        catch (IllegalArgumentException e) {
+            passou++;
+        }
+        catch (Exception e) {
+            System.out.println("FALHOU: testarCheckinHospedeNuloFalha - exceção inesperada");
+        }
+    }
+
+    // checkout - caso feliz
+    static void testarCheckoutAptoOcupado() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        apto.checkin(h);
+        apto.checkout();;
+        if (apto.estaLivre() && apto.getHospede() == null) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarCheckoutAptoOcupado");
+        }
+    }
+
+    // checkout - caso triste
+    static void testarCheckoutAptoLivreFalha() {
+        total++;
+        Apartamento apto = new Apartamento();
+        try {
+            apto.checkout();
+            System.out.println("FALHOU: testarCheckoutAptoLivreFalha");
+        }
+        catch (IllegalStateException e) {
+            passou++;
+        }
+        catch (Exception e) {
+            System.out.println("FALHOU: testarCheckoutAptoLivreFalha - exceção inesperada");
+        }
+    }
+
+    // checkout - caso triste
+    static void testarCheckoutAptoReservadoFalha() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        apto.reservar(h);
+        try {
+            apto.checkout();
+            System.out.println("FALHOU: testarCheckoutAptoReservadoFalha");
+        }
+        catch (IllegalStateException e) {
+            passou++;
+        }
+        catch (Exception e) {
+            System.out.println("FALHOU: testarCheckoutAptoReservadoFalha - exceção inesperada");
+        }
+    }
+
+    // cancelarReserva - caso feliz
+    static void testarCancelarReservaAptoReservado() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        apto.reservar(h);
+        apto.cancelarReserva();
+        if (apto.estaLivre() && apto.getHospede() == null) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarCancelarReservaAptoReservado");
+        }
+    }
+
+    // cancelarReserva - caso triste
+    static void testarCancelarReservaAptoLivreFalha() {
+        total++;
+        Apartamento apto = new Apartamento();
+        try {
+            apto.cancelarReserva();
+            System.out.println("FALHOU: testarCancelarReservaAptoLivreFalha");
+        }
+        catch (IllegalStateException e) {
+            passou++;
+        }
+        catch (Exception e) {
+            System.out.println("FALHOU: testarCancelarReservaAptoLivreFalha - exceção inesperada");
+        }
+    }
+
+    // cancelarReserva - caso triste
+    static void testarCancelarReservaAptoOcupadoFalha() {
+        total++;
+        Apartamento apto = new Apartamento();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        apto.checkin(h);
+        try {
+            apto.cancelarReserva();
+            System.out.println("FALHOU: testarCancelarReservaAptoOcupadoFalha");
+        }
+        catch (IllegalStateException e) {
+            passou++;
+        }
+        catch (Exception e) {
+            System.out.println("FALHOU: testarCancelarReservaAptoOcupadoFalha - exceção inesperada");
         }
     }
 }
