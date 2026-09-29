@@ -30,11 +30,30 @@ public class Hotel {
         return andar >= 0 && andar < NUM_ANDARES && numero >= 0 && numero < APTOS_POR_ANDAR;
     }
 
+    /**
+     * Reserva um apartamento, mudando seu status de LIVRE para RESERVADO.
+     *
+     * @param andar número do andar, de 0 a 19
+     * @param numero número do apartamento no andar, de 0 a 13
+     * @param hospede hóspede que fará a reserva
+     * @return true se a reserva foi realizada com sucesso, ou false se o
+     *         apartamento não estiver livre
+     * @throws IllegalArgumentException se andar ou número forem inválidos,
+     *         ou se hospede for nulo
+     *
+     * @pre hotel inicializado
+     * @post o apartamento fica RESERVADO com o hóspede armazenado
+     */
     public boolean reservarApartamento(int andar, int numero, Hospede hospede) {
         if (!aptoValido(andar, numero)) {
             throw new IllegalArgumentException("Andar ou numero invalido");
         }
-        throw new UnsupportedOperationException("Implementar reservarApartamento");
+        if (!matriz[andar][numero].estaLivre()) {
+            return false;
+        }
+
+        matriz[andar][numero].reservar(hospede);
+        return true;
     }
 
     public boolean realizarCheckin(int andar, int numero, Hospede hospede) {
