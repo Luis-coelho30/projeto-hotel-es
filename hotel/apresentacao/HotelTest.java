@@ -47,6 +47,9 @@ public class HotelTest {
         testarRealizarCheckinAptoReservado();
         testarRealizarCheckinAptoOcupadoFalha();
         testarRealizarCheckinHospedeNuloFalha();
+        testarRealizarCheckoutAptoOcupado();
+        testarRealizarCheckoutAptoLivreFalha();
+        testarRealizarCheckoutAptoReservadoFalha();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -591,6 +594,60 @@ public class HotelTest {
             passou++;
         } catch (Exception e) {
             System.out.println("FALHOU: testarRealizarCheckinHospedeNuloFalha - excecao inesperada");
+        }
+    }
+
+    // Checkout - caso feliz em apartamento ocupado
+    static void testarRealizarCheckoutAptoOcupado() {
+        total++;
+        Hotel hotel = new Hotel();
+        Hospede hospede = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+
+        try {
+            hotel.realizarCheckin(0, 0, hospede);
+            boolean resultado = hotel.realizarCheckout(0, 0);
+
+            if (resultado
+                    && hotel.getApartamento(0, 0).estaLivre()
+                    && hotel.getApartamento(0, 0).getHospede() == null) {
+                passou++;
+            } else {
+                System.out.println("FALHOU: testarRealizarCheckoutAptoOcupado");
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarRealizarCheckoutAptoOcupado - excecao inesperada");
+        }
+    }
+
+    // Checkout - caso triste em apartamento livre
+    static void testarRealizarCheckoutAptoLivreFalha() {
+        total++;
+        Hotel hotel = new Hotel();
+
+        try {
+            hotel.realizarCheckout(0, 0);
+            System.out.println("FALHOU: testarRealizarCheckoutAptoLivreFalha");
+        } catch (IllegalStateException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarRealizarCheckoutAptoLivreFalha - excecao inesperada");
+        }
+    }
+
+    // Checkout - caso triste em apartamento reservado
+    static void testarRealizarCheckoutAptoReservadoFalha() {
+        total++;
+        Hotel hotel = new Hotel();
+        Hospede hospede = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+
+        try {
+            hotel.reservarApartamento(0, 0, hospede);
+            hotel.realizarCheckout(0, 0);
+            System.out.println("FALHOU: testarRealizarCheckoutAptoReservadoFalha");
+        } catch (IllegalStateException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarRealizarCheckoutAptoReservadoFalha - excecao inesperada");
         }
     }
 }
