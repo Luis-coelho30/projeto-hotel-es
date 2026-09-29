@@ -56,11 +56,26 @@ public class Hotel {
         return true;
     }
 
+    /**
+     * Realiza o check-in de um hóspede em um apartamento livre ou reservado.
+     *
+     * @param andar número do andar, de 0 a 19
+     * @param numero número do apartamento no andar, de 0 a 13
+     * @param hospede hóspede que fará o check-in
+     * @return true se o check-in foi realizado com sucesso
+     * @throws IllegalArgumentException se andar ou número forem inválidos,
+     *         ou se hospede for nulo
+     * @throws IllegalStateException se o apartamento já estiver ocupado
+     *
+     * @pre hotel inicializado
+     * @post o apartamento fica OCUPADO com o hóspede armazenado
+     */
     public boolean realizarCheckin(int andar, int numero, Hospede hospede) {
         if (!aptoValido(andar, numero)) {
             throw new IllegalArgumentException("Andar ou numero invalido");
         }
-        throw new UnsupportedOperationException("Implementar realizarCheckin");
+        matriz[andar][numero].checkin(hospede);
+        return true;
     }
 
     public boolean realizarCheckout(int andar, int numero) {
