@@ -41,6 +41,9 @@ public class HotelTest {
         testarCancelarReservaAptoLivreFalha();
         testarCancelarReservaAptoOcupadoFalha();
 
+        testarReservarApartamentoValido();
+        testarReservarApartamentoNaoLivreFalha();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -462,6 +465,52 @@ public class HotelTest {
         }
         catch (Exception e) {
             System.out.println("FALHOU: testarCancelarReservaAptoOcupadoFalha - exceção inesperada");
+        }
+    }
+
+    // Testes Hotel.java
+
+    // Reservar - caso feliz
+    static void testarReservarApartamentoValido() {
+        total++;
+        Hotel hotel = new Hotel();
+        Hospede hospede = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+
+        try {
+            boolean resultado = hotel.reservarApartamento(0, 0, hospede);
+
+            if (resultado
+                    && hotel.getApartamento(0, 0).estaReservado()
+                    && hotel.getApartamento(0, 0).getHospede() == hospede) {
+                passou++;
+            } else {
+                System.out.println("FALHOU: testarReservarApartamentoValido");
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarReservarApartamentoValido - excecao inesperada");
+        }
+    }
+
+    // Reservar - caso triste
+    static void testarReservarApartamentoNaoLivreFalha() {
+        total++;
+        Hotel hotel = new Hotel();
+        Hospede primeiroHospede = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        Hospede segundoHospede = new Hospede("456", "Maria", "Rua Y", "8888", "maria@x");
+
+        try {
+            boolean primeiraReserva = hotel.reservarApartamento(0, 0, primeiroHospede);
+            boolean segundaReserva = hotel.reservarApartamento(0, 0, segundoHospede);
+
+            if (primeiraReserva
+                    && !segundaReserva
+                    && hotel.getApartamento(0, 0).getHospede() == primeiroHospede) {
+                passou++;
+            } else {
+                System.out.println("FALHOU: testarReservarApartamentoNaoLivreFalha");
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarReservarApartamentoNaoLivreFalha - excecao inesperada");
         }
     }
 }
