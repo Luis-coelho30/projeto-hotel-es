@@ -55,6 +55,10 @@ public class HotelTest {
         testarAptoHotelFeliz();
         testarAptoHotelTristeTipoIncorreto();
 
+        testarAptoInvalidoTristeNumero();
+        testarAptoInvalidoTristeAndar();
+        testarAptoValidoFeliz();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -697,6 +701,54 @@ public class HotelTest {
             passou++;
         } else {
             System.out.println("FALHOU: testarAptoHotelTristeTipoIncorreto");
+        }
+    }
+
+
+    // tenta entrar em um quarto fora dos limites (número) - caso triste
+    static void testarAptoInvalidoTristeNumero() {
+        total++;
+        Hotel hotel = new Hotel();
+        
+        try {
+            hotel.getApartamento(0, 14); // tenta ver o apto inexistente (valido: 0 <= numero <= 13)
+            System.out.println("FALHOU: testarAptoInvalidoTristeNumero - Devia ter lançado exceção.");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e){
+            System.out.println("FALHOU: testarAptoInvalidoTristeNumero - exceção inesperada " + e.toString());
+        }
+    }
+
+    // tenta entrar em um quarto fora dos limites (andar) - caso triste
+    static void testarAptoInvalidoTristeAndar() {
+        total++;
+        Hotel hotel = new Hotel();
+        
+        try {
+            hotel.getApartamento(20, 0); // tenta ver o andar inexistente (valido: 0 <= numero <= 19)
+            System.out.println("FALHOU: testarAptoInvalidoTristeAndar - Devia ter lançado exceção.");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e){
+            System.out.println("FALHOU: testarAptoInvalidoTristeAndar - exceção inesperada " + e.toString());
+        }
+    }
+
+    // testa quarto dentro dos limites - caso feliz
+    static void testarAptoValidoFeliz() {
+        total++;
+        Hotel hotel = new Hotel();
+        
+        try {
+            Apartamento ap = hotel.getApartamento(10, 5);
+            if (ap != null) {
+                passou++;
+            } else {
+                System.out.println("FALHOU: testarAptoValidoFeliz - O sistema retornou nulo para um quarto válido.");
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarAptoValidoFeliz - exceção inesperada " + e.toString());
         }
     }
 
