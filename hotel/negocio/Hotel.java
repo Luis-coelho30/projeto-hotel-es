@@ -128,6 +128,16 @@ public class Hotel {
         return ok;
     }
 
+    /**
+     * Exibe no terminal o mapa visual de ocupação do hotel
+     * Utiliza '.' para livre, 'R' para reservado e 'O' para ocupado
+     * 
+     * @param N/A Não recebe parâmetros
+     * @return (void)
+     * @throws (nenhuma)
+     * @pre a matriz do hotel deve estar inicializada
+     * @post o mapa é impresso na tela
+     */
     public void mostrarMapa() {
         System.out.println("\n=== MAPA DE OCUPAÇÃO ===");
   
