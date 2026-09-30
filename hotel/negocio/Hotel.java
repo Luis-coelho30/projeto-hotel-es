@@ -157,6 +157,9 @@ public class Hotel {
     }
 
     public Apartamento getApartamento(int andar, int numero) {
+        if(!aptoValido(andar, numero)){
+            throw new IllegalArgumentException("Andar ou número de apartamento inválido.");
+        }
         return matriz[andar][numero];
     }
 
