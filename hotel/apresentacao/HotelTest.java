@@ -51,6 +51,28 @@ public class HotelTest {
         testarRealizarCheckoutAptoLivreFalha();
         testarRealizarCheckoutAptoReservadoFalha();
 
+        testarPrecoDiariaFeliz();
+        testarAptoHotelFeliz();
+        testarAptoHotelTristeTipoIncorreto();
+
+        testarAptoInvalidoTristeNumero();
+        testarAptoInvalidoTristeAndar();
+        testarAptoValidoFeliz();
+
+        testarHotelCancelarReservaFeliz();
+        testarHotelCancelarReservaTristeLivre();
+        testarHotelCancelarReservaTristeOcupado();
+
+        testarMostrarMapa();
+
+        testarTaxaOcupacaoComCheckin();
+        testarTaxaOcupacaoHotelVazio();
+        testarTaxaOcupacaoComReserva();
+
+        testarTaxaReservasHotelVazio();
+        testarTaxaReservasIgnoraOcupados();
+        testarTaxaReservasComSucesso();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -648,6 +670,268 @@ public class HotelTest {
             passou++;
         } catch (Exception e) {
             System.out.println("FALHOU: testarRealizarCheckoutAptoReservadoFalha - excecao inesperada");
+        }
+    }
+
+    //teste do preco simples e premium - caso feliz
+    static void testarPrecoDiariaFeliz(){
+        total++;
+
+        Apartamento apSimples = new ApartamentoSimples();
+        Apartamento apPremium = new ApartamentoPremium();
+
+        if(apSimples.getPrecoDiaria() == 150.0f && apPremium.getPrecoDiaria() == 350.0f){
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarPrecoDiariaFeliz");
+        }
+    }
+
+    // testar se os quartos simples e premium estão corretos - caso feliz
+    static void testarAptoHotelFeliz(){
+        total++;
+        Hotel hotel = new Hotel();
+        
+        // quartos 0 a 7 devem ser Simples, quartos 8 a 13 Premium (regra da mistura 8/6)
+        boolean isSimples = hotel.getApartamento(0, 7) instanceof ApartamentoSimples;
+        boolean isPremium = hotel.getApartamento(0, 8) instanceof ApartamentoPremium;
+        
+        if (isSimples && isPremium) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarIntegracaoHotelFeliz - A mistura 8/6 não foi respeitada.");
+        }
+    }
+
+    // testar se os tipos de quarto não se misturam no lugar errado - caso triste
+    static void testarAptoHotelTristeTipoIncorreto(){
+        total++;
+        Hotel hotel = new Hotel();
+        
+        // perguntar se um quarto Premium (8) é simples, deve ser falso
+        boolean isSimples = hotel.getApartamento(0, 8) instanceof ApartamentoSimples;
+        
+        if (!isSimples) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarAptoHotelTristeTipoIncorreto");
+        }
+    }
+
+
+    // tenta entrar em um quarto fora dos limites (número) - caso triste
+    static void testarAptoInvalidoTristeNumero() {
+        total++;
+        Hotel hotel = new Hotel();
+        
+        try {
+            hotel.getApartamento(0, 14); // tenta ver o apto inexistente (valido: 0 <= numero <= 13)
+            System.out.println("FALHOU: testarAptoInvalidoTristeNumero - Devia ter lançado exceção.");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e){
+            System.out.println("FALHOU: testarAptoInvalidoTristeNumero - exceção inesperada " + e.toString());
+        }
+    }
+
+    // tenta entrar em um quarto fora dos limites (andar) - caso triste
+    static void testarAptoInvalidoTristeAndar() {
+        total++;
+        Hotel hotel = new Hotel();
+        
+        try {
+            hotel.getApartamento(20, 0); // tenta ver o andar inexistente (valido: 0 <= numero <= 19)
+            System.out.println("FALHOU: testarAptoInvalidoTristeAndar - Devia ter lançado exceção.");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e){
+            System.out.println("FALHOU: testarAptoInvalidoTristeAndar - exceção inesperada " + e.toString());
+        }
+    }
+
+    // testa quarto dentro dos limites - caso feliz
+    static void testarAptoValidoFeliz() {
+        total++;
+        Hotel hotel = new Hotel();
+        
+        try {
+            Apartamento ap = hotel.getApartamento(10, 5);
+            if (ap != null) {
+                passou++;
+            } else {
+                System.out.println("FALHOU: testarAptoValidoFeliz - O sistema retornou nulo para um quarto válido.");
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarAptoValidoFeliz - exceção inesperada " + e.toString());
+        }
+    }
+
+    // cancelar reserva hotel - caso feliz
+    static void testarHotelCancelarReservaFeliz(){
+        total++;
+        Hotel hotel = new Hotel();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+
+        hotel.reservarApartamento(0, 0, h);
+        boolean estavaReservadoAntes = hotel.getApartamento(0, 0).estaReservado();
+
+        boolean ok = hotel.cancelarReserva(0, 0);
+
+        if(estavaReservadoAntes && ok && hotel.getApartamento(0, 0).estaLivre()){
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarHotelCancelarReservaFeliz");
+        }
+    }
+
+    // cancelar reserva hotel - caso triste (quarto livre)
+    static void testarHotelCancelarReservaTristeLivre(){
+        total++;
+        Hotel hotel = new Hotel();
+        boolean estavaLivreAntes = hotel.getApartamento(0, 0).estaLivre();
+
+        boolean ok = hotel.cancelarReserva(0, 0);
+
+        if(!ok && hotel.getApartamento(0, 0).estaLivre() && estavaLivreAntes){
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarHotelCancelarReservaTristeLivre");
+        }
+    }
+
+    // cancelar reserva hotel - caso triste (quarto ocupado)
+    static void testarHotelCancelarReservaTristeOcupado(){
+        total++;
+
+        Hotel hotel = new Hotel();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");        
+        hotel.realizarCheckin(0, 0, h);
+        boolean estavaOcupadoAntes = hotel.getApartamento(0, 0).estaOcupado();
+
+        boolean ok = hotel.cancelarReserva(0, 0);
+
+        if(!ok && hotel.getApartamento(0, 0).estaOcupado() && estavaOcupadoAntes){
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarHotelCancelarReservaTristeOcupado");
+        }
+    }
+
+    //hotel mostrar mapa com diferentes status
+    static void testarMostrarMapa(){
+        total++;
+
+        Hotel hotel = new Hotel();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        
+        hotel.reservarApartamento(0, 0, h);
+        hotel.realizarCheckin(0, 1, h);
+
+        try {
+            hotel.mostrarMapa();
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarMostrarMapaFeliz - exceção inesperada: " + e.toString());
+        }
+    }
+
+    //teste de taxa de ocupação - caso feliz
+    static void testarTaxaOcupacaoComCheckin() {
+        total++;
+        Hotel hotel = new Hotel();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        
+        float taxaAntes = hotel.calcularTaxaOcupacao();
+
+        hotel.realizarCheckin(0, 0, h);
+        hotel.realizarCheckin(1, 1, h);
+        
+        float taxaDepois = hotel.calcularTaxaOcupacao(); //2 quartos ocupados num total de 280: (2 / 280) * 100 = 0.714285
+        
+        if (taxaAntes == 0.0f && taxaDepois > 0.0f && taxaDepois <= 1.0f) {//valor entre 0 e 1
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarTaxaOcupacaoComCheckin - O cálculo retornou " + taxaDepois + "mesmo com hóspedes no hotel.");
+        }
+    }
+
+    //teste de limite de hotel vazio (zero)
+    static void testarTaxaOcupacaoHotelVazio() {
+        total++;
+        Hotel hotel = new Hotel();
+
+        float taxa = hotel.calcularTaxaOcupacao();
+    
+        if (taxa == 0.0f) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarTaxaOcupacaoHotelVazio - Esperado 0.0, recebido " + taxa);
+        }
+    }
+
+    //testa se ignora os apartamentos reservados
+    static void testarTaxaOcupacaoComReserva() {
+        total++;
+        Hotel hotel = new Hotel();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        
+        hotel.reservarApartamento(0, 0, h);
+        float taxa = hotel.calcularTaxaOcupacao();
+        
+        if (taxa == 0.0f && hotel.getApartamento(0, 0).estaReservado()) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarTaxaOcupacaoComReserva - O sistema contabilizou quartos 'Reservados' como 'Ocupados'!");
+        }
+    }
+
+    // teste com hotel vazio
+    static void testarTaxaReservasHotelVazio() {
+        total++;
+        Hotel hotel = new Hotel();
+        
+        float taxa = hotel.calcularTaxaReservas();
+        
+        if (taxa == 0.0f) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarTaxaReservasHotelVazio - Esperado 0.0, recebido " + taxa);
+        }
+    }
+
+    //teste se ignora ocupados
+    static void testarTaxaReservasIgnoraOcupados() {
+        total++;
+        Hotel hotel = new Hotel();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        hotel.realizarCheckin(0, 0, h);
+
+        float taxa = hotel.calcularTaxaReservas();
+        
+        if (taxa == 0.0f) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarTaxaReservasIgnoraOcupados - Sistema contabiliza Quartos Ocupados como Reservas!");
+        }
+    }
+
+    //testar calculo de taxa de reservas
+    static void testarTaxaReservasComSucesso() {
+        total++;
+        Hotel hotel = new Hotel();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        
+        float taxaAntes = hotel.calcularTaxaReservas();
+        
+        hotel.reservarApartamento(0, 0, h);
+        hotel.reservarApartamento(1, 1, h);
+        
+        float taxaDepois = hotel.calcularTaxaReservas();
+        
+        if (taxaAntes == 0.0f && taxaDepois > 0.0f && taxaDepois <= 1.0f) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarTaxaReservasComSucesso - Taxa fora do limite (0 a 1): " + taxaDepois);
         }
     }
 }
