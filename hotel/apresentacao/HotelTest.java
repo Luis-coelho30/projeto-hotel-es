@@ -63,6 +63,8 @@ public class HotelTest {
         testarHotelCancelarReservaTristeLivre();
         testarHotelCancelarReservaTristeOcupado();
 
+        testarMostrarMapa();
+
 
 
         System.out.println(passou + "/" + total + " testes passaram");
@@ -806,6 +808,24 @@ public class HotelTest {
             passou++;
         } else {
             System.out.println("FALHOU: testarHotelCancelarReservaTristeOcupado");
+        }
+    }
+
+    //hotel mostrar mapa com diferentes status
+    static void testarMostrarMapa(){
+        total++;
+
+        Hotel hotel = new Hotel();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        
+        hotel.reservarApartamento(0, 0, h);
+        hotel.realizarCheckin(0, 1, h);
+
+        try {
+            hotel.mostrarMapa();
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarMostrarMapaFeliz - exceção inesperada: " + e.toString());
         }
     }
 }
