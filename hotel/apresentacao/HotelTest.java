@@ -65,6 +65,10 @@ public class HotelTest {
 
         testarMostrarMapa();
 
+        testarTaxaOcupacaoComCheckin();
+        testarTaxaOcupacaoHotelVazio();
+        testarTaxaOcupacaoComReserva();
+
 
 
         System.out.println(passou + "/" + total + " testes passaram");
@@ -826,6 +830,56 @@ public class HotelTest {
             passou++;
         } catch (Exception e) {
             System.out.println("FALHOU: testarMostrarMapaFeliz - exceção inesperada: " + e.toString());
+        }
+    }
+
+    //teste de taxa de ocupação - caso feliz
+    static void testarTaxaOcupacaoComCheckin() {
+        total++;
+        Hotel hotel = new Hotel();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        
+        float taxaAntes = hotel.calcularTaxaOcupacao();
+
+        hotel.realizarCheckin(0, 0, h);
+        hotel.realizarCheckin(1, 1, h);
+        
+        float taxaDepois = hotel.calcularTaxaOcupacao(); //2 quartos ocupados num total de 280: (2 / 280) * 100 = 0.714285
+        
+        if (taxaAntes == 0.0f && taxaDepois > 0.0f && taxaDepois <= 1.0f) {//valor entre 0 e 1
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarTaxaOcupacaoComCheckin - O cálculo retornou " + taxaDepois + "mesmo com hóspedes no hotel.");
+        }
+    }
+
+    //teste de limite de hotel vazio (zero)
+    static void testarTaxaOcupacaoHotelVazio() {
+        total++;
+        Hotel hotel = new Hotel();
+
+        float taxa = hotel.calcularTaxaOcupacao();
+    
+        if (taxa == 0.0f) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarTaxaOcupacaoHotelVazio - Esperado 0.0, recebido " + taxa);
+        }
+    }
+
+    //testa se ignora os apartamentos reservados
+    static void testarTaxaOcupacaoComReserva() {
+        total++;
+        Hotel hotel = new Hotel();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        
+        hotel.reservarApartamento(0, 0, h);
+        float taxa = hotel.calcularTaxaOcupacao();
+        
+        if (taxa == 0.0f && hotel.getApartamento(0, 0).estaReservado()) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarTaxaOcupacaoComReserva - O sistema contabilizou quartos 'Reservados' como 'Ocupados'!");
         }
     }
 }
