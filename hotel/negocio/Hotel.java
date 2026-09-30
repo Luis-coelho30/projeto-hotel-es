@@ -156,6 +156,16 @@ public class Hotel {
         throw new UnsupportedOperationException("Implementar emitirFatura");
     }
 
+    /**
+     * Recupera um apartamento específico da matriz do hotel, validando as coordenadas
+     * 
+     * @param andar O andar desejado (0 a 19)
+     * @param numero O número do apartamento no andar (0 a 13)
+     * @return A instância do Apartamento correspondente àquela posição.
+     * @throws IllegalArgumentException Se as coordenadas do andar ou número estiverem fora dos limites físicos do hotel
+     * @pre as coordenadas informadas devem ser maiores ou iguais a zero e menores que a capacidade máxima do prédio
+     * @post retorna o objeto Apartamento sem alterar o seu estado atual
+     */
     public Apartamento getApartamento(int andar, int numero) {
         if(!aptoValido(andar, numero)){
             throw new IllegalArgumentException("Andar ou número de apartamento inválido.");
