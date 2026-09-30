@@ -59,6 +59,12 @@ public class HotelTest {
         testarAptoInvalidoTristeAndar();
         testarAptoValidoFeliz();
 
+        testarHotelCancelarReservaFeliz();
+        testarHotelCancelarReservaTristeLivre();
+        testarHotelCancelarReservaTristeOcupado();
+
+
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -752,5 +758,54 @@ public class HotelTest {
         }
     }
 
+    // cancelar reserva hotel - caso feliz
+    static void testarHotelCancelarReservaFeliz(){
+        total++;
+        Hotel hotel = new Hotel();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
 
+        hotel.reservarApartamento(0, 0, h);
+        boolean estavaReservadoAntes = hotel.getApartamento(0, 0).estaReservado();
+
+        boolean ok = hotel.cancelarReserva(0, 0);
+
+        if(estavaReservadoAntes && ok && hotel.getApartamento(0, 0).estaLivre()){
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarHotelCancelarReservaFeliz");
+        }
+    }
+
+    // cancelar reserva hotel - caso triste (quarto livre)
+    static void testarHotelCancelarReservaTristeLivre(){
+        total++;
+        Hotel hotel = new Hotel();
+        boolean estavaLivreAntes = hotel.getApartamento(0, 0).estaLivre();
+
+        boolean ok = hotel.cancelarReserva(0, 0);
+
+        if(!ok && hotel.getApartamento(0, 0).estaLivre() && estavaLivreAntes){
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarHotelCancelarReservaTristeLivre");
+        }
+    }
+
+    // cancelar reserva hotel - caso triste (quarto ocupado)
+    static void testarHotelCancelarReservaTristeOcupado(){
+        total++;
+
+        Hotel hotel = new Hotel();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");        
+        hotel.realizarCheckin(0, 0, h);
+        boolean estavaOcupadoAntes = hotel.getApartamento(0, 0).estaOcupado();
+
+        boolean ok = hotel.cancelarReserva(0, 0);
+
+        if(!ok && hotel.getApartamento(0, 0).estaOcupado() && estavaOcupadoAntes){
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarHotelCancelarReservaTristeOcupado");
+        }
+    }
 }
