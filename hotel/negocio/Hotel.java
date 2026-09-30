@@ -187,6 +187,13 @@ public class Hotel {
         
     }
 
+    /**
+     * Calcula a taxa de reservas atuais do hotel (quartos reservados, aguardando check-in)
+     * 
+     * @return O percentual decimal de quartos reservados (ex: 0.10 para 10% de reservas)
+     * @pre a matriz de apartamentos deve estar instanciada
+     * @post retorna a proporção de quartos no estado RESERVADO em relação à capacidade total, sem alterar o estado do hotel
+     */
     public float calcularTaxaReservas() {
         Apartamento ap;
         int reservados = 0;
