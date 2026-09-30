@@ -69,7 +69,9 @@ public class HotelTest {
         testarTaxaOcupacaoHotelVazio();
         testarTaxaOcupacaoComReserva();
 
-
+        testarTaxaReservasHotelVazio();
+        testarTaxaReservasIgnoraOcupados();
+        testarTaxaReservasComSucesso();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -880,6 +882,56 @@ public class HotelTest {
             passou++;
         } else {
             System.out.println("FALHOU: testarTaxaOcupacaoComReserva - O sistema contabilizou quartos 'Reservados' como 'Ocupados'!");
+        }
+    }
+
+    // teste com hotel vazio
+    static void testarTaxaReservasHotelVazio() {
+        total++;
+        Hotel hotel = new Hotel();
+        
+        float taxa = hotel.calcularTaxaReservas();
+        
+        if (taxa == 0.0f) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarTaxaReservasHotelVazio - Esperado 0.0, recebido " + taxa);
+        }
+    }
+
+    //teste se ignora ocupados
+    static void testarTaxaReservasIgnoraOcupados() {
+        total++;
+        Hotel hotel = new Hotel();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        hotel.realizarCheckin(0, 0, h);
+
+        float taxa = hotel.calcularTaxaReservas();
+        
+        if (taxa == 0.0f) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarTaxaReservasIgnoraOcupados - Sistema contabiliza Quartos Ocupados como Reservas!");
+        }
+    }
+
+    //testar calculo de taxa de reservas
+    static void testarTaxaReservasComSucesso() {
+        total++;
+        Hotel hotel = new Hotel();
+        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+        
+        float taxaAntes = hotel.calcularTaxaReservas();
+        
+        hotel.reservarApartamento(0, 0, h);
+        hotel.reservarApartamento(1, 1, h);
+        
+        float taxaDepois = hotel.calcularTaxaReservas();
+        
+        if (taxaAntes == 0.0f && taxaDepois > 0.0f && taxaDepois <= 1.0f) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarTaxaReservasComSucesso - Taxa fora do limite (0 a 1): " + taxaDepois);
         }
     }
 }
