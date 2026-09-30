@@ -109,7 +109,13 @@ public class Hotel {
         if (!aptoValido(andar, numero)) {
             throw new IllegalArgumentException("Andar ou numero invalido");
         }
-        throw new UnsupportedOperationException("Implementar cancelarReserva");
+        boolean ok = false;
+        Apartamento ap = getApartamento(andar, numero);
+        if(ap.estaReservado()){
+            ap.cancelarReserva();
+            ok = true;
+        }
+        return ok;
     }
 
     public void mostrarMapa() {
