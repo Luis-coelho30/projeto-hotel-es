@@ -51,6 +51,10 @@ public class HotelTest {
         testarRealizarCheckoutAptoLivreFalha();
         testarRealizarCheckoutAptoReservadoFalha();
 
+        testarPrecoDiariaFeliz();
+        testarAptoHotelFeliz();
+        testarAptoHotelTristeTipoIncorreto();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -650,4 +654,51 @@ public class HotelTest {
             System.out.println("FALHOU: testarRealizarCheckoutAptoReservadoFalha - excecao inesperada");
         }
     }
+
+    //teste do preco simples e premium - caso feliz
+    static void testarPrecoDiariaFeliz(){
+        total++;
+
+        Apartamento apSimples = new ApartamentoSimples();
+        Apartamento apPremium = new ApartamentoPremium();
+
+        if(apSimples.getPrecoDiaria() == 150.0f && apPremium.getPrecoDiaria() == 350.0f){
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarPrecoDiariaFeliz");
+        }
+    }
+
+    // testar se os quartos simples e premium estão corretos - caso feliz
+    static void testarAptoHotelFeliz(){
+        total++;
+        Hotel hotel = new Hotel();
+        
+        // quartos 0 a 7 devem ser Simples, quartos 8 a 13 Premium (regra da mistura 8/6)
+        boolean isSimples = hotel.getApartamento(0, 7) instanceof ApartamentoSimples;
+        boolean isPremium = hotel.getApartamento(0, 8) instanceof ApartamentoPremium;
+        
+        if (isSimples && isPremium) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarIntegracaoHotelFeliz - A mistura 8/6 não foi respeitada.");
+        }
+    }
+
+    // testar se os tipos de quarto não se misturam no lugar errado - caso triste
+    static void testarAptoHotelTristeTipoIncorreto(){
+        total++;
+        Hotel hotel = new Hotel();
+        
+        // perguntar se um quarto Premium (8) é simples, deve ser falso
+        boolean isSimples = hotel.getApartamento(0, 8) instanceof ApartamentoSimples;
+        
+        if (!isSimples) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarAptoHotelTristeTipoIncorreto");
+        }
+    }
+
+
 }
