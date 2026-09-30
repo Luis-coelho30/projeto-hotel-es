@@ -160,6 +160,13 @@ public class Hotel {
         throw new UnsupportedOperationException("Implementar consultarApartamento");
     }
 
+     /**
+     * Calcula a taxa de ocupação atual do hotel (quartos com check-in realizado)
+     * 
+     * @return O percentual decimal de quartos ocupados (ex: 0.25 para 25% de ocupação)
+     * @pre a matriz de apartamentos deve estar instanciada
+     * @post retorna a proporção de quartos no estado OCUPADO em relação à capacidade total, sem alterar o estado do hotel
+     */
     public float calcularTaxaOcupacao() {
         Apartamento ap;
         int ocupados = 0;
