@@ -161,7 +161,23 @@ public class Hotel {
     }
 
     public float calcularTaxaOcupacao() {
-        throw new UnsupportedOperationException("Implementar calcularTaxaOcupacao");
+        Apartamento ap;
+        int ocupados = 0;
+        int totalQuartos = NUM_ANDARES * APTOS_POR_ANDAR;
+        float taxa;
+
+        for(int a = 0; a < NUM_ANDARES; a++){
+            for(int n = 0; n < APTOS_POR_ANDAR; n++){
+                ap = getApartamento(a, n);
+                if(ap.estaOcupado()){
+                    ocupados++;
+                }
+            }
+        }
+
+        taxa = (float) ocupados/totalQuartos;
+        return taxa;
+        
     }
 
     public float calcularTaxaReservas() {
