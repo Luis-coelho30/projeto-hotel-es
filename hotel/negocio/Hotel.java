@@ -105,6 +105,16 @@ public class Hotel {
         return true;
     }
 
+     /**
+     * Cancela a reserva de um apartamento específico, alterando o seu estado
+     * 
+     * @param andar O andar onde o apartamento está localizado
+     * @param numero O número do apartamento no andar especificado
+     * @return true se o cancelamento foi bem-sucedido, ou false se o quarto não estava reservado (ex: estava livre ou ocupado)
+     * @throws IllegalArgumentException Se as coordenadas do andar ou número estiverem fora dos limites do hotel
+     * @pre as coordenadas informadas devem ser válidas e pertencer à matriz do hotel
+     * @post se a operação for bem-sucedida, o estado do apartamento passa de RESERVADO para LIVRE; caso contrário, o estado é mantido
+     */
     public boolean cancelarReserva(int andar, int numero) {
         if (!aptoValido(andar, numero)) {
             throw new IllegalArgumentException("Andar ou numero invalido");
