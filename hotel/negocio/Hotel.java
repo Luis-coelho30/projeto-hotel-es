@@ -129,7 +129,18 @@ public class Hotel {
     }
 
     public void mostrarMapa() {
-        throw new UnsupportedOperationException("Implementar mostrarMapa");
+        System.out.println("\n=== MAPA DE OCUPAÇÃO ===");
+  
+        for(int a = NUM_ANDARES -1; a >= 0; a--){
+            System.out.printf("Andar %02d", a);
+            for(int n = 0; n < APTOS_POR_ANDAR; n++){
+                char simbolo = matriz[a][n].getSymbol();
+                System.out.print("[" + simbolo + "] ");
+            }
+            System.out.println();
+        }
+
+        System.out.println("\nLegenda: [.] Livre\t [R] Reservado\t [O] Ocupado");
     }
 
     public void consultarApartamento(int andar, int numero) {
