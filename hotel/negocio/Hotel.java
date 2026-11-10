@@ -322,18 +322,56 @@ public class Hotel {
         this.servicos.add(new Servico(nome, preco));
     }
 
+    /**
+     * Registra o consumo de um serviço na estadia ativa de um apartamento.
+     *
+     * @param andar número do andar, de 0 a 19
+     * @param numero número do apartamento no andar, de 0 a 13
+     * @param indiceServico posição do serviço no cardápio
+     * @param quantidade quantidade consumida (maior que zero)
+     * @return true se o consumo foi registrado, ou false se o apartamento
+     *         não estiver ocupado
+     * @throws IllegalArgumentException se andar/número forem inválidos, se o
+     *         índice do serviço não existir ou se a quantidade for inválida
+     *
+     * @pre hotel inicializado
+     * @post se bem-sucedido, a estadia ativa tem um consumo a mais
+     */
     public boolean registrarConsumo(int andar, int numero, int indiceServico, int quantidade) {
         if (!aptoValido(andar, numero)) {
             throw new IllegalArgumentException("Andar ou numero invalido");
         }
-        throw new UnsupportedOperationException("Implementar registrarConsumo");
+        if (indiceServico < 0 || indiceServico >= servicos.size()) {
+            throw new IllegalArgumentException("Indice de servico invalido");
+        }
+        Estadia estadia = buscarEstadiaAtiva(andar, numero);
+        if (estadia == null) {
+            return false;
+        }
+        estadia.registrarConsumo(new Consumo(servicos.get(indiceServico), quantidade));
+        return true;
     }
-
-    public ArrayList<Consumo> getConsumosDoApartamento(int andar, int numero) {
+    
+    /**
+     * Retorna os consumos da estadia ativa de um apartamento.
+     *
+     * @param andar número do andar, de 0 a 19
+     * @param numero número do apartamento no andar, de 0 a 13
+     * @return lista não modificável de consumos (vazia se não houver estadia ativa)
+     * @throws IllegalArgumentException se andar ou número forem inválidos
+     *
+     * @pre hotel inicializado
+     * @post estado do hotel inalterado
+     */
+    public List<Consumo> getConsumosDoApartamento(int andar, int numero) {
         if (!aptoValido(andar, numero)) {
             throw new IllegalArgumentException("Andar ou numero invalido");
         }
-        throw new UnsupportedOperationException("Implementar getConsumosDoApartamento");
+        Estadia estadia = buscarEstadiaAtiva(andar, numero);
+        if (estadia == null) {
+            return Collections.emptyList();
+        }
+        return estadia.getConsumos();
     }
 
     public Fatura emitirFatura(int andar, int numero, int dias) {
