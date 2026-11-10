@@ -123,6 +123,11 @@ public class HotelTest {
         testarGetTotalConsumosVazio();
 
         testarGetReservasNaoModificavelFalha();
+        testarGetEstadiasNaoModificavelFalha();
+
+        testarConsultarAptoLivre();
+        testarConsultarAptoReservadoMostraHospede();
+        testarConsultarAptoOcupadoMostraHospede();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -2022,6 +2027,44 @@ public class HotelTest {
             }
         } catch (Exception e) {
             System.out.println("FALHOU: testarGetEstadiasNaoModificavelFalha - excecao inesperada");
+        }
+    }
+
+    // consultarApartamento - apartamento livre
+    static void testarConsultarAptoLivre() {
+        total++;
+        Hotel hotel = new Hotel();
+        try {
+            hotel.consultarApartamento(0, 0);
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarConsultarAptoLivre - excecao inesperada");
+        }
+    }
+
+    // consultarApartamento - apartamento reservado
+    static void testarConsultarAptoReservadoMostraHospede() {
+        total++;
+        Hotel hotel = new Hotel();
+        hotel.reservarApartamento(0, 0, new Hospede("456", "Maria", "Rua Y", "8888", "maria@x"));
+        try {
+            hotel.consultarApartamento(0, 0);
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarConsultarAptoReservadoMostraHospede - excecao inesperada");
+        }
+    }
+
+    // consultarApartamento - apartamento ocupado
+    static void testarConsultarAptoOcupadoMostraHospede() {
+        total++;
+        Hotel hotel = new Hotel();
+        hotel.realizarCheckin(0, 0, new Hospede("789", "Carlos", "Rua Z", "7777", "carlos@x"));
+        try {
+            hotel.consultarApartamento(0, 0);
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarConsultarAptoOcupadoMostraHospede - excecao inesperada");
         }
     }
 
