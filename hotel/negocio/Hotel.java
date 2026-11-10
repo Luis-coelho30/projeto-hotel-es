@@ -2,6 +2,7 @@ package hotel.negocio;
 
 import hotel.modelo.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Hotel {
     public static final int NUM_ANDARES = 20;
@@ -9,13 +10,15 @@ public class Hotel {
     public static final int SIMPLES_POR_ANDAR = 8;
 
     private Apartamento[][] matriz;
-    private ArrayList<Servico> servicos;
-    private ArrayList<Consumo> consumos;
+    private List<Servico> servicos;
+    private List<Estadia> estadias;
+    private List<Reserva> reservas;
 
     public Hotel() {
         this.matriz = new Apartamento[NUM_ANDARES][APTOS_POR_ANDAR];
         this.servicos = new ArrayList<>();
-        this.consumos = new ArrayList<>();
+        this.estadias = new ArrayList<>();
+        this.reservas = new ArrayList<>();
         inicializar();
     }
 
@@ -255,6 +258,13 @@ public class Hotel {
         return matriz[andar][numero];
     }
 
-    public ArrayList<Servico> getServicos() { return servicos; }
-    public ArrayList<Consumo> getConsumos() { return consumos; }
+    public List<Servico> getServicos() { return servicos; }
+    
+    public List<Estadia> getEstadias() {
+        throw new UnsupportedOperationException("Implementar getEstadias");
+    }
+ 
+    public List<Reserva> getReservas() {
+        throw new UnsupportedOperationException("Implementar getReservas");
+    }
 }
