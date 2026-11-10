@@ -129,6 +129,11 @@ public class HotelTest {
         testarConsultarAptoReservadoMostraHospede();
         testarConsultarAptoOcupadoMostraHospede();
 
+        testarCadastrarServicoNoCardapio();
+        testarCadastrarServicosMantemOrdem();
+        testarCadastrarServicoNomeVazioFalha();
+        testarCadastrarServicoPrecoNegativoFalha();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -2065,6 +2070,95 @@ public class HotelTest {
             passou++;
         } catch (Exception e) {
             System.out.println("FALHOU: testarConsultarAptoOcupadoMostraHospede - excecao inesperada");
+        }
+    }
+
+    // cadastrarServico - caso feliz
+    static void testarCadastrarServicoNoCardapio() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Cafe", 12.5f);
+            if (hotel.getServicos().size() != 1) {
+                System.out.println("FALHOU: testarCadastrarServicoNoCardapio - Devia existir exatamente 1 servico");
+            }
+            else if (!hotel.getServicos().get(0).getNome().equals("Cafe")) {
+                System.out.println("FALHOU: testarCadastrarServicoNoCardapio - Nome do servico incorreto");
+            }
+            else if (hotel.getServicos().get(0).getPreco() != 12.5f) {
+                System.out.println("FALHOU: testarCadastrarServicoNoCardapio - Preco do servico incorreto");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCadastrarServicoNoCardapio - excecao inesperada");
+        }
+    }
+
+    // cadastrarServico - ordem do cardapio
+    static void testarCadastrarServicosMantemOrdem() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Cafe", 12.5f);
+            hotel.cadastrarServico("Agua", 5.0f);
+            if (hotel.getServicos().size() != 2) {
+                System.out.println("FALHOU: testarCadastrarServicosMantemOrdem - Devia existir 2 servicos");
+            }
+            else if (!hotel.getServicos().get(0).getNome().equals("Cafe")) {
+                System.out.println("FALHOU: testarCadastrarServicosMantemOrdem - O primeiro servico devia ser Cafe");
+            }
+            else if (!hotel.getServicos().get(1).getNome().equals("Agua")) {
+                System.out.println("FALHOU: testarCadastrarServicosMantemOrdem - O segundo servico devia ser Agua");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCadastrarServicosMantemOrdem - excecao inesperada");
+        }
+    }
+
+    // cadastrarServico - caso triste (nome vazio)
+    static void testarCadastrarServicoNomeVazioFalha() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            try {
+                hotel.cadastrarServico("", 5.0f);
+                System.out.println("FALHOU: testarCadastrarServicoNomeVazioFalha - Nome vazio devia lancar IllegalArgumentException");
+            } catch (IllegalArgumentException e) {
+                if (!hotel.getServicos().isEmpty()) {
+                    System.out.println("FALHOU: testarCadastrarServicoNomeVazioFalha - Nenhum servico devia ter sido cadastrado");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCadastrarServicoNomeVazioFalha - excecao inesperada");
+        }
+    }
+
+    // cadastrarServico - caso triste (preco negativo)
+    static void testarCadastrarServicoPrecoNegativoFalha() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            try {
+                hotel.cadastrarServico("Agua", -1.0f);
+                System.out.println("FALHOU: testarCadastrarServicoPrecoNegativoFalha - Preco negativo devia lancar IllegalArgumentException");
+            } catch (IllegalArgumentException e) {
+                if (!hotel.getServicos().isEmpty()) {
+                    System.out.println("FALHOU: testarCadastrarServicoPrecoNegativoFalha - Nenhum servico devia ter sido cadastrado");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCadastrarServicoPrecoNegativoFalha - excecao inesperada");
         }
     }
 
