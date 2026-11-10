@@ -94,7 +94,10 @@ public class HotelTest {
         testarCriarReservaHospedeNuloFalha();
         testarMarcarReservaUtilizada();
         testarMarcarUtilizadaDuasVezesFalha();
-
+        testarCancelarReservaAtiva();
+        testarCancelarReservaDuasVezesFalha();
+        testarMarcarUtilizadaDepoisDeCancelarFalha();
+        testarCancelarDepoisDeUtilizadaFalha();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -1207,6 +1210,92 @@ public class HotelTest {
             }
         } catch (Exception e) {
             System.out.println("FALHOU: testarMarcarUtilizadaDuasVezesFalha - excecao inesperada");
+        }
+    }
+
+    // cancelar - caso feliz
+    static void testarCancelarReservaAtiva() {
+        total++;
+        try {
+            Reserva reserva = new Reserva(0, 0, new Hospede("456", "Maria", "Rua Y", "8888", "maria@x"));
+            reserva.cancelar();
+            if (reserva.getStatus() != StatusReserva.CANCELADA) {
+                System.out.println("FALHOU: testarCancelarReservaAtiva - Status devia ser CANCELADA");
+            }
+            else if (reserva.estaAtiva()) {
+                System.out.println("FALHOU: testarCancelarReservaAtiva - Reserva cancelada nao pode estar ativa");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCancelarReservaAtiva - Excecao inesperada");
+        }
+    }
+ 
+    // cancelar - caso triste (ja cancelada)
+    static void testarCancelarReservaDuasVezesFalha() {
+        total++;
+        try {
+            Reserva reserva = new Reserva(0, 0, new Hospede("456", "Maria", "Rua Y", "8888", "maria@x"));
+            reserva.cancelar();
+            try {
+                reserva.cancelar();
+                System.out.println("FALHOU: testarCancelarReservaDuasVezesFalha - Cancelar duas vezes devia lancar IllegalStateException");
+            } catch (IllegalStateException e) {
+                if (reserva.getStatus() != StatusReserva.CANCELADA) {
+                    System.out.println("FALHOU: testarCancelarReservaDuasVezesFalha - Status devia continuar CANCELADA");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCancelarReservaDuasVezesFalha - excecao inesperada");
+        }
+    }
+ 
+    // marcarUtilizada - caso triste (reserva cancelada)
+    static void testarMarcarUtilizadaDepoisDeCancelarFalha() {
+        total++;
+        try {
+            Reserva reserva = new Reserva(0, 0, new Hospede("456", "Maria", "Rua Y", "8888", "maria@x"));
+            reserva.cancelar();
+            try {
+                reserva.marcarUtilizada();
+                System.out.println("FALHOU: testarMarcarUtilizadaDepoisDeCancelarFalha - Utilizar reserva cancelada devia lancar IllegalStateException");
+            } catch (IllegalStateException e) {
+                if (reserva.getStatus() != StatusReserva.CANCELADA) {
+                    System.out.println("FALHOU: testarMarcarUtilizadaDepoisDeCancelarFalha - Status devia continuar CANCELADA");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarMarcarUtilizadaDepoisDeCancelarFalha - excecao inesperada");
+        }
+    }
+
+    // cancelar - caso triste (reserva utilizada)
+    static void testarCancelarDepoisDeUtilizadaFalha() {
+        total++;
+        try {
+            Reserva reserva = new Reserva(0, 0, new Hospede("456", "Maria", "Rua Y", "8888", "maria@x"));
+            reserva.marcarUtilizada();
+            try {
+                reserva.cancelar();
+                System.out.println("FALHOU: testarCancelarDepoisDeUtilizadaFalha - Cancelar reserva utilizada devia lancar IllegalStateException");
+            } catch (IllegalStateException e) {
+                if (reserva.getStatus() != StatusReserva.UTILIZADA) {
+                    System.out.println("FALHOU: testarCancelarDepoisDeUtilizadaFalha - Status devia continuar UTILIZADA");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCancelarDepoisDeUtilizadaFalha - excecao inesperada");
         }
     }
 }
