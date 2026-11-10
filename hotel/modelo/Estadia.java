@@ -178,8 +178,24 @@ public class Estadia {
         this.dataFim = dataFim;
     }
 
+    /**
+     * Registra um consumo nesta estadia.
+     *
+     * @param consumo Consumo a ser registrado
+     * @throws IllegalArgumentException se consumo for nulo
+     * @throws IllegalStateException se a estadia já estiver encerrada
+     *
+     * @pre Estadia ativa e consumo não nulo
+     * @post Consumo adicionado ao final da lista de consumos
+     */
     public void registrarConsumo(Consumo consumo) {
-        throw new UnsupportedOperationException("Implementar registrarConsumo");
+        if (consumo == null) {
+            throw new IllegalArgumentException("Consumo nao pode ser nulo");
+        }
+        if (!estaAtiva()) {
+            throw new IllegalStateException("Estadia encerrada nao aceita consumos");
+        }
+        this.consumos.add(consumo);
     }
 
     public int getDias() {
