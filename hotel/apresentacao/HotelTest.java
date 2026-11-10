@@ -2,6 +2,7 @@ package hotel.apresentacao;
 
 import hotel.modelo.*;
 import hotel.negocio.Hotel;
+import java.util.ArrayList;
 
 public class HotelTest {
     private static int passou = 0;
@@ -80,6 +81,8 @@ public class HotelTest {
         testarCriarConsumoValido();
         testarCriarConsumoServicoNuloFalha();
         testarCriarConsumoQuantidadeZeroFalha();
+
+        testarFaturaTotalDiarias();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -1025,4 +1028,16 @@ public class HotelTest {
         }
     }
 
+    // teste Fatura (não tem caso triste)
+
+    // caso feliz
+    static void testarFaturaTotalDiarias() {
+        total++;
+        Fatura fatura = new Fatura(new ApartamentoSimples(), 3, new ArrayList<Consumo>());
+        if (fatura.getTotalDiarias() == 450.0f) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarFaturaTotalDiarias");
+        }
+    }
 }
