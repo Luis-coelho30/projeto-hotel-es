@@ -105,6 +105,12 @@ public class HotelTest {
         testarCriarEstadiaHospedeNuloFalha();
         testarCriarEstadiaSemDataHospedeNuloFalha();
         testarCriarEstadiaDataInicioNulaFalha();
+        testarEncerrarComData();
+        testarEncerrarSemDataUsaHoje();
+        testarEncerrarNoMesmoDiaDoInicio();
+        testarEncerrarDuasVezesFalha();
+        testarEncerrarDataAnteriorAoInicioFalha();
+        testarEncerrarDataNulaFalha();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -1401,6 +1407,132 @@ public class HotelTest {
             }
         } catch (Exception e) {
             System.out.println("FALHOU: testarCriarEstadiaDataInicioNulaFalha - excecao inesperada");
+        }
+    }
+
+    // encerrar(LocalDate) - caso feliz
+    static void testarEncerrarComData() {
+        total++;
+        try {
+            Estadia estadia = new Estadia(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.of(2026, 11, 1));
+            LocalDate fim = LocalDate.of(2026, 11, 4);
+            estadia.encerrar(fim);
+            if (estadia.estaAtiva()) {
+                System.out.println("FALHOU: testarEncerrarComData - Estadia devia estar encerrada");
+            }
+            else if (!estadia.getDataFim().equals(fim)) {
+                System.out.println("FALHOU: testarEncerrarComData - Data de fim incorreta");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEncerrarComData - excecao inesperada");
+        }
+    }
+ 
+    // encerrar() - caso feliz
+    static void testarEncerrarSemDataUsaHoje() {
+        total++;
+        try {
+            Estadia estadia = new Estadia(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            estadia.encerrar();
+            if (estadia.estaAtiva()) {
+                System.out.println("FALHOU: testarEncerrarSemDataUsaHoje - Estadia devia estar encerrada");
+            }
+            else if (!estadia.getDataFim().equals(LocalDate.now())) {
+                System.out.println("FALHOU: testarEncerrarSemDataUsaHoje - Data de fim deve ser a data atual");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEncerrarSemDataUsaHoje - excecao inesperada");
+        }
+    }
+ 
+    // encerrar(LocalDate) - caso limite (fim igual ao inicio)
+    static void testarEncerrarNoMesmoDiaDoInicio() {
+        total++;
+        try {
+            LocalDate dia = LocalDate.of(2026, 11, 1);
+            Estadia estadia = new Estadia(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"), dia);
+            estadia.encerrar(dia);
+            if (estadia.estaAtiva()) {
+                System.out.println("FALHOU: testarEncerrarNoMesmoDiaDoInicio - Encerrar no mesmo dia do inicio deve ser permitido");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEncerrarNoMesmoDiaDoInicio - excecao inesperada");
+        }
+    }
+ 
+    // encerrar - caso triste (ja encerrada)
+    static void testarEncerrarDuasVezesFalha() {
+        total++;
+        try {
+            Estadia estadia = new Estadia(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.of(2026, 11, 1));
+            estadia.encerrar(LocalDate.of(2026, 11, 2));
+            try {
+                estadia.encerrar(LocalDate.of(2026, 11, 3));
+                System.out.println("FALHOU: testarEncerrarDuasVezesFalha - Encerrar duas vezes devia lancar IllegalStateException");
+            } catch (IllegalStateException e) {
+                if (!estadia.getDataFim().equals(LocalDate.of(2026, 11, 2))) {
+                    System.out.println("FALHOU: testarEncerrarDuasVezesFalha - Data de fim nao deve mudar na segunda tentativa");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEncerrarDuasVezesFalha - excecao inesperada");
+        }
+    }
+ 
+    // encerrar - caso triste (fim antes do inicio)
+    static void testarEncerrarDataAnteriorAoInicioFalha() {
+        total++;
+        try {
+            Estadia estadia = new Estadia(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.of(2026, 11, 10));
+            try {
+                estadia.encerrar(LocalDate.of(2026, 11, 9));
+                System.out.println("FALHOU: testarEncerrarDataAnteriorAoInicioFalha - Data de fim anterior ao inicio devia lancar IllegalArgumentException");
+            } catch (IllegalArgumentException e) {
+                if (!estadia.estaAtiva()) {
+                    System.out.println("FALHOU: testarEncerrarDataAnteriorAoInicioFalha - Estadia deve continuar ativa apos a tentativa invalida");
+                }
+                else if (estadia.getDataFim() != null) {
+                    System.out.println("FALHOU: testarEncerrarDataAnteriorAoInicioFalha - Data de fim deve continuar nula");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEncerrarDataAnteriorAoInicioFalha - excecao inesperada");
+        }
+    }
+ 
+    // encerrar - caso triste (data nula)
+    static void testarEncerrarDataNulaFalha() {
+        total++;
+        try {
+            Estadia estadia = new Estadia(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            try {
+                estadia.encerrar(null);
+                System.out.println("FALHOU: testarEncerrarDataNulaFalha - Data de fim nula devia lancar IllegalArgumentException");
+            } catch (IllegalArgumentException e) {
+                if (!estadia.estaAtiva()) {
+                    System.out.println("FALHOU: testarEncerrarDataNulaFalha - Estadia deve continuar ativa apos a tentativa invalida");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEncerrarDataNulaFalha - excecao inesperada");
         }
     }
 }
