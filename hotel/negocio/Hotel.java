@@ -3,6 +3,7 @@ package hotel.negocio;
 import hotel.modelo.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 public class Hotel {
     public static final int NUM_ANDARES = 20;
@@ -268,6 +269,6 @@ public class Hotel {
     }
  
     public List<Reserva> getReservas() {
-        return this.reservas;
+        return Collections.unmodifiableList(reservas);
     }
 }
