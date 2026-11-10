@@ -36,6 +36,7 @@ public class HotelTest {
         testarCheckinDeReservaMarcaUtilizada();
         testarCheckinAptoOcupadoNaoCriaEstadia();
         testarCheckinHospedeNuloNaoCriaEstadia();
+        testarCheckinAposCancelarMantemReservaCancelada();
 
         testarCheckoutAptoOcupado();
         testarCheckoutAptoLivreFalha();
@@ -59,9 +60,10 @@ public class HotelTest {
         testarAptoInvalidoTristeAndar();
         testarAptoValidoFeliz();
 
-        testarHotelCancelarReservaFeliz();
-        testarHotelCancelarReservaTristeLivre();
-        testarHotelCancelarReservaTristeOcupado();
+        testarCancelarReservaMarcaCancelada();
+        testarCancelarAptoNaoReservadoRetornaFalse();
+        testarCancelarReservaDuasVezes();
+        testarReservarDepoisDeCancelarCriaNovaReserva();
 
         testarMostrarMapa();
 
@@ -790,6 +792,31 @@ public class HotelTest {
         }
     }
 
+    // realizarCheckin - reserva cancelada nao e reutilizada
+    static void testarCheckinAposCancelarMantemReservaCancelada() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.reservarApartamento(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            hotel.cancelarReserva(0, 0);
+            boolean ok = hotel.realizarCheckin(0, 0, new Hospede("456", "Maria", "Rua Y", "8888", "maria@x"));
+            if (!ok) {
+                System.out.println("FALHOU: testarCheckinAposCancelarMantemReservaCancelada - Check-in em apartamento livre devia retornar true");
+            }
+            else if (hotel.getReservas().get(0).getStatus() != StatusReserva.CANCELADA) {
+                System.out.println("FALHOU: testarCheckinAposCancelarMantemReservaCancelada - Reserva cancelada devia continuar CANCELADA");
+            }
+            else if (hotel.getEstadias().size() != 1) {
+                System.out.println("FALHOU: testarCheckinAposCancelarMantemReservaCancelada - Devia existir exatamente 1 estadia");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCheckinAposCancelarMantemReservaCancelada - excecao inesperada");
+        }
+    }
+
     // Checkout - caso feliz em apartamento ocupado
     static void testarRealizarCheckoutAptoOcupado() {
         total++;
@@ -937,54 +964,112 @@ public class HotelTest {
         }
     }
 
-    // cancelar reserva hotel - caso feliz
-    static void testarHotelCancelarReservaFeliz(){
+    // cancelarReserva - caso feliz
+    static void testarCancelarReservaMarcaCancelada() {
         total++;
-        Hotel hotel = new Hotel();
-        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
-
-        hotel.reservarApartamento(0, 0, h);
-        boolean estavaReservadoAntes = hotel.getApartamento(0, 0).estaReservado();
-
-        boolean ok = hotel.cancelarReserva(0, 0);
-
-        if(estavaReservadoAntes && ok && hotel.getApartamento(0, 0).estaLivre()){
-            passou++;
-        } else {
-            System.out.println("FALHOU: testarHotelCancelarReservaFeliz");
+        try {
+            Hotel hotel = new Hotel();
+            hotel.reservarApartamento(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            boolean ok = hotel.cancelarReserva(0, 0);
+            if (!ok) {
+                System.out.println("FALHOU: testarCancelarReservaMarcaCancelada - Cancelamento de reserva ativa devia retornar true");
+            }
+            else if (!hotel.getApartamento(0, 0).estaLivre()) {
+                System.out.println("FALHOU: testarCancelarReservaMarcaCancelada - Apartamento devia estar LIVRE");
+            }
+            else if (hotel.getReservas().size() != 1) {
+                System.out.println("FALHOU: testarCancelarReservaMarcaCancelada - A reserva devia permanecer no historico");
+            }
+            else if (hotel.getReservas().get(0).getStatus() != StatusReserva.CANCELADA) {
+                System.out.println("FALHOU: testarCancelarReservaMarcaCancelada - Reserva devia ficar CANCELADA");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCancelarReservaMarcaCancelada - excecao inesperada");
         }
     }
 
-    // cancelar reserva hotel - caso triste (quarto livre)
-    static void testarHotelCancelarReservaTristeLivre(){
+    // cancelarReserva - caso triste (livre e ocupado)
+    static void testarCancelarAptoNaoReservadoRetornaFalse() {
         total++;
-        Hotel hotel = new Hotel();
-        boolean estavaLivreAntes = hotel.getApartamento(0, 0).estaLivre();
-
-        boolean ok = hotel.cancelarReserva(0, 0);
-
-        if(!ok && hotel.getApartamento(0, 0).estaLivre() && estavaLivreAntes){
-            passou++;
-        } else {
-            System.out.println("FALHOU: testarHotelCancelarReservaTristeLivre");
+        try {
+            Hotel hotel = new Hotel();
+            boolean livre = hotel.cancelarReserva(0, 0);
+            hotel.realizarCheckin(0, 1, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            boolean ocupado = hotel.cancelarReserva(0, 1);
+            if (livre) {
+                System.out.println("FALHOU: testarCancelarAptoNaoReservadoRetornaFalse - Cancelar apartamento livre devia retornar false");
+            }
+            else if (ocupado) {
+                System.out.println("FALHOU: testarCancelarAptoNaoReservadoRetornaFalse - Cancelar apartamento ocupado devia retornar false");
+            }
+            else if (!hotel.getApartamento(0, 1).estaOcupado()) {
+                System.out.println("FALHOU: testarCancelarAptoNaoReservadoRetornaFalse - Apartamento ocupado devia continuar OCUPADO");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCancelarAptoNaoReservadoRetornaFalse - excecao inesperada");
         }
     }
 
-    // cancelar reserva hotel - caso triste (quarto ocupado)
-    static void testarHotelCancelarReservaTristeOcupado(){
+    // cancelarReserva - caso triste (segunda tentativa)
+    static void testarCancelarReservaDuasVezes() {
         total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.reservarApartamento(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            hotel.cancelarReserva(0, 0);
+            boolean segunda = hotel.cancelarReserva(0, 0);
+            if (segunda) {
+                System.out.println("FALHOU: testarCancelarReservaDuasVezes - Segundo cancelamento devia retornar false");
+            }
+            else if (hotel.getReservas().get(0).getStatus() != StatusReserva.CANCELADA) {
+                System.out.println("FALHOU: testarCancelarReservaDuasVezes - Reserva devia continuar CANCELADA");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCancelarReservaDuasVezes - excecao inesperada");
+        }
+    }
 
-        Hotel hotel = new Hotel();
-        Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");        
-        hotel.realizarCheckin(0, 0, h);
-        boolean estavaOcupadoAntes = hotel.getApartamento(0, 0).estaOcupado();
-
-        boolean ok = hotel.cancelarReserva(0, 0);
-
-        if(!ok && hotel.getApartamento(0, 0).estaOcupado() && estavaOcupadoAntes){
-            passou++;
-        } else {
-            System.out.println("FALHOU: testarHotelCancelarReservaTristeOcupado");
+    // reservarApartamento - apos cancelamento
+    static void testarReservarDepoisDeCancelarCriaNovaReserva() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            Hospede h2 = new Hospede("456", "Maria", "Rua Y", "8888", "maria@x");
+            hotel.reservarApartamento(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            hotel.cancelarReserva(0, 0);
+            boolean ok = hotel.reservarApartamento(0, 0, h2);
+            if (!ok) {
+                System.out.println("FALHOU: testarReservarDepoisDeCancelarCriaNovaReserva - Nova reserva devia retornar true");
+            }
+            else if (hotel.getReservas().size() != 2) {
+                System.out.println("FALHOU: testarReservarDepoisDeCancelarCriaNovaReserva - Devia existir 2 reservas (cancelada + nova)");
+            }
+            else if (hotel.getReservas().get(0).getStatus() != StatusReserva.CANCELADA) {
+                System.out.println("FALHOU: testarReservarDepoisDeCancelarCriaNovaReserva - A primeira devia continuar CANCELADA");
+            }
+            else if (!hotel.getReservas().get(1).estaAtiva()) {
+                System.out.println("FALHOU: testarReservarDepoisDeCancelarCriaNovaReserva - A segunda devia estar ativa");
+            }
+            else if (hotel.getReservas().get(1).getHospede() != h2) {
+                System.out.println("FALHOU: testarReservarDepoisDeCancelarCriaNovaReserva - Hospede da segunda reserva incorreto");
+            }
+            else if (!invarianteReservas(hotel)) {
+                System.out.println("FALHOU: testarReservarDepoisDeCancelarCriaNovaReserva - Invariante reserva ativa x apartamento RESERVADO violada");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarReservarDepoisDeCancelarCriaNovaReserva - excecao inesperada");
         }
     }
 
