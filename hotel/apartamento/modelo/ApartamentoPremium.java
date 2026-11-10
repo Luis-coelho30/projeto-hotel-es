@@ -1,4 +1,4 @@
-package hotel.modelo;
+package hotel.apartamento.modelo;
 
 public class ApartamentoPremium extends Apartamento {
     private static final float PRECO_DIARIA = 350.0f;

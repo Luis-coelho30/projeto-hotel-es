@@ -1,5 +1,6 @@
 package hotel.modelo;
 
+import hotel.apartamento.modelo.Apartamento;
 import java.util.List;
 
 public class Fatura {

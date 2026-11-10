@@ -1,4 +1,6 @@
-package hotel.modelo;
+package hotel.apartamento.modelo;
+
+import hotel.modelo.Hospede;
 
 public class Apartamento {
     private Status status;

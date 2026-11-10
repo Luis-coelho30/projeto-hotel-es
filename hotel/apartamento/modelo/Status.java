@@ -1,4 +1,4 @@
-package hotel.modelo;
+package hotel.apartamento.modelo;
 
 public enum Status {
     LIVRE,

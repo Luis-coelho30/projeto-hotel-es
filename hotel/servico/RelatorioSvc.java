@@ -1,5 +1,6 @@
 package hotel.servico;
 
+import hotel.apartamento.modelo.*;
 import hotel.modelo.*;
 import hotel.negocio.Hotel;
 import java.util.*;

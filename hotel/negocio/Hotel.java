@@ -1,5 +1,6 @@
 package hotel.negocio;
 
+import hotel.apartamento.modelo.*;
 import hotel.modelo.*;
 import java.util.ArrayList;
 

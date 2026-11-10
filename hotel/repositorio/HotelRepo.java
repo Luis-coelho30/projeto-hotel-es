@@ -1,5 +1,6 @@
 package hotel.repositorio;
 
+import hotel.apartamento.modelo.*;
 import hotel.negocio.Hotel;
 import java.io.*;
 

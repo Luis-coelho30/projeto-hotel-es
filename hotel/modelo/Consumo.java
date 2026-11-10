@@ -1,5 +1,7 @@
 package hotel.modelo;
 
+import hotel.apartamento.modelo.Apartamento;
+
 public class Consumo {
     private Apartamento apartamento;
     private Servico servico;

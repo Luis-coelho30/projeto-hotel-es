@@ -1,5 +1,6 @@
 package hotel.apresentacao;
 
+import hotel.apartamento.modelo.*;
 import hotel.modelo.*;
 import hotel.negocio.Hotel;
 
