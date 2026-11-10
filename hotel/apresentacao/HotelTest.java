@@ -92,6 +92,8 @@ public class HotelTest {
 
         testarCriarReservaValida();
         testarCriarReservaHospedeNuloFalha();
+        testarMarcarReservaUtilizada();
+        testarMarcarUtilizadaDuasVezesFalha();
 
 
         System.out.println(passou + "/" + total + " testes passaram");
@@ -1168,6 +1170,43 @@ public class HotelTest {
             passou++;
         } catch (Exception e) {
             System.out.println("FALHOU: testarCriarReservaHospedeNuloFalha - excecao inesperada");
+        }
+    }
+
+    // marcarUtilizada - caso feliz
+    static void testarMarcarReservaUtilizada() {
+        total++;
+        try {
+            Reserva reserva = new Reserva(0, 0, new Hospede("456", "Maria", "Rua Y", "8888", "maria@x"));
+            reserva.marcarUtilizada();
+            if (reserva.getStatus() != StatusReserva.UTILIZADA) {
+                System.out.println("FALHOU: testarMarcarReservaUtilizada - Status devia ser UTILIZADA");
+            }
+            else if (reserva.estaAtiva()) {
+                System.out.println("FALHOU: testarMarcarReservaUtilizada - Reserva utilizada nao pode estar ativa");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarMarcarReservaUtilizada - excecao inesperada");
+        }
+    }
+
+    // marcarUtilizada - caso triste (ja utilizada)
+    static void testarMarcarUtilizadaDuasVezesFalha() {
+        total++;
+        try {
+            Reserva reserva = new Reserva(0, 0, new Hospede("456", "Maria", "Rua Y", "8888", "maria@x"));
+            reserva.marcarUtilizada();
+            try {
+                reserva.marcarUtilizada();
+                System.out.println("FALHOU: testarMarcarUtilizadaDuasVezesFalha - Utilizar duas vezes devia lancar IllegalStateException");
+            } catch (IllegalStateException e) {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarMarcarUtilizadaDuasVezesFalha - excecao inesperada");
         }
     }
 }
