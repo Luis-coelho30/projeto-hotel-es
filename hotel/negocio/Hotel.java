@@ -308,8 +308,18 @@ public class Hotel {
         return taxa;
     }
 
+    /**
+     * Cadastra um serviço no cardápio do hotel.
+     *
+     * @param nome nome do serviço
+     * @param preco preço unitário do serviço
+     * @throws IllegalArgumentException se os dados forem inválidos (validação do Servico)
+     *
+     * @pre nome não vazio e preço não negativo
+     * @post o serviço é adicionado ao final do cardápio
+     */
     public void cadastrarServico(String nome, float preco) {
-        throw new UnsupportedOperationException("Implementar cadastrarServico");
+        this.servicos.add(new Servico(nome, preco));
     }
 
     public boolean registrarConsumo(int andar, int numero, int indiceServico, int quantidade) {
