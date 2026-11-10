@@ -118,6 +118,8 @@ public class HotelTest {
         testarGetDiasMesmoDia();
         testarGetDiasAtivaRecemCriada();
         testarGetDiasAtivaComInicioNoPassado();
+        testarGetTotalConsumos();
+        testarGetTotalConsumosVazio();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -1672,6 +1674,40 @@ public class HotelTest {
             }
         } catch (Exception e) {
             System.out.println("FALHOU: testarGetDiasAtivaComInicioNoPassado - excecao inesperada");
+        }
+    }
+
+    // getTotalConsumos - caso feliz
+    static void testarGetTotalConsumos() {
+        total++;
+        try {
+            Estadia estadia = new Estadia(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            estadia.registrarConsumo(new Consumo(new Servico("Agua", 10.0f), 3));
+            estadia.registrarConsumo(new Consumo(new Servico("Cafe", 2.5f), 4));
+            if (estadia.getTotalConsumos() != 40.0f) {
+                System.out.println("FALHOU: testarGetTotalConsumos - Esperado total de 40.0");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarGetTotalConsumos - excecao inesperada");
+        }
+    }
+ 
+    // getTotalConsumos - sem consumos
+    static void testarGetTotalConsumosVazio() {
+        total++;
+        try {
+            Estadia estadia = new Estadia(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            if (estadia.getTotalConsumos() != 0.0f) {
+                System.out.println("FALHOU: testarGetTotalConsumosVazio - Esperado total de 0.0");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarGetTotalConsumosVazio - excecao inesperada");
         }
     }
 }
