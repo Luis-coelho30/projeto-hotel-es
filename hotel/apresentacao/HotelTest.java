@@ -77,6 +77,10 @@ public class HotelTest {
         testarCriarServicoNomeVazioFalha();
         testarCriarServicoPrecoNegativoFalha();
 
+        testarCriarConsumoValido();
+        testarCriarConsumoServicoNuloFalha();
+        testarCriarConsumoQuantidadeZeroFalha();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -978,4 +982,47 @@ public class HotelTest {
             System.out.println("FALHOU: testarCriarServicoPrecoNegativoFalha - excecao inesperada");
         }
     }
+
+    // testes Consumo
+
+    // Consumo - caso feliz
+    static void testarCriarConsumoValido() {
+        total++;
+        Servico servico = new Servico("Agua", 5.0f);
+        Consumo c = new Consumo(servico, 2);
+        if (c.getServico() == servico && c.getQuantidade() == 2 && c.getTotal() == 10.0f) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarCriarConsumoValido");
+        }
+    }
+
+    // Consumo - caso triste (servico nulo)
+    static void testarCriarConsumoServicoNuloFalha() {
+        total++;
+        try {
+            new Consumo(null, 2);
+            System.out.println("FALHOU: testarCriarConsumoServicoNuloFalha");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCriarConsumoServicoNuloFalha - excecao inesperada");
+        }
+    }
+
+    // Consumo - caso triste (quantidade zero)
+    static void testarCriarConsumoQuantidadeZeroFalha() {
+        total++;
+        Servico servico = new Servico("Agua", 5.0f);
+        try {
+            new Consumo(servico, 0);
+            System.out.println("FALHOU: testarCriarConsumoQuantidadeZeroFalha");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCriarConsumoQuantidadeZeroFalha - excecao inesperada");
+        }
+    }
+
 }
