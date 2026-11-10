@@ -198,8 +198,22 @@ public class Estadia {
         this.consumos.add(consumo);
     }
 
+    /**
+     * Calcula a quantidade de dias da estadia. Se ainda estiver ativa, usa a data
+     * atual como referência. O mínimo é 1 dia (entrada e saída no mesmo dia contam como 1).
+     *
+     * @return Número de dias da estadia (>= 1)
+     *
+     * @pre Estadia criada
+     * @post Estado da estadia inalterado
+     */
     public int getDias() {
-        throw new UnsupportedOperationException("Implementar getDias");
+        LocalDate fim = this.dataFim;
+        if (estaAtiva()) {
+            fim = LocalDate.now();
+        }
+        long dias = ChronoUnit.DAYS.between(this.dataInicio, fim);
+        return Math.toIntExact(Math.max(1, dias));
     }
 
     public float getTotalConsumos() {
