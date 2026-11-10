@@ -7,6 +7,9 @@ public class Reserva {
     private StatusReserva status;
 
     public Reserva(int andar, int numero, Hospede hospede) {
+        if (hospede == null) {
+            throw new IllegalArgumentException("Hospede nao pode ser nulo");
+        }
         this.andar = andar;
         this.numero = numero;
         this.hospede = hospede;
@@ -30,7 +33,7 @@ public class Reserva {
     }
 
     public boolean estaAtiva() {
-        throw new UnsupportedOperationException("Implementar encerrar");
+        return this.status == StatusReserva.ATIVA;
     }
 
     public void marcarUtilizada() {
