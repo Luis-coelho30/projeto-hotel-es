@@ -102,7 +102,18 @@ public class Reserva {
         this.status = StatusReserva.UTILIZADA;
     }
 
+    /**
+     * Cancela a reserva.
+     *
+     * @throws IllegalStateException se a reserva não estiver ativa
+     *
+     * @pre Reserva ativa
+     * @post Status igual a CANCELADA
+     */
     public void cancelar() {
-        throw new UnsupportedOperationException("Implementar encerrar");
+        if (!estaAtiva()) {
+            throw new IllegalStateException("Reserva nao esta ativa (" + this.status + ")");
+        }
+        this.status = StatusReserva.CANCELADA;
     }
 }
