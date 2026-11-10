@@ -41,6 +41,25 @@ public class Hotel {
     }
 
     /**
+     * Busca a reserva ativa de um apartamento.
+     *
+     * @param andar andar do apartamento
+     * @param numero número do apartamento
+     * @return a reserva ativa, ou null se não houver
+     */
+    private Reserva buscarReservaAtiva(int andar, int numero) {
+        if (!aptoValido(andar, numero)) {
+            throw new IllegalArgumentException("Andar ou numero invalido");
+        }
+        for (Reserva r : reservas) {
+            if (r.estaAtiva() && r.getAndar() == andar && r.getNumero() == numero) {
+                return r;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Reserva um apartamento, mudando seu status de LIVRE para RESERVADO.
      *
      * @param andar número do andar, de 0 a 19
@@ -71,23 +90,36 @@ public class Hotel {
 
     /**
      * Realiza o check-in de um hóspede em um apartamento livre ou reservado.
+     * Cria uma nova Estadia ativa. Se havia reserva, ela é consumida e o hóspede
+     * informado prevalece.
      *
      * @param andar número do andar, de 0 a 19
      * @param numero número do apartamento no andar, de 0 a 13
-     * @param hospede hóspede que fará o check-in
-     * @return true se o check-in foi realizado com sucesso
+     * @param hospede hóspede da estadia
+     * @return true se o check-in foi realizado, ou false se o apartamento já
+     *         estiver ocupado
      * @throws IllegalArgumentException se andar ou número forem inválidos,
      *         ou se hospede for nulo
-     * @throws IllegalStateException se o apartamento já estiver ocupado
      *
      * @pre hotel inicializado
-     * @post o apartamento fica OCUPADO com o hóspede armazenado
+     * @post se bem-sucedido, o apartamento fica OCUPADO e existe uma estadia ativa
      */
     public boolean realizarCheckin(int andar, int numero, Hospede hospede) {
         if (!aptoValido(andar, numero)) {
             throw new IllegalArgumentException("Andar ou numero invalido");
         }
-        matriz[andar][numero].checkin(hospede);
+        Apartamento apto = matriz[andar][numero];
+        if (apto.estaOcupado()) {
+            return false;
+        }
+        // cria a estadia antes de mudar o estado: hospede nulo falha sem deixar o hotel inconsistente
+        Estadia nova = new Estadia(andar, numero, hospede);
+        Reserva reserva = buscarReservaAtiva(andar, numero);
+        apto.checkin(hospede);
+        if (reserva != null) {
+            reserva.marcarUtilizada();
+        }
+        estadias.add(nova);
         return true;
     }
 
@@ -265,7 +297,7 @@ public class Hotel {
     public List<Servico> getServicos() { return servicos; }
     
     public List<Estadia> getEstadias() {
-        throw new UnsupportedOperationException("Implementar getEstadias");
+        return Collections.unmodifiableList(estadias);
     }
  
     public List<Reserva> getReservas() {
