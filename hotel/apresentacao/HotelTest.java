@@ -123,6 +123,8 @@ public class HotelTest {
         testarGetTotalConsumos();
         testarGetTotalConsumosVazio();
 
+        testarGetReservasNaoModificavelFalha();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -1792,6 +1794,28 @@ public class HotelTest {
             }
         } catch (Exception e) {
             System.out.println("FALHOU: testarGetTotalConsumosVazio - excecao inesperada");
+        }
+    }
+
+    // getReservas - caso triste (lista nao modificavel)
+    static void testarGetReservasNaoModificavelFalha() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.reservarApartamento(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            try {
+                hotel.getReservas().clear();
+                System.out.println("FALHOU: testarGetReservasNaoModificavelFalha - Alterar a lista devolvida devia lancar UnsupportedOperationException");
+            } catch (UnsupportedOperationException e) {
+                if (hotel.getReservas().size() != 1) {
+                    System.out.println("FALHOU: testarGetReservasNaoModificavelFalha - A reserva nao devia ter sido removida");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarGetReservasNaoModificavelFalha - excecao inesperada");
         }
     }
 }
