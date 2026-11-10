@@ -77,7 +77,7 @@ public class Hotel {
         }
         return null;
     }
-    
+
     /**
      * Reserva um apartamento, mudando seu status de LIVRE para RESERVADO.
      *
@@ -223,11 +223,36 @@ public class Hotel {
         System.out.println("\nLegenda: [.] Livre\t [R] Reservado\t [O] Ocupado");
     }
 
+    /**
+     * Exibe no terminal a situação de um apartamento e, se estiver reservado
+     * ou ocupado, os dados do hóspede.
+     *
+     * @param andar número do andar, de 0 a 19
+     * @param numero número do apartamento no andar, de 0 a 13
+     * @throws IllegalArgumentException se andar ou número forem inválidos
+     *
+     * @pre hotel inicializado
+     * @post a situação do apartamento é impressa na tela; estado inalterado
+     */
     public void consultarApartamento(int andar, int numero) {
         if (!aptoValido(andar, numero)) {
             throw new IllegalArgumentException("Andar ou numero invalido");
         }
-        throw new UnsupportedOperationException("Implementar consultarApartamento");
+        Apartamento apto = matriz[andar][numero];
+        System.out.println("Apartamento " + andar + "/" + numero
+                + " - Status: " + apto.getStatus()
+                + " - Diaria: R$ " + apto.getPrecoDiaria());
+        if (apto.estaReservado()) {
+            Reserva r = buscarReservaAtiva(andar, numero);
+            if (r != null) {
+                System.out.println("Reservado para: " + r.getHospede());
+            }
+        } else if (apto.estaOcupado()) {
+            Estadia e = buscarEstadiaAtiva(andar, numero);
+            if (e != null) {
+                System.out.println("Hospede: " + e.getHospede());
+            }
+        }
     }
 
      /**
