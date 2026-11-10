@@ -146,6 +146,15 @@ public class HotelTest {
         testarConsumosIndependentesPorApartamento();
         testarConsumosNaoModificavelFalha();
 
+        testarEmitirFaturaSimplesSemConsumo();
+        testarEmitirFaturaPremiumComConsumo();
+        testarEmitirFaturaNaoAlteraEstado();
+        testarEmitirFaturaEhRetratoFixo();
+        testarEmitirFaturaIgnoraEstadiaAnterior();
+        testarEmitirFaturaAptoLivreFalha();
+        testarEmitirFaturaAptoReservadoFalha();
+        testarEmitirFaturaAposCheckoutFalha();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -2447,6 +2456,202 @@ public class HotelTest {
             }
         } catch (Exception e) {
             System.out.println("FALHOU: testarConsumosNaoModificavelFalha - excecao inesperada");
+        }
+    }
+
+    // emitirFatura - caso feliz (Simples, sem consumo)
+    static void testarEmitirFaturaSimplesSemConsumo() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.realizarCheckin(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            Fatura fatura = hotel.emitirFatura(0, 0);
+            if (fatura.getDias() != 1) {
+                System.out.println("FALHOU: testarEmitirFaturaSimplesSemConsumo - Esperado 1 dia");
+            }
+            else if (fatura.getTotalDiarias() != 150.0f) {
+                System.out.println("FALHOU: testarEmitirFaturaSimplesSemConsumo - Total de diarias incorreto");
+            }
+            else if (fatura.getTotalConsumos() != 0.0f) {
+                System.out.println("FALHOU: testarEmitirFaturaSimplesSemConsumo - Total de consumos devia ser 0");
+            }
+            else if (fatura.getTotalGeral() != 150.0f) {
+                System.out.println("FALHOU: testarEmitirFaturaSimplesSemConsumo - Total geral incorreto");
+            }
+            else if (!fatura.getConsumos().isEmpty()) {
+                System.out.println("FALHOU: testarEmitirFaturaSimplesSemConsumo - A fatura nao devia ter consumos");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEmitirFaturaSimplesSemConsumo - excecao inesperada");
+        }
+    }
+
+    // emitirFatura - caso feliz (Premium, com consumo)
+    static void testarEmitirFaturaPremiumComConsumo() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Agua", 10.0f);
+            hotel.realizarCheckin(0, 13, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            hotel.registrarConsumo(0, 13, 0, 3);
+            Fatura fatura = hotel.emitirFatura(0, 13);
+            if (fatura.getTotalDiarias() != 350.0f) {
+                System.out.println("FALHOU: testarEmitirFaturaPremiumComConsumo - Total de diarias incorreto");
+            }
+            else if (fatura.getTotalConsumos() != 30.0f) {
+                System.out.println("FALHOU: testarEmitirFaturaPremiumComConsumo - Total de consumos incorreto");
+            }
+            else if (fatura.getTotalGeral() != 380.0f) {
+                System.out.println("FALHOU: testarEmitirFaturaPremiumComConsumo - Total geral incorreto");
+            }
+            else if (fatura.getConsumos().size() != 1) {
+                System.out.println("FALHOU: testarEmitirFaturaPremiumComConsumo - A fatura devia ter 1 consumo");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEmitirFaturaPremiumComConsumo - excecao inesperada");
+        }
+    }
+
+    // emitirFatura - sem efeito colateral
+    static void testarEmitirFaturaNaoAlteraEstado() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Agua", 10.0f);
+            hotel.realizarCheckin(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            hotel.registrarConsumo(0, 0, 0, 1);
+            Fatura primeira = hotel.emitirFatura(0, 0);
+            Fatura segunda = hotel.emitirFatura(0, 0);
+            if (!hotel.getApartamento(0, 0).estaOcupado()) {
+                System.out.println("FALHOU: testarEmitirFaturaNaoAlteraEstado - O apartamento devia continuar OCUPADO");
+            }
+            else if (!hotel.getEstadias().get(0).estaAtiva()) {
+                System.out.println("FALHOU: testarEmitirFaturaNaoAlteraEstado - A estadia devia continuar ativa");
+            }
+            else if (hotel.getConsumosDoApartamento(0, 0).size() != 1) {
+                System.out.println("FALHOU: testarEmitirFaturaNaoAlteraEstado - Os consumos nao deviam mudar");
+            }
+            else if (primeira.getTotalGeral() != segunda.getTotalGeral()) {
+                System.out.println("FALHOU: testarEmitirFaturaNaoAlteraEstado - Emitir duas vezes devia dar o mesmo total");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEmitirFaturaNaoAlteraEstado - excecao inesperada");
+        }
+    }
+
+    // emitirFatura - fatura antiga nao muda com novos consumos
+    static void testarEmitirFaturaEhRetratoFixo() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Agua", 10.0f);
+            hotel.realizarCheckin(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            hotel.registrarConsumo(0, 0, 0, 1);
+            Fatura antes = hotel.emitirFatura(0, 0);
+            hotel.registrarConsumo(0, 0, 0, 5);
+            Fatura depois = hotel.emitirFatura(0, 0);
+            if (antes.getConsumos().size() != 1) {
+                System.out.println("FALHOU: testarEmitirFaturaEhRetratoFixo - A fatura antiga devia manter 1 consumo");
+            }
+            else if (antes.getTotalConsumos() != 10.0f) {
+                System.out.println("FALHOU: testarEmitirFaturaEhRetratoFixo - O total da fatura antiga devia ser 10");
+            }
+            else if (depois.getConsumos().size() != 2) {
+                System.out.println("FALHOU: testarEmitirFaturaEhRetratoFixo - A fatura nova devia ter 2 consumos");
+            }
+            else if (depois.getTotalConsumos() != 60.0f) {
+                System.out.println("FALHOU: testarEmitirFaturaEhRetratoFixo - O total da fatura nova devia ser 60");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEmitirFaturaEhRetratoFixo - excecao inesperada");
+        }
+    }
+
+    // emitirFatura - nao inclui consumo de hospede anterior
+    static void testarEmitirFaturaIgnoraEstadiaAnterior() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Agua", 10.0f);
+            hotel.realizarCheckin(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            hotel.registrarConsumo(0, 0, 0, 4);
+            hotel.realizarCheckout(0, 0);
+            hotel.realizarCheckin(0, 0, new Hospede("456", "Maria", "Rua Y", "8888", "maria@x"));
+            Fatura fatura = hotel.emitirFatura(0, 0);
+            if (!fatura.getConsumos().isEmpty()) {
+                System.out.println("FALHOU: testarEmitirFaturaIgnoraEstadiaAnterior - A fatura nao devia ter consumos do hospede anterior");
+            }
+            else if (fatura.getTotalConsumos() != 0.0f) {
+                System.out.println("FALHOU: testarEmitirFaturaIgnoraEstadiaAnterior - Total de consumos devia ser 0");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEmitirFaturaIgnoraEstadiaAnterior - excecao inesperada");
+        }
+    }
+
+    // emitirFatura - caso triste (apartamento livre)
+    static void testarEmitirFaturaAptoLivreFalha() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            try {
+                hotel.emitirFatura(0, 0);
+                System.out.println("FALHOU: testarEmitirFaturaAptoLivreFalha - Fatura de apartamento livre devia lancar IllegalStateException");
+            } catch (IllegalStateException e) {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEmitirFaturaAptoLivreFalha - excecao inesperada");
+        }
+    }
+
+    // emitirFatura - caso triste (apartamento reservado)
+    static void testarEmitirFaturaAptoReservadoFalha() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.reservarApartamento(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            try {
+                hotel.emitirFatura(0, 0);
+                System.out.println("FALHOU: testarEmitirFaturaAptoReservadoFalha - Fatura de apartamento reservado devia lancar IllegalStateException");
+            } catch (IllegalStateException e) {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEmitirFaturaAptoReservadoFalha - excecao inesperada");
+        }
+    }
+
+    // emitirFatura - caso triste (apos check-out)
+    static void testarEmitirFaturaAposCheckoutFalha() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.realizarCheckin(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            hotel.realizarCheckout(0, 0);
+            try {
+                hotel.emitirFatura(0, 0);
+                System.out.println("FALHOU: testarEmitirFaturaAposCheckoutFalha - Fatura sem estadia ativa devia lancar IllegalStateException");
+            } catch (IllegalStateException e) {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEmitirFaturaAposCheckoutFalha - excecao inesperada");
         }
     }
 
