@@ -134,6 +134,18 @@ public class HotelTest {
         testarCadastrarServicoNomeVazioFalha();
         testarCadastrarServicoPrecoNegativoFalha();
 
+        testarRegistrarConsumoAptoOcupado();
+        testarRegistrarConsumoAptoNaoOcupadoRetornaFalse();
+        testarRegistrarConsumoAposCheckoutRetornaFalse();
+        testarRegistrarConsumoIndiceNegativoFalha();
+        testarRegistrarConsumoIndiceForaDoCardapioFalha();
+        testarRegistrarConsumoQuantidadeZeroFalha();
+        testarRegistrarConsumoQuantidadeNegativaFalha();
+        testarConsumosSemEstadiaVazio();
+        testarConsumosNaoVazamEntreHospedes();
+        testarConsumosIndependentesPorApartamento();
+        testarConsumosNaoModificavelFalha();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -2159,6 +2171,282 @@ public class HotelTest {
             }
         } catch (Exception e) {
             System.out.println("FALHOU: testarCadastrarServicoPrecoNegativoFalha - excecao inesperada");
+        }
+    }
+
+    // registrarConsumo - caso feliz
+    static void testarRegistrarConsumoAptoOcupado() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Agua", 10.0f);
+            hotel.realizarCheckin(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            boolean ok = hotel.registrarConsumo(0, 0, 0, 3);
+            if (!ok) {
+                System.out.println("FALHOU: testarRegistrarConsumoAptoOcupado - Consumo em apartamento ocupado devia retornar true");
+            }
+            else if (hotel.getConsumosDoApartamento(0, 0).size() != 1) {
+                System.out.println("FALHOU: testarRegistrarConsumoAptoOcupado - Devia existir exatamente 1 consumo");
+            }
+            else if (hotel.getConsumosDoApartamento(0, 0).get(0).getQuantidade() != 3) {
+                System.out.println("FALHOU: testarRegistrarConsumoAptoOcupado - Quantidade incorreta");
+            }
+            else if (!hotel.getConsumosDoApartamento(0, 0).get(0).getServico().getNome().equals("Agua")) {
+                System.out.println("FALHOU: testarRegistrarConsumoAptoOcupado - Servico incorreto");
+            }
+            else if (hotel.getEstadias().get(0).getTotalConsumos() != 30.0f) {
+                System.out.println("FALHOU: testarRegistrarConsumoAptoOcupado - Total de consumos da estadia incorreto");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarRegistrarConsumoAptoOcupado - excecao inesperada");
+        }
+    }
+
+    // registrarConsumo - caso triste (livre e reservado)
+    static void testarRegistrarConsumoAptoNaoOcupadoRetornaFalse() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Agua", 10.0f);
+            boolean livre = hotel.registrarConsumo(0, 0, 0, 1);
+            hotel.reservarApartamento(0, 1, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            boolean reservado = hotel.registrarConsumo(0, 1, 0, 1);
+            if (livre) {
+                System.out.println("FALHOU: testarRegistrarConsumoAptoNaoOcupadoRetornaFalse - Consumo em apartamento livre devia retornar false");
+            }
+            else if (reservado) {
+                System.out.println("FALHOU: testarRegistrarConsumoAptoNaoOcupadoRetornaFalse - Consumo em apartamento reservado devia retornar false");
+            }
+            else if (!hotel.getConsumosDoApartamento(0, 0).isEmpty()) {
+                System.out.println("FALHOU: testarRegistrarConsumoAptoNaoOcupadoRetornaFalse - Nenhum consumo devia existir no apto livre");
+            }
+            else if (!hotel.getConsumosDoApartamento(0, 1).isEmpty()) {
+                System.out.println("FALHOU: testarRegistrarConsumoAptoNaoOcupadoRetornaFalse - Nenhum consumo devia existir no apto reservado");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarRegistrarConsumoAptoNaoOcupadoRetornaFalse - excecao inesperada");
+        }
+    }
+
+    // registrarConsumo - caso triste (apos check-out)
+    static void testarRegistrarConsumoAposCheckoutRetornaFalse() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Agua", 10.0f);
+            hotel.realizarCheckin(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            hotel.realizarCheckout(0, 0);
+            boolean ok = hotel.registrarConsumo(0, 0, 0, 1);
+            if (ok) {
+                System.out.println("FALHOU: testarRegistrarConsumoAposCheckoutRetornaFalse - Consumo apos o check-out devia retornar false");
+            }
+            else if (!hotel.getEstadias().get(0).getConsumos().isEmpty()) {
+                System.out.println("FALHOU: testarRegistrarConsumoAposCheckoutRetornaFalse - A estadia encerrada nao devia receber consumos");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarRegistrarConsumoAposCheckoutRetornaFalse - excecao inesperada");
+        }
+    }
+
+    // registrarConsumo - caso triste (indice negativo)
+    static void testarRegistrarConsumoIndiceNegativoFalha() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Agua", 10.0f);
+            hotel.realizarCheckin(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            try {
+                hotel.registrarConsumo(0, 0, -1, 1);
+                System.out.println("FALHOU: testarRegistrarConsumoIndiceNegativoFalha - Indice negativo devia lancar IllegalArgumentException");
+            } catch (IllegalArgumentException e) {
+                if (!hotel.getConsumosDoApartamento(0, 0).isEmpty()) {
+                    System.out.println("FALHOU: testarRegistrarConsumoIndiceNegativoFalha - Nenhum consumo devia ter sido registrado");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarRegistrarConsumoIndiceNegativoFalha - excecao inesperada");
+        }
+    }
+
+    // registrarConsumo - caso triste (indice fora do cardapio)
+    static void testarRegistrarConsumoIndiceForaDoCardapioFalha() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Agua", 10.0f);
+            hotel.realizarCheckin(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            try {
+                hotel.registrarConsumo(0, 0, 1, 1);
+                System.out.println("FALHOU: testarRegistrarConsumoIndiceForaDoCardapioFalha - Indice inexistente devia lancar IllegalArgumentException");
+            } catch (IllegalArgumentException e) {
+                if (!hotel.getConsumosDoApartamento(0, 0).isEmpty()) {
+                    System.out.println("FALHOU: testarRegistrarConsumoIndiceForaDoCardapioFalha - Nenhum consumo devia ter sido registrado");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarRegistrarConsumoIndiceForaDoCardapioFalha - excecao inesperada");
+        }
+    }
+
+    // registrarConsumo - caso triste (quantidade zero)
+    static void testarRegistrarConsumoQuantidadeZeroFalha() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Agua", 10.0f);
+            hotel.realizarCheckin(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            try {
+                hotel.registrarConsumo(0, 0, 0, 0);
+                System.out.println("FALHOU: testarRegistrarConsumoQuantidadeZeroFalha - Quantidade zero devia lancar IllegalArgumentException");
+            } catch (IllegalArgumentException e) {
+                if (!hotel.getConsumosDoApartamento(0, 0).isEmpty()) {
+                    System.out.println("FALHOU: testarRegistrarConsumoQuantidadeZeroFalha - Nenhum consumo devia ter sido registrado");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarRegistrarConsumoQuantidadeZeroFalha - excecao inesperada");
+        }
+    }
+
+    // registrarConsumo - caso triste (quantidade negativa)
+    static void testarRegistrarConsumoQuantidadeNegativaFalha() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Agua", 10.0f);
+            hotel.realizarCheckin(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            try {
+                hotel.registrarConsumo(0, 0, 0, -2);
+                System.out.println("FALHOU: testarRegistrarConsumoQuantidadeNegativaFalha - Quantidade negativa devia lancar IllegalArgumentException");
+            } catch (IllegalArgumentException e) {
+                if (!hotel.getConsumosDoApartamento(0, 0).isEmpty()) {
+                    System.out.println("FALHOU: testarRegistrarConsumoQuantidadeNegativaFalha - Nenhum consumo devia ter sido registrado");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarRegistrarConsumoQuantidadeNegativaFalha - excecao inesperada");
+        }
+    }
+
+    // getConsumosDoApartamento - sem estadia ativa
+    static void testarConsumosSemEstadiaVazio() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            if (hotel.getConsumosDoApartamento(0, 0) == null) {
+                System.out.println("FALHOU: testarConsumosSemEstadiaVazio - Devia retornar lista vazia, nao null");
+            }
+            else if (!hotel.getConsumosDoApartamento(0, 0).isEmpty()) {
+                System.out.println("FALHOU: testarConsumosSemEstadiaVazio - A lista devia estar vazia");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarConsumosSemEstadiaVazio - excecao inesperada");
+        }
+    }
+
+    // getConsumosDoApartamento - consumo nao vaza para o proximo hospede
+    static void testarConsumosNaoVazamEntreHospedes() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Agua", 10.0f);
+            hotel.realizarCheckin(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            hotel.registrarConsumo(0, 0, 0, 2);
+            hotel.realizarCheckout(0, 0);
+            hotel.realizarCheckin(0, 0, new Hospede("456", "Maria", "Rua Y", "8888", "maria@x"));
+            boolean vazioParaNovo = hotel.getConsumosDoApartamento(0, 0).isEmpty();
+            hotel.registrarConsumo(0, 0, 0, 1);
+            if (!vazioParaNovo) {
+                System.out.println("FALHOU: testarConsumosNaoVazamEntreHospedes - O novo hospede nao devia herdar consumos do anterior");
+            }
+            else if (hotel.getConsumosDoApartamento(0, 0).size() != 1) {
+                System.out.println("FALHOU: testarConsumosNaoVazamEntreHospedes - O novo hospede devia ter apenas o seu consumo");
+            }
+            else if (hotel.getEstadias().get(0).getConsumos().size() != 1) {
+                System.out.println("FALHOU: testarConsumosNaoVazamEntreHospedes - O historico da estadia anterior devia ser preservado");
+            }
+            else if (hotel.getEstadias().get(0).getConsumos().get(0).getQuantidade() != 2) {
+                System.out.println("FALHOU: testarConsumosNaoVazamEntreHospedes - Consumo da estadia anterior alterado");
+            }
+            else if (hotel.getEstadias().get(1).getConsumos().get(0).getQuantidade() != 1) {
+                System.out.println("FALHOU: testarConsumosNaoVazamEntreHospedes - Consumo da estadia atual incorreto");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarConsumosNaoVazamEntreHospedes - excecao inesperada");
+        }
+    }
+
+    // getConsumosDoApartamento - apartamentos distintos
+    static void testarConsumosIndependentesPorApartamento() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Agua", 10.0f);
+            hotel.realizarCheckin(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            hotel.realizarCheckin(0, 1, new Hospede("456", "Maria", "Rua Y", "8888", "maria@x"));
+            hotel.registrarConsumo(0, 0, 0, 2);
+            if (hotel.getConsumosDoApartamento(0, 0).size() != 1) {
+                System.out.println("FALHOU: testarConsumosIndependentesPorApartamento - O apto 0/0 devia ter 1 consumo");
+            }
+            else if (!hotel.getConsumosDoApartamento(0, 1).isEmpty()) {
+                System.out.println("FALHOU: testarConsumosIndependentesPorApartamento - O apto 0/1 nao devia ter consumos");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarConsumosIndependentesPorApartamento - excecao inesperada");
+        }
+    }
+
+    // getConsumosDoApartamento - caso triste (lista nao modificavel)
+    static void testarConsumosNaoModificavelFalha() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            hotel.cadastrarServico("Agua", 10.0f);
+            hotel.realizarCheckin(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            hotel.registrarConsumo(0, 0, 0, 1);
+            try {
+                hotel.getConsumosDoApartamento(0, 0).clear();
+                System.out.println("FALHOU: testarConsumosNaoModificavelFalha - Alterar a lista devolvida devia lancar UnsupportedOperationException");
+            } catch (UnsupportedOperationException e) {
+                if (hotel.getConsumosDoApartamento(0, 0).size() != 1) {
+                    System.out.println("FALHOU: testarConsumosNaoModificavelFalha - O consumo nao devia ter sido removido");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarConsumosNaoModificavelFalha - excecao inesperada");
         }
     }
 
