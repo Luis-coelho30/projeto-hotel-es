@@ -83,6 +83,12 @@ public class HotelTest {
         testarCriarConsumoQuantidadeZeroFalha();
 
         testarFaturaTotalDiarias();
+        testarFaturaApartamentoNuloFalha();
+        testarFaturaDiasZeroFalha();
+        testarFaturaConsumosNuloFalha();
+        testarFaturaTotalConsumos();
+        testarFaturaTotalConsumosVazio();
+        testarFaturaTotalGeral();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -1028,9 +1034,9 @@ public class HotelTest {
         }
     }
 
-    // teste Fatura (não tem caso triste)
+    // teste Fatura
 
-    // caso feliz
+    // testarFaturaTotalDiarias - caso feliz
     static void testarFaturaTotalDiarias() {
         total++;
         Fatura fatura = new Fatura(new ApartamentoSimples(), 3, new ArrayList<Consumo>());
@@ -1038,6 +1044,84 @@ public class HotelTest {
             passou++;
         } else {
             System.out.println("FALHOU: testarFaturaTotalDiarias");
+        }
+    }
+
+    // Fatura - caso triste (apartamento nulo)
+    static void testarFaturaApartamentoNuloFalha() {
+        total++;
+        try {
+            new Fatura(null, 3, new ArrayList<Consumo>());
+            System.out.println("FALHOU: testarFaturaApartamentoNuloFalha");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarFaturaApartamentoNuloFalha - excecao inesperada");
+        }
+    }
+
+    // Fatura - caso triste (dias zero)
+    static void testarFaturaDiasZeroFalha() {
+        total++;
+        try {
+            new Fatura(new ApartamentoSimples(), 0, new ArrayList<Consumo>());
+            System.out.println("FALHOU: testarFaturaDiasZeroFalha");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarFaturaDiasZeroFalha - excecao inesperada");
+        }
+    }
+
+    // Fatura - caso triste (lista de consumos nula)
+    static void testarFaturaConsumosNuloFalha() {
+        total++;
+        try {
+            new Fatura(new ApartamentoSimples(), 3, null);
+            System.out.println("FALHOU: testarFaturaConsumosNuloFalha");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarFaturaConsumosNuloFalha - excecao inesperada");
+        }
+    }
+
+    // getTotalConsumos - caso feliz
+    static void testarFaturaTotalConsumos() {
+        total++;
+        ArrayList<Consumo> consumos = new ArrayList<Consumo>();
+        consumos.add(new Consumo(new Servico("Agua", 5.0f), 2));     // 10
+        consumos.add(new Consumo(new Servico("Jantar", 80.0f), 1));  // 80
+        Fatura fatura = new Fatura(new ApartamentoSimples(), 3, consumos);
+        if (fatura.getTotalConsumos() == 90.0f) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarFaturaTotalConsumos");
+        }
+    }
+
+    // getTotalConsumos - lista vazia
+    static void testarFaturaTotalConsumosVazio() {
+        total++;
+        Fatura fatura = new Fatura(new ApartamentoSimples(), 3, new ArrayList<Consumo>());
+        if (fatura.getTotalConsumos() == 0.0f) {
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarFaturaTotalConsumosVazio");
+        }
+    }
+
+    // getTotalGeral - caso feliz
+    static void testarFaturaTotalGeral() {
+        total++;
+        ArrayList<Consumo> consumos = new ArrayList<Consumo>();
+        consumos.add(new Consumo(new Servico("Agua", 5.0f), 2));
+        consumos.add(new Consumo(new Servico("Jantar", 80.0f), 1));
+        Fatura fatura = new Fatura(new ApartamentoSimples(), 3, consumos);
+        if (fatura.getTotalGeral() == 540.0f) {   // 450 + 90
+            passou++;
+        } else {
+            System.out.println("FALHOU: testarFaturaTotalGeral");
         }
     }
 }
