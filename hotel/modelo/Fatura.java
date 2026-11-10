@@ -21,8 +21,16 @@ public class Fatura {
     public int getDias() { return dias; }
     public List<Consumo> getConsumos() { return consumos; }
 
+    /**
+     * Calcula o total das diárias da hospedagem
+     *
+     * @return número de dias multiplicado pelo preço da diária do apartamento
+     *
+     * @pre (nenhuma)
+     * @post nenhuma alteração de estado
+     */
     public float getTotalDiarias() {
-        throw new UnsupportedOperationException("Implementar calculo total de diarias");
+        return dias * apartamento.getPrecoDiaria();
     }
 
     public float getTotalConsumos() {
