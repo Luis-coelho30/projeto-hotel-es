@@ -114,6 +114,10 @@ public class HotelTest {
         testarRegistrarConsumo();
         testarRegistrarConsumoNuloFalha();
         testarRegistrarConsumoEstadiaEncerradaFalha();
+        testarGetDiasVariosDias();
+        testarGetDiasMesmoDia();
+        testarGetDiasAtivaRecemCriada();
+        testarGetDiasAtivaComInicioNoPassado();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -1601,6 +1605,73 @@ public class HotelTest {
             }
         } catch (Exception e) {
             System.out.println("FALHOU: testarRegistrarConsumoEstadiaEncerradaFalha - excecao inesperada");
+        }
+    }
+
+    // getDias - caso feliz (01/11 a 04/11 = 3 dias)
+    static void testarGetDiasVariosDias() {
+        total++;
+        try {
+            Estadia estadia = new Estadia(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.of(2026, 11, 1));
+            estadia.encerrar(LocalDate.of(2026, 11, 4));
+            if (estadia.getDias() != 3) {
+                System.out.println("FALHOU: testarGetDiasVariosDias - Esperado 3 dias");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarGetDiasVariosDias - excecao inesperada");
+        }
+    }
+ 
+    // getDias - caso limite (entrada e saida no mesmo dia = 1 dia)
+    static void testarGetDiasMesmoDia() {
+        total++;
+        try {
+            LocalDate dia = LocalDate.of(2026, 11, 1);
+            Estadia estadia = new Estadia(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"), dia);
+            estadia.encerrar(dia);
+            if (estadia.getDias() != 1) {
+                System.out.println("FALHOU: testarGetDiasMesmoDia - Esperado minimo de 1 dia");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarGetDiasMesmoDia - excecao inesperada");
+        }
+    }
+ 
+    // getDias - estadia ativa criada hoje
+    static void testarGetDiasAtivaRecemCriada() {
+        total++;
+        try {
+            Estadia estadia = new Estadia(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            if (estadia.getDias() != 1) {
+                System.out.println("FALHOU: testarGetDiasAtivaRecemCriada - Esperado 1 dia");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarGetDiasAtivaRecemCriada - excecao inesperada");
+        }
+    }
+ 
+    // getDias - estadia ativa conta ate a data atual
+    static void testarGetDiasAtivaComInicioNoPassado() {
+        total++;
+        try {
+            Estadia estadia = new Estadia(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.now().minusDays(3));
+            if (estadia.getDias() != 3) {
+                System.out.println("FALHOU: testarGetDiasAtivaComInicioNoPassado - Esperado 3 dias");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarGetDiasAtivaComInicioNoPassado - excecao inesperada");
         }
     }
 }
