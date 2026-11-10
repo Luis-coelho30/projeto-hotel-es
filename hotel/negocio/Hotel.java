@@ -59,7 +59,7 @@ public class Hotel {
             return false;
         }
 
-        matriz[andar][numero].reservar(hospede);
+        matriz[andar][numero].reservar();
         return true;
     }
 
@@ -81,7 +81,7 @@ public class Hotel {
         if (!aptoValido(andar, numero)) {
             throw new IllegalArgumentException("Andar ou numero invalido");
         }
-        matriz[andar][numero].checkin(hospede);
+        matriz[andar][numero].checkin();
         return true;
     }
 
