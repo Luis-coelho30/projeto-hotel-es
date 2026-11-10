@@ -90,6 +90,10 @@ public class HotelTest {
         testarFaturaTotalConsumosVazio();
         testarFaturaTotalGeral();
 
+        testarCriarReservaValida();
+        testarCriarReservaHospedeNuloFalha();
+
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -1122,6 +1126,48 @@ public class HotelTest {
             passou++;
         } else {
             System.out.println("FALHOU: testarFaturaTotalGeral");
+        }
+    }
+
+    // construtor - caso feliz
+    static void testarCriarReservaValida() {
+        total++;
+        try {
+            Hospede h = new Hospede("456", "Maria", "Rua Y", "8888", "maria@x");
+            Reserva reserva = new Reserva(4, 9, h);
+            if (reserva.getAndar() != 4) {
+                System.out.println("FALHOU: testarCriarReservaValida - Andar incorreto");
+            }
+            else if (reserva.getNumero() != 9) {
+                System.out.println("FALHOU: testarCriarReservaValida - Numero incorreto");
+            }
+            else if (reserva.getHospede() != h) {
+                System.out.println("FALHOU: testarCriarReservaValida - Hospede incorreto");
+            }
+            else if (reserva.getStatus() != StatusReserva.ATIVA) {
+                System.out.println("FALHOU: testarCriarReservaValida - Status inicial deve ser ATIVA");
+            }
+            else if (!reserva.estaAtiva()) {
+                System.out.println("FALHOU: testarCriarReservaValida - Reserva recem criada deve estar ativa");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCriarReservaValida - excecao inesperada");
+        }
+    }
+ 
+    // construtor - caso triste (hospede nulo)
+    static void testarCriarReservaHospedeNuloFalha() {
+        total++;
+        try {
+            new Reserva(0, 0, null);
+            System.out.println("FALHOU: testarCriarReservaHospedeNuloFalha - Hospede nulo devia lancar IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCriarReservaHospedeNuloFalha - excecao inesperada");
         }
     }
 }
