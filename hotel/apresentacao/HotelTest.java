@@ -73,6 +73,10 @@ public class HotelTest {
         testarTaxaReservasIgnoraOcupados();
         testarTaxaReservasComSucesso();
 
+        testarCriarServicoValido();
+        testarCriarServicoNomeVazioFalha();
+        testarCriarServicoPrecoNegativoFalha();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -932,6 +936,46 @@ public class HotelTest {
             passou++;
         } else {
             System.out.println("FALHOU: testarTaxaReservasComSucesso - Taxa fora do limite (0 a 1): " + taxaDepois);
+        }
+    }
+
+    // testes Servico
+
+    // Servico - caso feliz
+    static void testarCriarServicoValido() {
+        total++;
+        Servico s = new Servico("Agua", 5.0f);
+        if (s.getNome().equals("Agua") && s.getPreco() == 5.0f) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarCriarServicoValido");
+        }
+    }
+
+    // Servico - caso triste (nome vazio)
+    static void testarCriarServicoNomeVazioFalha() {
+        total++;
+        try {
+            new Servico("", 5.0f);
+            System.out.println("FALHOU: testarCriarServicoNomeVazioFalha");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCriarServicoNomeVazioFalha - excecao inesperada");
+        }
+    }
+
+    // Servico - caso triste (preco negativo)
+    static void testarCriarServicoPrecoNegativoFalha() {
+        total++;
+        try {
+            new Servico("Agua", -1.0f);
+            System.out.println("FALHOU: testarCriarServicoPrecoNegativoFalha");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCriarServicoPrecoNegativoFalha - excecao inesperada");
         }
     }
 }
