@@ -143,12 +143,39 @@ public class Estadia {
         return this.dataFim == null;
     }
 
+    /**
+     * Encerra a estadia usando a data atual do sistema como data de fim.
+     *
+     * @throws IllegalStateException se a estadia já estiver encerrada
+     *
+     * @pre Estadia ativa
+     * @post dataFim igual à data atual; estaAtiva() retorna false
+     */
     public void encerrar() {
-        throw new UnsupportedOperationException("Implementar encerrar");
+        encerrar(LocalDate.now());
     }
 
+    /**
+     * Encerra a estadia na data informada.
+     *
+     * @param dataFim Data de encerramento
+     * @throws IllegalArgumentException se dataFim for nula ou anterior à data de início
+     * @throws IllegalStateException se a estadia já estiver encerrada
+     *
+     * @pre Estadia ativa
+     * @post dataFim igual ao valor informado; estaAtiva() retorna false
+     */
     public void encerrar(LocalDate dataFim) {
-        throw new UnsupportedOperationException("Implementar encerrar");
+        if (dataFim == null) {
+            throw new IllegalArgumentException("Data de fim nao pode ser nulo");
+        }
+        if (!estaAtiva()) {
+            throw new IllegalStateException("Estadia ja encerrada");
+        }
+        if (dataFim.isBefore(this.dataInicio)) {
+            throw new IllegalArgumentException("Data de fim anterior a data de inicio");
+        }
+        this.dataFim = dataFim;
     }
 
     public void registrarConsumo(Consumo consumo) {
