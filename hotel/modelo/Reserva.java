@@ -87,8 +87,19 @@ public class Reserva {
         return this.status == StatusReserva.ATIVA;
     }
 
+    /**
+     * Marca a reserva como utilizada (check-in realizado).
+     *
+     * @throws IllegalStateException se a reserva não estiver ativa
+     *
+     * @pre Reserva ativa
+     * @post Status igual a UTILIZADA
+     */
     public void marcarUtilizada() {
-        throw new UnsupportedOperationException("Implementar encerrar");
+        if (!estaAtiva()) {
+            throw new IllegalStateException("Reserva nao esta ativa (" + this.status + ")");
+        }
+        this.status = StatusReserva.UTILIZADA;
     }
 
     public void cancelar() {
