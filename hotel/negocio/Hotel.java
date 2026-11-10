@@ -374,7 +374,7 @@ public class Hotel {
         return estadia.getConsumos();
     }
 
-    public Fatura emitirFatura(int andar, int numero, int dias) {
+    public Fatura emitirFatura(int andar, int numero) {
         if (!aptoValido(andar, numero)) {
             throw new IllegalArgumentException("Andar ou numero invalido");
         }
