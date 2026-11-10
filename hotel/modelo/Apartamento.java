@@ -56,8 +56,18 @@ public class Apartamento {
         this.hospede = h;
     }
 
+    /**
+     * reserva o apartamento, mudando seu status de LIVRE para RESERVADO
+     *
+     * @throws IllegalArgumentException se h for nulo
+     * @throws IllegalStateException se o apartamento não estiver com status LIVRE
+     *
+     * @pre o apartamento deve existir (construtor já garante isso)
+     * @post se bem-sucedido, o status muda para RESERVADO
+     */
     public void reservar() {
-        throw new UnsupportedOperationException("Implementar reservar");
+        validarStatus(Status.LIVRE, "apartamento não está livre para reserva");
+        this.status = Status.RESERVADO;
     }
 
     /**
@@ -82,10 +92,21 @@ public class Apartamento {
         this.hospede = h;
     }
 
+    /**
+     * realiza o check-in no apartamento, mudando seu status para OCUPADO
+     * pode ser chamado para apartamentos de status LIVRE ou RESERVADO
+     *
+     * @throws IllegalStateException se o apartamento já estiver com status OCUPADO
+     *
+     * @pre o apartamento deve existir
+     * @post se bem-sucedido, o status do apartamento muda para OCUPADO
+     */
     public void checkin() {
-        throw new UnsupportedOperationException("Implementar checkin");
+        if (this.status == Status.OCUPADO) {
+            throw new IllegalStateException("apartamento já ocupado");
+        }
+        this.status = Status.OCUPADO;
     }
-
 
     /**
      * realiza o check-out do apartamento, liberando-o e mudando seu status para LIVRE
