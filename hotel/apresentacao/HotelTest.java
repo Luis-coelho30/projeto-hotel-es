@@ -3,6 +3,7 @@ package hotel.apresentacao;
 import hotel.modelo.*;
 import hotel.negocio.Hotel;
 import java.util.ArrayList;
+import java.time.LocalDate;
 
 public class HotelTest {
     private static int passou = 0;
@@ -98,6 +99,12 @@ public class HotelTest {
         testarCancelarReservaDuasVezesFalha();
         testarMarcarUtilizadaDepoisDeCancelarFalha();
         testarCancelarDepoisDeUtilizadaFalha();
+
+        testarCriarEstadiaValida();
+        testarCriarEstadiaSemDataUsaHoje();
+        testarCriarEstadiaHospedeNuloFalha();
+        testarCriarEstadiaSemDataHospedeNuloFalha();
+        testarCriarEstadiaDataInicioNulaFalha();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -1296,6 +1303,104 @@ public class HotelTest {
             }
         } catch (Exception e) {
             System.out.println("FALHOU: testarCancelarDepoisDeUtilizadaFalha - excecao inesperada");
+        }
+    }
+
+    // construtor completo - caso feliz
+    static void testarCriarEstadiaValida() {
+        total++;
+        try {
+            LocalDate inicio = LocalDate.of(2026, 11, 1);
+            Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+            Estadia estadia = new Estadia(2, 5, h, inicio);
+            if (estadia.getAndar() != 2) {
+                System.out.println("FALHOU: testarCriarEstadiaValida - Andar incorreto");
+            }
+            else if (estadia.getNumero() != 5) {
+                System.out.println("FALHOU: testarCriarEstadiaValida - Numero incorreto");
+            }
+            else if (estadia.getHospede() != h) {
+                System.out.println("FALHOU: testarCriarEstadiaValida - Hospede incorreto");
+            }
+            else if (!estadia.getDataInicio().equals(inicio)) {
+                System.out.println("FALHOU: testarCriarEstadiaValida - Data de inicio incorreta");
+            }
+            else if (estadia.getDataFim() != null) {
+                System.out.println("FALHOU: testarCriarEstadiaValida - Data de fim deve comecar nula");
+            }
+            else if (!estadia.estaAtiva()) {
+                System.out.println("FALHOU: testarCriarEstadiaValida - Estadia recem criada deve estar ativa");
+            }
+            else if (!estadia.getConsumos().isEmpty()) {
+                System.out.println("FALHOU: testarCriarEstadiaValida - Lista de consumos deve comecar vazia");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCriarEstadiaValida - Excecao inesperada");
+        }
+    }
+ 
+    // construtor sem data - caso feliz
+    static void testarCriarEstadiaSemDataUsaHoje() {
+        total++;
+        try {
+            Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+            Estadia estadia = new Estadia(0, 0, h);
+            if (!estadia.getDataInicio().equals(LocalDate.now())) {
+                System.out.println("FALHOU: testarCriarEstadiaSemDataUsaHoje - Data de inicio deve ser a data atual");
+            }
+            else if (!estadia.estaAtiva()) {
+                System.out.println("FALHOU: testarCriarEstadiaSemDataUsaHoje - Estadia recem criada deve estar ativa");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCriarEstadiaSemDataUsaHoje - excecao inesperada");
+        }
+    }
+ 
+    // construtor completo - caso triste (hospede nulo)
+    static void testarCriarEstadiaHospedeNuloFalha() {
+        total++;
+        try {
+            new Estadia(0, 0, null, LocalDate.now());
+            System.out.println("FALHOU: testarCriarEstadiaHospedeNuloFalha - Hospede nulo devia lancar IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCriarEstadiaHospedeNuloFalha - excecao inesperada");
+        }
+    }
+ 
+    // construtor sem data - caso triste (hospede nulo)
+    static void testarCriarEstadiaSemDataHospedeNuloFalha() {
+        total++;
+        try {
+            new Estadia(0, 0, null);
+            System.out.println("FALHOU: testarCriarEstadiaSemDataHospedeNuloFalha - Hospede nulo devia lancar IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCriarEstadiaSemDataHospedeNuloFalha - excecao inesperada");
+        }
+    }
+ 
+    // construtor completo - caso triste (data de inicio nula)
+    static void testarCriarEstadiaDataInicioNulaFalha() {
+        total++;
+        try {
+            Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+            try {
+                new Estadia(0, 0, h, null);
+                System.out.println("FALHOU: testarCriarEstadiaDataInicioNulaFalha - Data de inicio nula devia lancar IllegalArgumentException");
+            } catch (IllegalArgumentException e) {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCriarEstadiaDataInicioNulaFalha - excecao inesperada");
         }
     }
 }
