@@ -60,6 +60,25 @@ public class Hotel {
     }
 
     /**
+     * Busca a estadia ativa de um apartamento.
+     *
+     * @param andar andar do apartamento 
+     * @param numero número do apartamento 
+     * @return a estadia ativa, ou null se não houver
+     */
+    private Estadia buscarEstadiaAtiva(int andar, int numero) {
+        if (!aptoValido(andar, numero)) {
+            throw new IllegalArgumentException("Andar ou numero invalido");
+        }
+        for (Estadia e : estadias) {
+            if (e.estaAtiva() && e.getAndar() == andar && e.getNumero() == numero) {
+                return e;
+            }
+        }
+        return null;
+    }
+    
+    /**
      * Reserva um apartamento, mudando seu status de LIVRE para RESERVADO.
      *
      * @param andar número do andar, de 0 a 19
@@ -124,23 +143,30 @@ public class Hotel {
     }
 
     /**
-     * Realiza o check-out de um apartamento ocupado, liberando-o.
+     * Realiza o check-out de um apartamento ocupado na data atual.
      *
      * @param andar número do andar, de 0 a 19
      * @param numero número do apartamento no andar, de 0 a 13
-     * @return true se o check-out foi realizado com sucesso
-     * @throws IllegalArgumentException se andar ou número forem inválidos
-     * @throws IllegalStateException se o apartamento não estiver ocupado
+     * @return true se o check-out foi realizado, ou false se o apartamento
+     *         não estiver ocupado
+     * @throws IllegalArgumentException se andar/número forem inválidos, ou se
+     *         dataFim for nula ou anterior ao início da estadia
+     * @throws IllegalStateException se o apartamento estiver ocupado sem estadia ativa
      *
      * @pre hotel inicializado
-     * @post o apartamento fica LIVRE e sem hóspede associado
+     * @post se bem-sucedido, o apartamento fica LIVRE e a estadia fica encerrada em dataFim
      */
     public boolean realizarCheckout(int andar, int numero) {
-        if (!aptoValido(andar, numero)) {
-            throw new IllegalArgumentException("Andar ou numero invalido");
+        Apartamento apto = getApartamento(andar, numero);
+        if (!apto.estaOcupado()) {
+            return false;
         }
-        
-        matriz[andar][numero].checkout();
+        Estadia estadia = buscarEstadiaAtiva(andar, numero);
+        if (estadia == null) {
+            throw new IllegalStateException("Apartamento ocupado sem estadia ativa");
+        }
+        estadia.encerrar();
+        apto.checkout();
         return true;
     }
 
