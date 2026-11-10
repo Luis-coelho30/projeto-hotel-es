@@ -111,6 +111,9 @@ public class HotelTest {
         testarEncerrarDuasVezesFalha();
         testarEncerrarDataAnteriorAoInicioFalha();
         testarEncerrarDataNulaFalha();
+        testarRegistrarConsumo();
+        testarRegistrarConsumoNuloFalha();
+        testarRegistrarConsumoEstadiaEncerradaFalha();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -1533,6 +1536,71 @@ public class HotelTest {
             }
         } catch (Exception e) {
             System.out.println("FALHOU: testarEncerrarDataNulaFalha - excecao inesperada");
+        }
+    }
+
+    // registrarConsumo - caso feliz
+    static void testarRegistrarConsumo() {
+        total++;
+        try {
+            Estadia estadia = new Estadia(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            Consumo consumo = new Consumo(new Servico("Agua", 10.0f), 2);
+            estadia.registrarConsumo(consumo);
+            if (estadia.getConsumos().size() != 1) {
+                System.out.println("FALHOU: testarRegistrarConsumo - Devia ter exatamente 1 consumo");
+            }
+            else if (estadia.getConsumos().get(0) != consumo) {
+                System.out.println("FALHOU: testarRegistrarConsumo - Consumo registrado incorreto");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarRegistrarConsumo - excecao inesperada");
+        }
+    }
+ 
+    // registrarConsumo - caso triste (consumo nulo)
+    static void testarRegistrarConsumoNuloFalha() {
+        total++;
+        try {
+            Estadia estadia = new Estadia(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            try {
+                estadia.registrarConsumo(null);
+                System.out.println("FALHOU: testarRegistrarConsumoNuloFalha - Consumo nulo devia lancar IllegalArgumentException");
+            } catch (IllegalArgumentException e) {
+                if (!estadia.getConsumos().isEmpty()) {
+                    System.out.println("FALHOU: testarRegistrarConsumoNuloFalha - Nenhum consumo devia ter sido registrado");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarRegistrarConsumoNuloFalha - excecao inesperada");
+        }
+    }
+ 
+    // registrarConsumo - caso triste (estadia encerrada)
+    static void testarRegistrarConsumoEstadiaEncerradaFalha() {
+        total++;
+        try {
+            Estadia estadia = new Estadia(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.of(2026, 11, 1));
+            estadia.encerrar(LocalDate.of(2026, 11, 2));
+            Consumo consumo = new Consumo(new Servico("Agua", 10.0f), 1);
+            try {
+                estadia.registrarConsumo(consumo);
+                System.out.println("FALHOU: testarRegistrarConsumoEstadiaEncerradaFalha - Consumo em estadia encerrada devia lancar IllegalStateException");
+            } catch (IllegalStateException e) {
+                if (!estadia.getConsumos().isEmpty()) {
+                    System.out.println("FALHOU: testarRegistrarConsumoEstadiaEncerradaFalha - Nenhum consumo devia ter sido registrado");
+                }
+                else {
+                    passou++;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarRegistrarConsumoEstadiaEncerradaFalha - excecao inesperada");
         }
     }
 }
