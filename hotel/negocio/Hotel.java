@@ -45,23 +45,26 @@ public class Hotel {
      * @param andar número do andar, de 0 a 19
      * @param numero número do apartamento no andar, de 0 a 13
      * @param hospede hóspede que fará a reserva
-     * @return true se a reserva foi realizada com sucesso, ou false se o
-     *         apartamento não estiver livre
-     * @throws IllegalArgumentException se andar ou número forem inválidos,
-     *         ou se hospede for nulo
+     * @return true se a reserva foi realizada com sucesso, ou false se o 
+     *         apartamento não estiver livre (o hóspede só é validado se estiver livre)
+     * @throws IllegalArgumentException se andar ou número forem inválidos, 
+     *         ou se hospede for nulo e o apartamento estiver livre
      *
      * @pre hotel inicializado
-     * @post o apartamento fica RESERVADO com o hóspede armazenado
+     * @post se bem-sucedido, o apartamento fica RESERVADO e o hóspede é guardado
      */
     public boolean reservarApartamento(int andar, int numero, Hospede hospede) {
         if (!aptoValido(andar, numero)) {
             throw new IllegalArgumentException("Andar ou numero invalido");
         }
-        if (!matriz[andar][numero].estaLivre()) {
+        Apartamento apto = matriz[andar][numero];
+        if (!apto.estaLivre()) {
             return false;
         }
-
-        matriz[andar][numero].reservar(hospede);
+        // cria a reserva antes de mudar o estado, impede inconsistencia se falhar por hospede nulo 
+        Reserva nova = new Reserva(andar, numero, hospede);
+        apto.reservar(hospede);
+        reservas.add(nova);
         return true;
     }
 
@@ -265,6 +268,6 @@ public class Hotel {
     }
  
     public List<Reserva> getReservas() {
-        throw new UnsupportedOperationException("Implementar getReservas");
+        return this.reservas;
     }
 }
