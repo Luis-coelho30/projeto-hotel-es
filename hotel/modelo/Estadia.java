@@ -14,7 +14,22 @@ public class Estadia {
     private LocalDate dataFim;
     private final List<Consumo> consumos;
 
+    /**
+     * Cria uma nova Estadia com data de início informada.
+     *
+     * @param andar Andar do apartamento
+     * @param numero Número do apartamento
+     * @param hospede Hóspede associado à estadia
+     * @param dataInicio Início do período de estadia
+     * @throws IllegalArgumentException se hospede ou dataInicio forem nulos
+     *
+     * @pre Hóspede e data de início não nulos; coordenadas já validadas pelo Hotel
+     * @post Estadia criada ativa (dataFim nula) e sem consumos
+     */
     public Estadia(int andar, int numero, Hospede hospede, LocalDate dataInicio) {
+        if (hospede == null || dataInicio == null) {
+            throw new IllegalArgumentException("Hospede nao pode ser nulo");
+        }
         this.andar = andar;
         this.numero = numero;
         this.hospede = hospede;
@@ -22,7 +37,21 @@ public class Estadia {
         this.consumos = new ArrayList<>();
     }
 
+    /**
+     * Cria uma nova Estadia com a data atual do sistema como início.
+     *
+     * @param andar Andar do apartamento
+     * @param numero Número do apartamento
+     * @param hospede Hóspede associado à estadia
+     * @throws IllegalArgumentException se hospede for nulo
+     *
+     * @pre Hóspede não nulo; coordenadas já validadas pelo Hotel
+     * @post Estadia criada ativa, com dataInicio igual à data atual, sem consumos
+     */
     public Estadia(int andar, int numero, Hospede hospede) {
+        if (hospede == null) {
+            throw new IllegalArgumentException("Hospede nao pode ser nulo");
+        }
         this.andar = andar;
         this.numero = numero;
         this.hospede = hospede;
@@ -30,32 +59,88 @@ public class Estadia {
         this.consumos = new ArrayList<>();
     }
 
+    /**
+     * Retorna o andar do apartamento da estadia.
+     *
+     * @return Andar do apartamento
+     *
+     * @pre Estadia criada
+     * @post Estado da estadia inalterado
+     */
     public int getAndar() {
         return this.andar;
     }
 
+    /**
+     * Retorna o número do apartamento da estadia.
+     *
+     * @return Número do apartamento no andar
+     *
+     * @pre Estadia criada
+     * @post Estado da estadia inalterado
+     */
     public int getNumero() {
         return this.numero;
     }
 
+    /**
+     * Retorna o hóspede associado à estadia.
+     *
+     * @return Hóspede da estadia (nunca nulo)
+     *
+     * @pre Estadia criada
+     * @post Estado da estadia inalterado
+     */
     public Hospede getHospede() {
         return this.hospede;
     }
 
+    /**
+     * Retorna a data de início da estadia.
+     *
+     * @return Data de início (nunca nula)
+     *
+     * @pre Estadia criada
+     * @post Estado da estadia inalterado
+     */
     public LocalDate getDataInicio() {
         return this.dataInicio;
     }
 
+    /**
+     * Retorna a data de encerramento da estadia.
+     *
+     * @return Data de fim, ou null se a estadia ainda estiver ativa
+     *
+     * @pre Estadia criada
+     * @post Estado da estadia inalterado
+     */
     public LocalDate getDataFim() {
         return this.dataFim;
     }
 
+    /**
+     * Retorna os consumos registrados na estadia, em visão somente leitura.
+     *
+     * @return Lista não modificável de consumos (vazia se não houver)
+     *
+     * @pre Estadia criada
+     * @post Estado da estadia inalterado
+     */
     public List<Consumo> getConsumos() {
-        return this.consumos;
+        return Collections.unmodifiableList(this.consumos);
     }
 
+    /**
+     * Indica se a estadia ainda está ativa (não encerrada).
+     *
+     * @return true se dataFim for nula, false caso contrário
+     *
+     * @pre Estadia criada
+     * @post Estado da estadia inalterado
+     */
     public boolean estaAtiva() {
-        throw new UnsupportedOperationException("Implementar estaAtiva");
+        return this.dataFim == null;
     }
 
     public void encerrar() {
