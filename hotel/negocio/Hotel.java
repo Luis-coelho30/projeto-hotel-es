@@ -374,11 +374,29 @@ public class Hotel {
         return estadia.getConsumos();
     }
 
+    /**
+     * Emite a fatura da estadia ativa de um apartamento, sem alterar o estado
+     * do hotel. Os dias vêm da própria estadia (até a data atual, mínimo 1) e
+     * os consumos são os já registrados; o check-out é uma operação separada.
+     *
+     * @param andar número do andar, de 0 a 19
+     * @param numero número do apartamento no andar, de 0 a 13
+     * @return a fatura com diárias e consumos da estadia ativa
+     * @throws IllegalArgumentException se andar ou número forem inválidos
+     * @throws IllegalStateException se o apartamento não tiver estadia ativa
+     *
+     * @pre apartamento ocupado
+     * @post estado do hotel inalterado
+     */
     public Fatura emitirFatura(int andar, int numero) {
         if (!aptoValido(andar, numero)) {
             throw new IllegalArgumentException("Andar ou numero invalido");
         }
-        throw new UnsupportedOperationException("Implementar emitirFatura");
+        Estadia estadia = buscarEstadiaAtiva(andar, numero);
+        if (estadia == null) {
+            throw new IllegalStateException("Apartamento sem estadia ativa");
+        }
+        return new Fatura(matriz[andar][numero], estadia.getDias(), estadia.getConsumos());
     }
 
     /**
