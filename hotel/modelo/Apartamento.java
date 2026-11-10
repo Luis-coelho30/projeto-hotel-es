@@ -56,6 +56,10 @@ public class Apartamento {
         this.hospede = h;
     }
 
+    public void reservar() {
+        throw new UnsupportedOperationException("Implementar reservar");
+    }
+
     /**
      * realiza o check-in no apartamento, mudando seu status para OCUPADO
      * pode ser chamado para apartamentos de status LIVRE ou RESERVADO
@@ -77,6 +81,11 @@ public class Apartamento {
         this.status = Status.OCUPADO;
         this.hospede = h;
     }
+
+    public void checkin() {
+        throw new UnsupportedOperationException("Implementar checkin");
+    }
+
 
     /**
      * realiza o check-out do apartamento, liberando-o e mudando seu status para LIVRE
