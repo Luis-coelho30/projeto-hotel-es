@@ -216,7 +216,19 @@ public class Estadia {
         return Math.toIntExact(Math.max(1, dias));
     }
 
+    /**
+     * Soma o valor de todos os consumos registrados na estadia.
+     *
+     * @return Total dos consumos (0 se não houver)
+     *
+     * @pre Estadia criada
+     * @post Estado da estadia inalterado
+     */
     public float getTotalConsumos() {
-        throw new UnsupportedOperationException("Implementar getTotalConsumos");
+        float total = 0f;
+        for (Consumo c : this.consumos) {
+            total += c.getTotal();
+        }
+        return total;
     }
 }
