@@ -48,9 +48,10 @@ public class HotelTest {
 
         testarReservarApartamentoValido();
         testarReservarApartamentoNaoLivreFalha();
-        testarRealizarCheckoutAptoOcupado();
-        testarRealizarCheckoutAptoLivreFalha();
-        testarRealizarCheckoutAptoReservadoFalha();
+        testarCheckoutEncerraEstadiaELibera();
+        testarCheckoutAptoNaoOcupadoRetornaFalse();
+        testarCheckinAposCheckoutCriaNovaEstadia();
+        testarInvarianteReservaAtivaEAptoReservado();
 
         testarPrecoDiariaFeliz();
         testarAptoHotelFeliz();
@@ -817,57 +818,118 @@ public class HotelTest {
         }
     }
 
-    // Checkout - caso feliz em apartamento ocupado
-    static void testarRealizarCheckoutAptoOcupado() {
+    // realizarCheckout - caso feliz
+    static void testarCheckoutEncerraEstadiaELibera() {
         total++;
-        Hotel hotel = new Hotel();
-        Hospede hospede = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
-
         try {
-            hotel.realizarCheckin(0, 0, hospede);
-            boolean resultado = hotel.realizarCheckout(0, 0);
-
-            if (resultado
-                    && hotel.getApartamento(0, 0).estaLivre()
-                    && hotel.getApartamento(0, 0).getHospede() == null) {
+            Hotel hotel = new Hotel();
+            hotel.realizarCheckin(0, 0, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            boolean ok = hotel.realizarCheckout(0, 0);
+            if (!ok) {
+                System.out.println("FALHOU: testarCheckoutEncerraEstadiaELibera - Check-out em apartamento ocupado devia retornar true");
+            }
+            else if (!hotel.getApartamento(0, 0).estaLivre()) {
+                System.out.println("FALHOU: testarCheckoutEncerraEstadiaELibera - Apartamento devia estar LIVRE");
+            }
+            else if (hotel.getEstadias().size() != 1) {
+                System.out.println("FALHOU: testarCheckoutEncerraEstadiaELibera - A estadia devia permanecer no historico");
+            }
+            else if (hotel.getEstadias().get(0).estaAtiva()) {
+                System.out.println("FALHOU: testarCheckoutEncerraEstadiaELibera - Estadia devia estar encerrada");
+            }
+            else if (!hotel.getEstadias().get(0).getDataFim().equals(LocalDate.now())) {
+                System.out.println("FALHOU: testarCheckoutEncerraEstadiaELibera - Data de fim devia ser a data atual");
+            }
+            else {
                 passou++;
-            } else {
-                System.out.println("FALHOU: testarRealizarCheckoutAptoOcupado");
             }
         } catch (Exception e) {
-            System.out.println("FALHOU: testarRealizarCheckoutAptoOcupado - excecao inesperada");
+            System.out.println("FALHOU: testarCheckoutEncerraEstadiaELibera - excecao inesperada");
         }
     }
 
-    // Checkout - caso triste em apartamento livre
-    static void testarRealizarCheckoutAptoLivreFalha() {
+    // realizarCheckout - caso triste (livre e reservado)
+    static void testarCheckoutAptoNaoOcupadoRetornaFalse() {
         total++;
-        Hotel hotel = new Hotel();
-
         try {
-            hotel.realizarCheckout(0, 0);
-            System.out.println("FALHOU: testarRealizarCheckoutAptoLivreFalha");
-        } catch (IllegalStateException e) {
-            passou++;
+            Hotel hotel = new Hotel();
+            boolean livre = hotel.realizarCheckout(0, 0);
+            hotel.reservarApartamento(0, 1, new Hospede("123", "Joao", "Rua X", "9999", "joao@x"));
+            boolean reservado = hotel.realizarCheckout(0, 1);
+            if (livre) {
+                System.out.println("FALHOU: testarCheckoutAptoNaoOcupadoRetornaFalse - Check-out em apartamento livre devia retornar false");
+            }
+            else if (reservado) {
+                System.out.println("FALHOU: testarCheckoutAptoNaoOcupadoRetornaFalse - Check-out em apartamento reservado devia retornar false");
+            }
+            else if (!hotel.getApartamento(0, 1).estaReservado()) {
+                System.out.println("FALHOU: testarCheckoutAptoNaoOcupadoRetornaFalse - Apartamento reservado devia continuar RESERVADO");
+            }
+            else if (!hotel.getEstadias().isEmpty()) {
+                System.out.println("FALHOU: testarCheckoutAptoNaoOcupadoRetornaFalse - Nenhuma estadia devia existir");
+            }
+            else {
+                passou++;
+            }
         } catch (Exception e) {
-            System.out.println("FALHOU: testarRealizarCheckoutAptoLivreFalha - excecao inesperada");
+            System.out.println("FALHOU: testarCheckoutAptoNaoOcupadoRetornaFalse - excecao inesperada");
         }
     }
 
-    // Checkout - caso triste em apartamento reservado
-    static void testarRealizarCheckoutAptoReservadoFalha() {
+    // realizarCheckin - apos check-out
+    static void testarCheckinAposCheckoutCriaNovaEstadia() {
         total++;
-        Hotel hotel = new Hotel();
-        Hospede hospede = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
-
         try {
-            hotel.reservarApartamento(0, 0, hospede);
+            Hotel hotel = new Hotel();
+            Hospede h1 = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+            Hospede h2 = new Hospede("456", "Maria", "Rua Y", "8888", "maria@x");
+            hotel.realizarCheckin(0, 0, h1);
             hotel.realizarCheckout(0, 0);
-            System.out.println("FALHOU: testarRealizarCheckoutAptoReservadoFalha");
-        } catch (IllegalStateException e) {
-            passou++;
+            boolean ok = hotel.realizarCheckin(0, 0, h2);
+            if (!ok) {
+                System.out.println("FALHOU: testarCheckinAposCheckoutCriaNovaEstadia - Novo check-in devia retornar true");
+            }
+            else if (hotel.getEstadias().size() != 2) {
+                System.out.println("FALHOU: testarCheckinAposCheckoutCriaNovaEstadia - Devia existir 2 estadias (historico + atual)");
+            }
+            else if (hotel.getEstadias().get(0).estaAtiva()) {
+                System.out.println("FALHOU: testarCheckinAposCheckoutCriaNovaEstadia - A primeira estadia devia estar encerrada");
+            }
+            else if (!hotel.getEstadias().get(1).estaAtiva()) {
+                System.out.println("FALHOU: testarCheckinAposCheckoutCriaNovaEstadia - A segunda estadia devia estar ativa");
+            }
+            else if (hotel.getEstadias().get(1).getHospede() != h2) {
+                System.out.println("FALHOU: testarCheckinAposCheckoutCriaNovaEstadia - Hospede da segunda estadia incorreto");
+            }
+            else {
+                passou++;
+            }
         } catch (Exception e) {
-            System.out.println("FALHOU: testarRealizarCheckoutAptoReservadoFalha - excecao inesperada");
+            System.out.println("FALHOU: testarCheckinAposCheckoutCriaNovaEstadia - excecao inesperada");
+        }
+    }
+
+    // invariante: reserva ativa se e somente se apartamento RESERVADO
+    static void testarInvarianteReservaAtivaEAptoReservado() {
+        total++;
+        try {
+            Hotel hotel = new Hotel();
+            Hospede h = new Hospede("123", "Joao", "Rua X", "9999", "joao@x");
+            hotel.reservarApartamento(0, 0, h);
+            hotel.reservarApartamento(0, 1, h);
+            hotel.reservarApartamento(0, 2, h);
+            hotel.cancelarReserva(0, 1);
+            hotel.realizarCheckin(0, 0, h);
+            hotel.reservarApartamento(0, 1, h);
+            hotel.realizarCheckout(0, 0);
+            if (!invarianteReservas(hotel)) {
+                System.out.println("FALHOU: testarInvarianteReservaAtivaEAptoReservado - Reservas ativas e apartamentos RESERVADOS ficaram inconsistentes");
+            }
+            else {
+                passou++;
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarInvarianteReservaAtivaEAptoReservado - excecao inesperada");
         }
     }
 
