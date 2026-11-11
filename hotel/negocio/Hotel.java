@@ -102,7 +102,7 @@ public class Hotel {
         }
         // cria a reserva antes de mudar o estado, impede inconsistencia se falhar por hospede nulo 
         Reserva nova = new Reserva(andar, numero, hospede);
-        apto.reservar(hospede);
+        apto.reservar();
         reservas.add(nova);
         return true;
     }
@@ -134,7 +134,7 @@ public class Hotel {
         // cria a estadia antes de mudar o estado: hospede nulo falha sem deixar o hotel inconsistente
         Estadia nova = new Estadia(andar, numero, hospede);
         Reserva reserva = buscarReservaAtiva(andar, numero);
-        apto.checkin(hospede);
+        apto.checkin();
         if (reserva != null) {
             reserva.marcarUtilizada();
         }

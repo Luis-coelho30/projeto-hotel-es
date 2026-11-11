@@ -2,17 +2,15 @@ package hotel.modelo;
 
 public class Apartamento {
     private Status status;
-    private Hospede hospede;
 
     /**
-     * cria um novo apartamento, no estado inicial com status LIVRE e sem hóspede associado
+     * cria um novo apartamento, no estado inicial com status LIVRE
      *
      * @pre (nenhuma)
-     * @post instância de Apartamento criada com status LIVRE e hóspede nulo
+     * @post instância de Apartamento criada com status LIVRE
      */
     public Apartamento() {
         this.status = Status.LIVRE;
-        this.hospede = null;
     }
 
     /**
@@ -27,39 +25,8 @@ public class Apartamento {
     }
 
     /**
-     * retorna o hóspede atualmente associado ao apartamento, se houver
-     * @return o hóspede associado, ou null se o apartamento tiver status LIVRE
-     *
-     * @pre (nenhuma)
-     * @post retorna a referência do hóspede atualmente associado
-     */
-    public Hospede getHospede() {
-        return hospede;
-    }
-
-    /**
      * reserva o apartamento, mudando seu status de LIVRE para RESERVADO
      *
-     * @param h hóspede que faz a reserva
-     * @throws IllegalArgumentException se h for nulo
-     * @throws IllegalStateException se o apartamento não estiver com status LIVRE
-     *
-     * @pre o apartamento deve existir (construtor já garante isso)
-     * @post se bem-sucedido, o status muda para RESERVADO e o hóspede é armazenado
-     */
-    public void reservar(Hospede h) {
-        if (h == null) {
-            throw new IllegalArgumentException("hóspede não pode ser nulo ao reservar um apartamento");
-        }
-        validarStatus(Status.LIVRE, "apartamento não está livre para reserva");
-        this.status = Status.RESERVADO;
-        this.hospede = h;
-    }
-
-    /**
-     * reserva o apartamento, mudando seu status de LIVRE para RESERVADO
-     *
-     * @throws IllegalArgumentException se h for nulo
      * @throws IllegalStateException se o apartamento não estiver com status LIVRE
      *
      * @pre o apartamento deve existir (construtor já garante isso)
@@ -68,28 +35,6 @@ public class Apartamento {
     public void reservar() {
         validarStatus(Status.LIVRE, "apartamento não está livre para reserva");
         this.status = Status.RESERVADO;
-    }
-
-    /**
-     * realiza o check-in no apartamento, mudando seu status para OCUPADO
-     * pode ser chamado para apartamentos de status LIVRE ou RESERVADO
-     *
-     * @param h hóspede que faz o check-in
-     * @throws IllegalArgumentException se h for nulo
-     * @throws IllegalStateException se o apartamento já estiver com status OCUPADO
-     *
-     * @pre o apartamento deve existir
-     * @post se bem-sucedido, o status do apartamento muda para OCUPADO e o hóspede é armazenado
-     */
-    public void checkin(Hospede h) {
-        if (h == null) {
-            throw new IllegalArgumentException("hóspede não pode ser nulo ao fazer check-in");
-        }
-        if (this.status == Status.OCUPADO) {
-            throw new IllegalStateException("apartamento já ocupado");
-        }
-        this.status = Status.OCUPADO;
-        this.hospede = h;
     }
 
     /**
@@ -114,12 +59,11 @@ public class Apartamento {
      * @throws IllegalStateException se o apartamento não estiver OCUPADO
      *
      * @pre o apartamento deve existir
-     * @post o status do apartamento muda para LIVRE e o hóspede é removido (ficando nulo)
+     * @post o status do apartamento muda para LIVRE
      */
     public void checkout() {
         validarStatus(Status.OCUPADO, "apartamento não está ocupado");
         this.status = Status.LIVRE;
-        this.hospede = null;
     }
 
     /**
@@ -128,12 +72,11 @@ public class Apartamento {
      * @throws IllegalStateException se o apartamento não estiver RESERVADO
      *
      * @pre o apartamento deve existir
-     * @post o status muda para LIVRE e o hóspede é removido
+     * @post o status muda para LIVRE
      */
     public void cancelarReserva() {
         validarStatus(Status.RESERVADO, "apartamento não está reservado");
         this.status = Status.LIVRE;
-        this.hospede = null;
     }
 
     /**
