@@ -1,6 +1,7 @@
 package hotel.modelo;
 
 import java.util.List;
+import java.util.ArrayList;
 
 public class Fatura {
     private Apartamento apartamento;
@@ -30,7 +31,7 @@ public class Fatura {
         }
         this.apartamento = apto;
         this.dias = dias;
-        this.consumos = consumos;
+        this.consumos = new ArrayList<>(consumos);
     }
 
     /**

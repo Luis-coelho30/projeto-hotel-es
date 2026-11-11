@@ -139,9 +139,7 @@ public class Main {
                     case 10:
                         andar = lerAndar();
                         numero = lerNumero();
-                        System.out.print("Quantidade de dias: ");
-                        int dias = Integer.parseInt(scanner.nextLine());
-                        Fatura fatura = hotel.emitirFatura(andar, numero, dias);
+                        Fatura fatura = hotel.emitirFatura(andar, numero);
                         System.out.println(fatura);
                         break;
                     case 11:
