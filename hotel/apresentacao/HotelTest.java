@@ -164,6 +164,12 @@ public class HotelTest {
         testarEstadiaGuardaValorDiaria();
         testarCheckinGuardaDiariaDoApartamento();
 
+        testarFaturaDeEstadiaNulaFalha();
+        testarFaturaDeEstadiaEncerradaFalha();
+        testarFaturaDeEstadiaTotalDiarias();
+        testarFaturaDeEstadiaComConsumos();
+        testarFaturaDeEstadiaSemConsumos();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -2724,6 +2730,78 @@ public class HotelTest {
         }
         else {
             System.out.println("FALHOU: testarCheckinGuardaDiariaDoApartamento");
+        }
+    }
+
+    // fatura de estadia - caso triste
+    static void testarFaturaDeEstadiaNulaFalha() {
+        total++;
+        try {
+            new Fatura((Estadia) null);
+            System.out.println("FALHOU: testarFaturaDeEstadiaNulaFalha");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarFaturaDeEstadiaNulaFalha - exceção inesperada");
+        }
+    }
+
+    // fatura de estadia - caso triste: só estadia ativa pode ser faturada
+    static void testarFaturaDeEstadiaEncerradaFalha() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, 150f);
+        e.encerrar();
+        try {
+            new Fatura(e);
+            System.out.println("FALHOU: testarFaturaDeEstadiaEncerradaFalha");
+        } catch (IllegalStateException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarFaturaDeEstadiaEncerradaFalha - exceção inesperada");
+        }
+    }
+
+    // fatura de estadia - diárias - caso feliz
+    static void testarFaturaDeEstadiaTotalDiarias() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, LocalDate.now().minusDays(3), 150f);
+        Fatura f = new Fatura(e);
+        if (f.getDias() == 3 && f.getTotalDiarias() == 450f) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarFaturaDeEstadiaTotalDiarias");
+        }
+    }
+
+    // fatura de estadia - consumos - caso feliz
+    static void testarFaturaDeEstadiaComConsumos() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, LocalDate.now().minusDays(3), 150f);
+        e.registrarConsumo(new Consumo(new Servico("Agua", 10f), 3));    // 30
+        e.registrarConsumo(new Consumo(new Servico("Jantar", 20f), 3));  // 60
+        Fatura f = new Fatura(e);
+        if (f.getTotalConsumos() == 90f && f.getTotalGeral() == 540f) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarFaturaDeEstadiaComConsumos");
+        }
+    }
+
+    // fatura de estadia - sem consumos - caso feliz
+    static void testarFaturaDeEstadiaSemConsumos() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Fatura f = new Fatura(new Estadia(0, 0, t, 150f));
+        if (f.getTotalConsumos() == 0f) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarFaturaDeEstadiaSemConsumos");
         }
     }
 }
