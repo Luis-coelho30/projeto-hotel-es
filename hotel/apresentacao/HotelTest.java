@@ -1614,7 +1614,7 @@ public class HotelTest {
         try {
             LocalDate inicio = LocalDate.of(2026, 11, 1);
             Titular h = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
-            Estadia estadia = new Estadia(2, 5, h, inicio);
+            Estadia estadia = new Estadia(2, 5, h, inicio, 150f);
             if (estadia.getAndar() != 2) {
                 System.out.println("FALHOU: testarCriarEstadiaValida - Andar incorreto");
             }
@@ -1649,7 +1649,7 @@ public class HotelTest {
         total++;
         try {
             Titular h = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
-            Estadia estadia = new Estadia(0, 0, h);
+            Estadia estadia = new Estadia(0, 0, h, 150f);
             if (!estadia.getDataInicio().equals(LocalDate.now())) {
                 System.out.println("FALHOU: testarCriarEstadiaSemDataUsaHoje - Data de inicio deve ser a data atual");
             }
@@ -1668,7 +1668,7 @@ public class HotelTest {
     static void testarCriarEstadiaTitularNuloFalha() {
         total++;
         try {
-            new Estadia(0, 0, null, LocalDate.now());
+            new Estadia(0, 0, null, LocalDate.now(), 150f);
             System.out.println("FALHOU: testarCriarEstadiaTitularNuloFalha - Titular nulo devia lancar IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             passou++;
@@ -1681,7 +1681,7 @@ public class HotelTest {
     static void testarCriarEstadiaSemDataTitularNuloFalha() {
         total++;
         try {
-            new Estadia(0, 0, null);
+            new Estadia(0, 0, null, 150f);
             System.out.println("FALHOU: testarCriarEstadiaSemDataTitularNuloFalha - Titular nulo devia lancar IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             passou++;
@@ -1696,7 +1696,7 @@ public class HotelTest {
         try {
             Titular h = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
             try {
-                new Estadia(0, 0, h, null);
+                new Estadia(0, 0, h, null, 150f);
                 System.out.println("FALHOU: testarCriarEstadiaDataInicioNulaFalha - Data de inicio nula devia lancar IllegalArgumentException");
             } catch (IllegalArgumentException e) {
                 passou++;
@@ -1710,7 +1710,7 @@ public class HotelTest {
     static void testarEncerrarComData() {
         total++;
         try {
-            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.of(2026, 11, 1));
+            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.of(2026, 11, 1), 150f);
             LocalDate fim = LocalDate.of(2026, 11, 4);
             estadia.encerrar(fim);
             if (estadia.estaAtiva()) {
@@ -1731,7 +1731,7 @@ public class HotelTest {
     static void testarEncerrarSemDataUsaHoje() {
         total++;
         try {
-            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"));
+            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), 150f);
             estadia.encerrar();
             if (estadia.estaAtiva()) {
                 System.out.println("FALHOU: testarEncerrarSemDataUsaHoje - Estadia devia estar encerrada");
@@ -1752,7 +1752,7 @@ public class HotelTest {
         total++;
         try {
             LocalDate dia = LocalDate.of(2026, 11, 1);
-            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), dia);
+            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), dia, 150f);
             estadia.encerrar(dia);
             if (estadia.estaAtiva()) {
                 System.out.println("FALHOU: testarEncerrarNoMesmoDiaDoInicio - Encerrar no mesmo dia do inicio deve ser permitido");
@@ -1769,7 +1769,7 @@ public class HotelTest {
     static void testarEncerrarDuasVezesFalha() {
         total++;
         try {
-            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.of(2026, 11, 1));
+            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.of(2026, 11, 1), 150f);
             estadia.encerrar(LocalDate.of(2026, 11, 2));
             try {
                 estadia.encerrar(LocalDate.of(2026, 11, 3));
@@ -1791,7 +1791,7 @@ public class HotelTest {
     static void testarEncerrarDataAnteriorAoInicioFalha() {
         total++;
         try {
-            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.of(2026, 11, 10));
+            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.of(2026, 11, 10), 150f);
             try {
                 estadia.encerrar(LocalDate.of(2026, 11, 9));
                 System.out.println("FALHOU: testarEncerrarDataAnteriorAoInicioFalha - Data de fim anterior ao inicio devia lancar IllegalArgumentException");
@@ -1815,7 +1815,7 @@ public class HotelTest {
     static void testarEncerrarDataNulaFalha() {
         total++;
         try {
-            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"));
+            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), 150f);
             try {
                 estadia.encerrar(null);
                 System.out.println("FALHOU: testarEncerrarDataNulaFalha - Data de fim nula devia lancar IllegalArgumentException");
@@ -1836,7 +1836,7 @@ public class HotelTest {
     static void testarRegistrarConsumo() {
         total++;
         try {
-            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"));
+            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), 150f);
             Consumo consumo = new Consumo(new Servico("Agua", 10.0f), 2);
             estadia.registrarConsumo(consumo);
             if (estadia.getConsumos().size() != 1) {
@@ -1857,7 +1857,7 @@ public class HotelTest {
     static void testarRegistrarConsumoNuloFalha() {
         total++;
         try {
-            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"));
+            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), 150f);
             try {
                 estadia.registrarConsumo(null);
                 System.out.println("FALHOU: testarRegistrarConsumoNuloFalha - Consumo nulo devia lancar IllegalArgumentException");
@@ -1878,7 +1878,7 @@ public class HotelTest {
     static void testarRegistrarConsumoEstadiaEncerradaFalha() {
         total++;
         try {
-            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.of(2026, 11, 1));
+            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.of(2026, 11, 1), 150f);
             estadia.encerrar(LocalDate.of(2026, 11, 2));
             Consumo consumo = new Consumo(new Servico("Agua", 10.0f), 1);
             try {
@@ -1901,7 +1901,7 @@ public class HotelTest {
     static void testarGetDiasVariosDias() {
         total++;
         try {
-            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.of(2026, 11, 1));
+            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.of(2026, 11, 1), 150f);
             estadia.encerrar(LocalDate.of(2026, 11, 4));
             if (estadia.getDias() != 3) {
                 System.out.println("FALHOU: testarGetDiasVariosDias - Esperado 3 dias");
@@ -1919,7 +1919,7 @@ public class HotelTest {
         total++;
         try {
             LocalDate dia = LocalDate.of(2026, 11, 1);
-            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), dia);
+            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), dia, 150f);
             estadia.encerrar(dia);
             if (estadia.getDias() != 1) {
                 System.out.println("FALHOU: testarGetDiasMesmoDia - Esperado minimo de 1 dia");
@@ -1936,7 +1936,7 @@ public class HotelTest {
     static void testarGetDiasAtivaRecemCriada() {
         total++;
         try {
-            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"));
+            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), 150f);
             if (estadia.getDias() != 1) {
                 System.out.println("FALHOU: testarGetDiasAtivaRecemCriada - Esperado 1 dia");
             }
@@ -1952,7 +1952,7 @@ public class HotelTest {
     static void testarGetDiasAtivaComInicioNoPassado() {
         total++;
         try {
-            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.now().minusDays(3));
+            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), LocalDate.now().minusDays(3), 150f);
             if (estadia.getDias() != 3) {
                 System.out.println("FALHOU: testarGetDiasAtivaComInicioNoPassado - Esperado 3 dias");
             }
@@ -1968,7 +1968,7 @@ public class HotelTest {
     static void testarGetTotalConsumos() {
         total++;
         try {
-            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"));
+            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), 150f);
             estadia.registrarConsumo(new Consumo(new Servico("Agua", 10.0f), 3));
             estadia.registrarConsumo(new Consumo(new Servico("Cafe", 2.5f), 4));
             if (estadia.getTotalConsumos() != 40.0f) {
@@ -1986,7 +1986,7 @@ public class HotelTest {
     static void testarGetTotalConsumosVazio() {
         total++;
         try {
-            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"));
+            Estadia estadia = new Estadia(0, 0, new Titular("123", "Joao", "Rua X", "9999", "joao@x"), 150f);
             if (estadia.getTotalConsumos() != 0.0f) {
                 System.out.println("FALHOU: testarGetTotalConsumosVazio - Esperado total de 0.0");
             }

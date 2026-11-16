@@ -17,16 +17,16 @@ public class Estadia {
     /**
      * Cria uma nova Estadia com data de início informada.
      *
-     * @param andar Andar do apartamento
-     * @param numero Número do apartamento
-     * @param titular Titular associado à estadia
-     * @param dataInicio Início do período de estadia
+     * @param andar       Andar do apartamento
+     * @param numero      Número do apartamento
+     * @param titular     Titular associado à estadia
+     * @param dataInicio  Início do período de estadia
+     * @param valorDiaria valor da diária
      * @throws IllegalArgumentException se titular ou dataInicio forem nulos
-     *
      * @pre Titular e data de início não nulos; coordenadas já validadas pelo Hotel
      * @post Estadia criada ativa (dataFim nula) e sem consumos
      */
-    public Estadia(int andar, int numero, Titular titular, LocalDate dataInicio) {
+    public Estadia(int andar, int numero, Titular titular, LocalDate dataInicio, float valorDiaria) {
         if (titular == null || dataInicio == null) {
             throw new IllegalArgumentException("Titular nao pode ser nulo");
         }
@@ -48,7 +48,7 @@ public class Estadia {
      * @pre Titular não nulo; coordenadas já validadas pelo Hotel
      * @post Estadia criada ativa, com dataInicio igual à data atual, sem consumos
      */
-    public Estadia(int andar, int numero, Titular titular) {
+    public Estadia(int andar, int numero, Titular titular, float valorDiaria) {
         if (titular == null) {
             throw new IllegalArgumentException("Titular nao pode ser nulo");
         }
@@ -230,5 +230,17 @@ public class Estadia {
             total += c.getTotal();
         }
         return total;
+    }
+
+    /**
+     * Retorna o valor da diária contratada na estadia.
+     *
+     * @return Valor da diária
+     *
+     * @pre Estadia criada
+     * @post Estado da estadia inalterado
+     */
+    public float getValorDiaria() {
+        throw new UnsupportedOperationException("Implementar getValorDiaria");
     }
 }

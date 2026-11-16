@@ -132,7 +132,7 @@ public class Hotel {
             return false;
         }
         // cria a estadia antes de mudar o estado: titular nulo falha sem deixar o hotel inconsistente
-        Estadia nova = new Estadia(andar, numero, titular);
+        Estadia nova = new Estadia(andar, numero, titular, apto.getPrecoDiaria());
         Reserva reserva = buscarReservaAtiva(andar, numero);
         apto.checkin();
         if (reserva != null) {
