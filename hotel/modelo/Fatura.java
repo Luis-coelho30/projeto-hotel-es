@@ -9,32 +9,6 @@ public class Fatura {
     private List<Consumo> consumos;
 
     /**
-     * Cria uma fatura de hospedagem
-     *
-     * @param apto apartamento faturado, não pode ser nulo
-     * @param dias número de diárias, deve ser pelo menos 1
-     * @param consumos consumos a cobrar, não pode ser nulo (pode ser vazio)
-     * @throws IllegalArgumentException se o apartamento ou a lista forem nulos, ou se os dias forem menores que 1
-     *
-     * @pre (nenhuma)
-     * @post instância de Fatura criada com o apartamento, os dias e os consumos informados
-     */
-    public Fatura(Apartamento apto, int dias, List<Consumo> consumos) {
-        if (apto == null) {
-            throw new IllegalArgumentException("apartamento da fatura não pode ser nulo");
-        }
-        if (dias < 1) {
-            throw new IllegalArgumentException("dias da fatura deve ser pelo menos 1");
-        }
-        if (consumos == null) {
-            throw new IllegalArgumentException("lista de consumos da fatura não pode ser nula");
-        }
-        this.valorDiaria = apto.getPrecoDiaria();
-        this.dias = dias;
-        this.consumos = new ArrayList<>(consumos);
-    }
-
-    /**
      * Cria a fatura de uma estadia ativa
      *
      * @param estadia estadia a ser faturada, não pode ser nula
