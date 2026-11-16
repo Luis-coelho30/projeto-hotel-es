@@ -159,6 +159,11 @@ public class HotelTest {
         testarEmitirFaturaAptoReservadoFalha();
         testarEmitirFaturaAposCheckoutFalha();
 
+        testarEstadiaValorDiariaNegativoFalha();
+        testarEstadiaComDataValorDiariaNegativoFalha();
+        testarEstadiaGuardaValorDiaria();
+        testarCheckinGuardaDiariaDoApartamento();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -2662,5 +2667,63 @@ public class HotelTest {
             }
         }
         return true;
+    }
+
+    // estadia - valor da diária - caso triste
+    static void testarEstadiaValorDiariaNegativoFalha() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        try {
+            new Estadia(0, 0, t, -1f);
+            System.out.println("FALHOU: testarEstadiaValorDiariaNegativoFalha");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEstadiaValorDiariaNegativoFalha - exceção inesperada");
+        }
+    }
+
+    // estadia - valor da diária - caso triste (construtor com data)
+    static void testarEstadiaComDataValorDiariaNegativoFalha() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        try {
+            new Estadia(0, 0, t, java.time.LocalDate.now(), -1f);
+            System.out.println("FALHOU: testarEstadiaComDataValorDiariaNegativoFalha");
+        } catch (IllegalArgumentException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarEstadiaComDataValorDiariaNegativoFalha - exceção inesperada");
+        }
+    }
+
+    // estadia - valor da diária - caso feliz
+    static void testarEstadiaGuardaValorDiaria() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, 350f);
+        if (e.getValorDiaria() == 350f) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarEstadiaGuardaValorDiaria");
+        }
+    }
+
+    // check-in - estadia guarda a diária do apartamento - caso feliz
+    static void testarCheckinGuardaDiariaDoApartamento() {
+        total++;
+        Hotel hotel = new Hotel();
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        hotel.realizarCheckin(0, 0, t); // apto simples
+        hotel.realizarCheckin(0, 8, t); // apto premium
+        float simples = hotel.getEstadias().get(0).getValorDiaria();
+        float premium = hotel.getEstadias().get(1).getValorDiaria();
+        if (simples == 150f && premium == 350f) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarCheckinGuardaDiariaDoApartamento");
+        }
     }
 }
