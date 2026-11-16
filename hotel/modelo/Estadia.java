@@ -13,6 +13,7 @@ public class Estadia {
     private final LocalDate dataInicio;
     private LocalDate dataFim;
     private final List<Consumo> consumos;
+    private final float valorDiaria;
 
     /**
      * Cria uma nova Estadia com data de início informada.
@@ -22,7 +23,7 @@ public class Estadia {
      * @param titular     Titular associado à estadia
      * @param dataInicio  Início do período de estadia
      * @param valorDiaria valor da diária
-     * @throws IllegalArgumentException se titular ou dataInicio forem nulos
+     * @throws IllegalArgumentException se titular ou dataInicio forem nulos, ou se valorDiaria for negativo
      * @pre Titular e data de início não nulos; coordenadas já validadas pelo Hotel
      * @post Estadia criada ativa (dataFim nula) e sem consumos
      */
@@ -30,6 +31,10 @@ public class Estadia {
         if (titular == null || dataInicio == null) {
             throw new IllegalArgumentException("Titular nao pode ser nulo");
         }
+        if (valorDiaria < 0) {
+            throw new IllegalArgumentException("Valor da diaria nao pode ser negativo");
+        }
+        this.valorDiaria = valorDiaria;
         this.andar = andar;
         this.numero = numero;
         this.titular = titular;
@@ -52,6 +57,10 @@ public class Estadia {
         if (titular == null) {
             throw new IllegalArgumentException("Titular nao pode ser nulo");
         }
+        if (valorDiaria < 0) {
+            throw new IllegalArgumentException("Valor da diaria nao pode ser negativo");
+        }
+        this.valorDiaria = valorDiaria;
         this.andar = andar;
         this.numero = numero;
         this.titular = titular;
@@ -241,6 +250,6 @@ public class Estadia {
      * @post Estado da estadia inalterado
      */
     public float getValorDiaria() {
-        throw new UnsupportedOperationException("Implementar getValorDiaria");
+        return this.valorDiaria;
     }
 }
