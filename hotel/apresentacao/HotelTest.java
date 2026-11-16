@@ -162,6 +162,12 @@ public class HotelTest {
         testarFaturaDeEstadiaComConsumos();
         testarFaturaDeEstadiaSemConsumos();
 
+        testarEncerrarDuasVezesMantemFaturaFinal();
+        testarEstadiaAtivaNaoTemFaturaFinal();
+        testarCheckoutGeraFaturaFinal();
+        testarEncerrarGeraFaturaFinalComDias();
+        testarEncerrarComDataGeraFaturaFinalComDias();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -2704,6 +2710,90 @@ public class HotelTest {
         }
         else {
             System.out.println("FALHOU: testarFaturaDeEstadiaSemConsumos");
+        }
+    }
+
+
+    // estadia - fatura final - caso triste: encerrar de novo não troca a fatura
+    static void testarEncerrarDuasVezesMantemFaturaFinal() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, 150f);
+        e.encerrar();
+        Fatura primeira = e.getFaturaFinal();
+        try {
+            e.encerrar();
+            System.out.println("FALHOU: testarEncerrarDuasVezesMantemFaturaFinal");
+        } catch (IllegalStateException ex) {
+            if (e.getFaturaFinal() == primeira) {
+                passou++;
+            }
+            else {
+                System.out.println("FALHOU: testarEncerrarDuasVezesMantemFaturaFinal - fatura foi trocada");
+            }
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarEncerrarDuasVezesMantemFaturaFinal - exceção inesperada");
+        }
+    }
+
+    // estadia - fatura final - caso feliz: estadia ativa não tem fatura final
+    static void testarEstadiaAtivaNaoTemFaturaFinal() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, 150f);
+        if (e.getFaturaFinal() == null) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarEstadiaAtivaNaoTemFaturaFinal");
+        }
+    }
+
+    // check-out gera a fatura final com diárias e consumos - caso feliz
+    static void testarCheckoutGeraFaturaFinal() {
+        total++;
+        Hotel hotel = new Hotel();
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        hotel.cadastrarServico("Agua", 5f);
+        hotel.realizarCheckin(0, 0, t); // apto Simples, 150
+        hotel.registrarConsumo(0, 0, 0, 2); // 2 x 5 = 10
+        hotel.realizarCheckout(0, 0);
+        Fatura f = hotel.getEstadias().get(0).getFaturaFinal();
+        if (f != null && f.getTotalGeral() == 160f) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarCheckoutGeraFaturaFinal");
+        }
+    }
+
+    // encerrar() usa os dias até hoje - caso feliz
+    static void testarEncerrarGeraFaturaFinalComDias() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, LocalDate.now().minusDays(3), 150f);
+        e.encerrar();
+        Fatura f = e.getFaturaFinal();
+        if (f != null && f.getDias() == 3 && f.getTotalDiarias() == 450f) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarEncerrarGeraFaturaFinalComDias");
+        }
+    }
+
+    // encerrar(data) usa a data informada, não hoje - caso feliz
+    static void testarEncerrarComDataGeraFaturaFinalComDias() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, 150f);
+        e.encerrar(LocalDate.now().plusDays(3));
+        Fatura f = e.getFaturaFinal();
+        if (f != null && f.getDias() == 3 && f.getTotalDiarias() == 450f) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarEncerrarComDataGeraFaturaFinalComDias");
         }
     }
 }
