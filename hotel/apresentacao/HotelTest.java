@@ -32,6 +32,10 @@ public class HotelTest {
         testarReservarHospedeNuloFalha();
         testarReservaAptoNaoLivreComHospedeNuloRetornaFalse();
 
+        testarCheckinAptoLivre();
+        testarCheckinAptoReservado();
+        testarCheckinAptoOcupado();
+
         testarCheckinLivreCriaEstadiaAtiva();
         testarCheckinDeReservaMarcaUtilizada();
         testarCheckinAptoOcupadoNaoCriaEstadia();
