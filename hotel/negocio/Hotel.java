@@ -392,7 +392,7 @@ public class Hotel {
         if (estadia == null) {
             throw new IllegalStateException("Apartamento sem estadia ativa");
         }
-        return new Fatura(matriz[andar][numero], estadia.getDias(), estadia.getConsumos());
+        return new Fatura(estadia);
     }
 
     /**

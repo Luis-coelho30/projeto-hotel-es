@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Fatura {
-    private Apartamento apartamento;
+    private float valorDiaria;
     private int dias;
     private List<Consumo> consumos;
 
@@ -29,7 +29,7 @@ public class Fatura {
         if (consumos == null) {
             throw new IllegalArgumentException("lista de consumos da fatura não pode ser nula");
         }
-        this.apartamento = apto;
+        this.valorDiaria = apto.getPrecoDiaria();
         this.dias = dias;
         this.consumos = new ArrayList<>(consumos);
     }
@@ -45,7 +45,15 @@ public class Fatura {
      * @post fatura criada com os dias, a diária e os consumos da estadia
      */
     public Fatura(Estadia estadia) {
-        throw new UnsupportedOperationException("Implementar Fatura(Estadia)");
+        if (estadia == null) {
+            throw new IllegalArgumentException("estadia da fatura não pode ser nula");
+        }
+        if (!estadia.estaAtiva()) {
+            throw new IllegalStateException("estadia encerrada não pode ser faturada");
+        }
+        this.dias = estadia.getDias();
+        this.valorDiaria = estadia.getValorDiaria();
+        this.consumos = new ArrayList<>(estadia.getConsumos());
     }
 
     /**
@@ -59,16 +67,6 @@ public class Fatura {
     public float getTotalGeral() {
         return getTotalDiarias() + getTotalConsumos();
     }
-
-    /**
-     * Retorna o apartamento
-     *
-     * @return o apartamento do qual a fatura pertence
-     *
-     * @pre (nenhuma)
-     * @post nenhuma alteração de estado
-     */
-    public Apartamento getApartamento() { return apartamento; }
 
     /**
      * Retorna a quantidade de dias da fatura
@@ -99,7 +97,7 @@ public class Fatura {
      * @post nenhuma alteração de estado
      */
     public float getTotalDiarias() {
-        return dias * apartamento.getPrecoDiaria();
+        return dias * valorDiaria;
     }
 
     /**
