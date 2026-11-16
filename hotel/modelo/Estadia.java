@@ -14,6 +14,7 @@ public class Estadia {
     private LocalDate dataFim;
     private final List<Consumo> consumos;
     private final float valorDiaria;
+    private Fatura faturaFinal;
 
     /**
      * Cria uma nova Estadia com data de início informada.
@@ -172,7 +173,7 @@ public class Estadia {
      * @throws IllegalStateException se a estadia já estiver encerrada
      *
      * @pre Estadia ativa
-     * @post dataFim igual ao valor informado; estaAtiva() retorna false
+     * @post dataFim igual ao valor informado; estaAtiva() retorna false; a fatura final é gerada
      */
     public void encerrar(LocalDate dataFim) {
         if (dataFim == null) {
@@ -185,6 +186,7 @@ public class Estadia {
             throw new IllegalArgumentException("Data de fim anterior a data de inicio");
         }
         this.dataFim = dataFim;
+        this.faturaFinal = Fatura.finalDe(this);
     }
 
     /**
@@ -262,6 +264,6 @@ public class Estadia {
      * @post Estado da estadia inalterado
      */
     public Fatura getFaturaFinal() {
-        throw new UnsupportedOperationException("Implementar getFaturaFinal");
+        return this.faturaFinal;
     }
 }

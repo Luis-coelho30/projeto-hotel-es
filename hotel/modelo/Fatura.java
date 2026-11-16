@@ -9,7 +9,7 @@ public class Fatura {
     private List<Consumo> consumos;
 
     /**
-     * Cria a fatura de uma estadia ativa
+     * Cria a fatura parcial de uma estadia ativa.
      *
      * @param estadia estadia a ser faturada, não pode ser nula
      * @throws IllegalArgumentException se a estadia for nula
@@ -19,10 +19,28 @@ public class Fatura {
      * @post fatura criada com os dias, a diária e os consumos da estadia
      */
     public Fatura(Estadia estadia) {
+        this(estadia, true);
+    }
+
+    /**
+     * Cria a fatura final de uma estadia. Usada apenas pela própria Estadia, logo depois de definir a data de encerramento.
+     *
+     * @param estadia estadia encerrada, não pode ser nula
+     * @return fatura final da estadia
+     * @throws IllegalArgumentException se a estadia for nula
+     *
+     * @pre dataFim da estadia já definida
+     * @post fatura criada com os dias, a diária e os consumos da estadia
+     */
+    static Fatura finalDe(Estadia estadia) {
+        return new Fatura(estadia, false);
+    }
+
+    private Fatura(Estadia estadia, boolean parcial) {
         if (estadia == null) {
             throw new IllegalArgumentException("estadia da fatura não pode ser nula");
         }
-        if (!estadia.estaAtiva()) {
+        if (parcial && !estadia.estaAtiva()) {
             throw new IllegalStateException("estadia encerrada não pode ser faturada");
         }
         this.dias = estadia.getDias();
