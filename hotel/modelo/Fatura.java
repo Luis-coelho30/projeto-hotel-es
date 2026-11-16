@@ -35,6 +35,20 @@ public class Fatura {
     }
 
     /**
+     * Cria a fatura de uma estadia ativa
+     *
+     * @param estadia estadia a ser faturada, não pode ser nula
+     * @throws IllegalArgumentException se a estadia for nula
+     * @throws IllegalStateException se a estadia já estiver encerrada
+     *
+     * @pre estadia ativa
+     * @post fatura criada com os dias, a diária e os consumos da estadia
+     */
+    public Fatura(Estadia estadia) {
+        throw new UnsupportedOperationException("Implementar Fatura(Estadia)");
+    }
+
+    /**
      * Calcula o valor total da fatura
      *
      * @return total das diárias somado ao total dos consumos
