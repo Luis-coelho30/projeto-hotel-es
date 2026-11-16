@@ -149,12 +149,11 @@ public class Hotel {
      * @param numero número do apartamento no andar, de 0 a 13
      * @return true se o check-out foi realizado, ou false se o apartamento
      *         não estiver ocupado
-     * @throws IllegalArgumentException se andar/número forem inválidos, ou se
-     *         dataFim for nula ou anterior ao início da estadia
+     * @throws IllegalArgumentException se andar ou número forem inválidos
      * @throws IllegalStateException se o apartamento estiver ocupado sem estadia ativa
      *
      * @pre hotel inicializado
-     * @post se bem-sucedido, o apartamento fica LIVRE e a estadia fica encerrada em dataFim
+     * @post se bem-sucedido, o apartamento fica LIVRE e a estadia fica encerrada na data atual
      */
     public boolean realizarCheckout(int andar, int numero) {
         Apartamento apto = getApartamento(andar, numero);
@@ -201,10 +200,7 @@ public class Hotel {
     /**
      * Exibe no terminal o mapa visual de ocupação do hotel
      * Utiliza '.' para livre, 'R' para reservado e 'O' para ocupado
-     * 
-     * @param N/A Não recebe parâmetros
-     * @return (void)
-     * @throws (nenhuma)
+     *
      * @pre a matriz do hotel deve estar inicializada
      * @post o mapa é impresso na tela
      */
