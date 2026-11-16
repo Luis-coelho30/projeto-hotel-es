@@ -102,4 +102,16 @@ public class Fatura {
     public String toString() {
         return "Fatura: R$ " + getTotalGeral();
     }
+
+    /**
+     * Retorna a fatura final gerada no encerramento da estadia.
+     *
+     * @return Fatura final, ou null se a estadia ainda estiver ativa
+     *
+     * @pre Estadia criada
+     * @post Estado da estadia inalterado
+     */
+    public Fatura getFaturaFinal() {
+        throw new UnsupportedOperationException("Implementar getFaturaFinal");
+    }
 }
