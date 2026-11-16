@@ -9,7 +9,7 @@ import java.util.List;
 public class Estadia {
     private final int andar;
     private final int numero;
-    private final Hospede hospede;
+    private final Titular titular;
     private final LocalDate dataInicio;
     private LocalDate dataFim;
     private final List<Consumo> consumos;
@@ -19,20 +19,20 @@ public class Estadia {
      *
      * @param andar Andar do apartamento
      * @param numero Número do apartamento
-     * @param hospede Hóspede associado à estadia
+     * @param titular Titular associado à estadia
      * @param dataInicio Início do período de estadia
-     * @throws IllegalArgumentException se hospede ou dataInicio forem nulos
+     * @throws IllegalArgumentException se titular ou dataInicio forem nulos
      *
-     * @pre Hóspede e data de início não nulos; coordenadas já validadas pelo Hotel
+     * @pre Titular e data de início não nulos; coordenadas já validadas pelo Hotel
      * @post Estadia criada ativa (dataFim nula) e sem consumos
      */
-    public Estadia(int andar, int numero, Hospede hospede, LocalDate dataInicio) {
-        if (hospede == null || dataInicio == null) {
-            throw new IllegalArgumentException("Hospede nao pode ser nulo");
+    public Estadia(int andar, int numero, Titular titular, LocalDate dataInicio) {
+        if (titular == null || dataInicio == null) {
+            throw new IllegalArgumentException("Titular nao pode ser nulo");
         }
         this.andar = andar;
         this.numero = numero;
-        this.hospede = hospede;
+        this.titular = titular;
         this.dataInicio = dataInicio;
         this.consumos = new ArrayList<>();
     }
@@ -42,19 +42,19 @@ public class Estadia {
      *
      * @param andar Andar do apartamento
      * @param numero Número do apartamento
-     * @param hospede Hóspede associado à estadia
-     * @throws IllegalArgumentException se hospede for nulo
+     * @param titular Titular associado à estadia
+     * @throws IllegalArgumentException se titular for nulo
      *
-     * @pre Hóspede não nulo; coordenadas já validadas pelo Hotel
+     * @pre Titular não nulo; coordenadas já validadas pelo Hotel
      * @post Estadia criada ativa, com dataInicio igual à data atual, sem consumos
      */
-    public Estadia(int andar, int numero, Hospede hospede) {
-        if (hospede == null) {
-            throw new IllegalArgumentException("Hospede nao pode ser nulo");
+    public Estadia(int andar, int numero, Titular titular) {
+        if (titular == null) {
+            throw new IllegalArgumentException("Titular nao pode ser nulo");
         }
         this.andar = andar;
         this.numero = numero;
-        this.hospede = hospede;
+        this.titular = titular;
         this.dataInicio = LocalDate.now();
         this.consumos = new ArrayList<>();
     }
@@ -84,15 +84,15 @@ public class Estadia {
     }
 
     /**
-     * Retorna o hóspede associado à estadia.
+     * Retorna o titular associado à estadia.
      *
-     * @return Hóspede da estadia (nunca nulo)
+     * @return Titular da estadia (nunca nulo)
      *
      * @pre Estadia criada
      * @post Estado da estadia inalterado
      */
-    public Hospede getHospede() {
-        return this.hospede;
+    public Titular getTitular() {
+        return this.titular;
     }
 
     /**

@@ -1,6 +1,6 @@
 package hotel.modelo;
 
-public class Hospede {
+public class Titular {
     private String cpf;
     private String nome;
     private String endereco;
@@ -8,16 +8,16 @@ public class Hospede {
     private String email;
 
     /**
-     * Cria uma nova instância de Hospede com os dados informados
+     * Cria uma nova instância de Titular com os dados informados
      * 
-     * @param cpf CPF do Hospede
-     * @param nome Nome do Hospede
-     * @param endereco Endereço do Hospede
-     * @param celular Número de celular do Hospede
-     * @param email Endereço de email do Hospede
+     * @param cpf CPF do Titular
+     * @param nome Nome do Titular
+     * @param endereco Endereço do Titular
+     * @param celular Número de celular do Titular
+     * @param email Endereço de email do Titular
      * @throws IllegalArgumentException se algum dos campos for null
      */
-    public Hospede(String cpf, String nome, String endereco, String celular, String email) {
+    public Titular(String cpf, String nome, String endereco, String celular, String email) {
         this.cpf = validarCampo(cpf, "CPF");
         this.nome = validarCampo(nome, "Nome");
         this.endereco = validarCampo(endereco, "Endereco");
@@ -26,44 +26,44 @@ public class Hospede {
     }
 
     /**
-     * Retorna o CPF do Hospede
+     * Retorna o CPF do Titular
      * 
-     * @return O CPF do Hospede
+     * @return O CPF do Titular
      */
     public String getCpf() { return cpf; }
     
     /**
-     * Retorna o nome do Hospede
+     * Retorna o nome do Titular
      * 
-     * @return O Nome do Hospede
+     * @return O Nome do Titular
      */
     public String getNome() { return nome; }
     
     /**
-     * Retorna o endereço do Hospede
+     * Retorna o endereço do Titular
      * 
-     * @return O Endereço do Hospede 
+     * @return O Endereço do Titular
      */
     public String getEndereco() { return endereco; }
     
     /**
-     * Retorna o celular do Hospede
+     * Retorna o celular do Titular
      * 
-     * @return O Celular do Hospede
+     * @return O Celular do Titular
      */
     public String getCelular() { return celular; }
     
     /**
-     * Retorna o email do Hospede
+     * Retorna o email do Titular
      * 
-     * @return O Email do Hospede
+     * @return O Email do Titular
      */
     public String getEmail() { return email; }
 
     /**    
-     * Retorna uma representação em texto do Hospede, contendo seu nome e CPF
+     * Retorna uma representação em texto do Titular, contendo seu nome e CPF
      * 
-     * @return Nome e CPF do Hospede
+     * @return Nome e CPF do Titular
      */
     @Override
     public String toString() {
@@ -74,7 +74,7 @@ public class Hospede {
      * Verifica se um objeto é igual a esta instância com base no CPF.
      * 
      * @param obj Objeto a ser comparado
-     * @return true se o objeto for um Hospede com o mesmo CPF;
+     * @return true se o objeto for um Titular com o mesmo CPF;
      *         false caso o contrário
      */
     @Override 
@@ -82,8 +82,8 @@ public class Hospede {
         if(this == obj) {
             return true;
         }
-        if(obj instanceof Hospede hospede) {
-            if(this.cpf.equals(hospede.cpf)){
+        if(obj instanceof Titular titular) {
+            if(this.cpf.equals(titular.cpf)){
                 return true;
             }
         }

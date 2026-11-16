@@ -10,7 +10,7 @@ public class Main {
     private static Hotel hotel = new Hotel();
     private static Scanner scanner = new Scanner(System.in);
 
-    private static Hospede lerHospede() {
+    private static Titular lerTitular() {
         System.out.print("CPF: ");
         String cpf = scanner.nextLine();
         System.out.print("Nome: ");
@@ -21,7 +21,7 @@ public class Main {
         String celular = scanner.nextLine();
         System.out.print("Email: ");
         String email = scanner.nextLine();
-        return new Hospede(cpf, nome, endereco, celular, email);
+        return new Titular(cpf, nome, endereco, celular, email);
     }
 
     private static int lerAndar() {
@@ -68,8 +68,8 @@ public class Main {
                     case 1:
                         int andar = lerAndar();
                         int numero = lerNumero();
-                        Hospede h = lerHospede();
-                        if (hotel.reservarApartamento(andar, numero, h)) {
+                        Titular t = lerTitular();
+                        if (hotel.reservarApartamento(andar, numero, t)) {
                             System.out.println("Reserva realizada com sucesso.");
                         } else {
                             System.out.println("Não foi possível reservar.");
@@ -78,8 +78,8 @@ public class Main {
                     case 2:
                         andar = lerAndar();
                         numero = lerNumero();
-                        h = lerHospede();
-                        if (hotel.realizarCheckin(andar, numero, h)) {
+                        t = lerTitular();
+                        if (hotel.realizarCheckin(andar, numero, t)) {
                             System.out.println("Check-in realizado com sucesso.");
                         } else {
                             System.out.println("Não foi possível realizar check-in.");
