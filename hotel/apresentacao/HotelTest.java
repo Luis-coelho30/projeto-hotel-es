@@ -5,6 +5,7 @@ import hotel.negocio.Hotel;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import hotel.repositorio.HotelRepo;
+import hotel.servico.RelatorioSvc;
 
 public class HotelTest {
     private static int passou = 0;
@@ -172,6 +173,8 @@ public class HotelTest {
         testarCarregarSemArquivoFalha();
         testarSalvarECarregarMantemEstado();
         testarSalvarECarregarMantemFaturaFinal();
+
+        testarRelatorioOcupacaoImprime();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -2871,7 +2874,8 @@ public class HotelTest {
             if (!e.estaAtiva() && e.getFaturaFinal() != null
                     && e.getFaturaFinal().getTotalGeral() == 160f) {
                 passou++;
-            } else {
+            }
+            else {
                 System.out.println("FALHOU: testarSalvarECarregarMantemFaturaFinal");
             }
         } catch (java.io.IOException | ClassNotFoundException e) {
@@ -2879,5 +2883,26 @@ public class HotelTest {
         } finally {
             new java.io.File("hotel.dat").delete();
         }
+    }
+
+
+    // relatório de ocupação - imprime o relatório (a saída é conferida visualmente)
+    static void testarRelatorioOcupacaoImprime() {
+        total++;
+        Hotel hotel = new Hotel();
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+
+        hotel.realizarCheckin(0, 0, t); // estadia 0
+        hotel.getEstadias().get(0).encerrar(LocalDate.now().plusDays(3)); // fica 3 dias
+
+        hotel.realizarCheckin(0, 1, t); // ativa, fica 1 dia
+
+        hotel.realizarCheckin(1, 2, t);
+        hotel.realizarCheckout(1, 2);
+        hotel.realizarCheckin(1, 2, t); // duas estadias no mesmo apto, 1 dia cada (2 dias total)
+        hotel.realizarCheckout(1, 2);
+
+        new RelatorioSvc(hotel).gerarRelatorioOcupacao();
+        passou++; // chegou aqui sem lançar exceção
     }
 }
