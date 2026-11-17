@@ -48,7 +48,18 @@ public class Fatura implements java.io.Serializable {
      * @post fatura criada com uma cópia da lista de consumos
      */
     public Fatura(int dias, float valorDiaria, List<Consumo> consumos) {
-        throw new UnsupportedOperationException("não implementado");
+        if (dias < 1) {
+            throw new IllegalArgumentException("dias da fatura deve ser pelo menos 1");
+        }
+        if (valorDiaria < 0) {
+            throw new IllegalArgumentException("valor da diária não pode ser negativo");
+        }
+        if (consumos == null) {
+            throw new IllegalArgumentException("consumos da fatura não pode ser nulo");
+        }
+        this.dias = dias;
+        this.valorDiaria = valorDiaria;
+        this.consumos = new ArrayList<>(consumos);
     }
 
     private Fatura(Estadia estadia, boolean parcial) {

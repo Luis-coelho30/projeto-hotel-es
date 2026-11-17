@@ -200,7 +200,10 @@ public class Estadia implements java.io.Serializable {
      * @post Estado da estadia inalterado
      */
     public Fatura gerarFatura() {
-        throw new UnsupportedOperationException("não implementado");
+        if (!estaAtiva()) {
+            throw new IllegalStateException("Estadia encerrada nao pode ser faturada");
+        }
+        return new Fatura(getDias(), this.valorDiaria, this.consumos);
     }
 
     /**
