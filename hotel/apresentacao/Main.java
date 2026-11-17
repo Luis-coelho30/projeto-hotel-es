@@ -4,6 +4,7 @@ import hotel.modelo.*;
 import hotel.negocio.Hotel;
 import hotel.repositorio.HotelRepo;
 import hotel.servico.RelatorioSvc;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
@@ -173,8 +174,16 @@ public class Main {
                 }
             } catch (UnsupportedOperationException e) {
                 System.out.println("Funcionalidade não implementada: " + e.getMessage());
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida: digite um número válido.");
             } catch (IllegalArgumentException e) {
-                System.out.println("Erro: " + e.getMessage());
+                System.out.println("Dados inválidos: " + e.getMessage());
+            } catch (IllegalStateException e) {
+                System.out.println("Operação inválida: " + e.getMessage());
+            } catch (IOException e) {
+                System.out.println("Erro de arquivo: " + e.getMessage());
+            } catch (ClassNotFoundException e) {
+                System.out.println("Arquivo de dados incompatível: " + e.getMessage());
             } catch (Exception e) {
                 System.out.println("Erro inesperado: " + e.getMessage());
             }
