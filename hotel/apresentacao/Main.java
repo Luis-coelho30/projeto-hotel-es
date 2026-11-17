@@ -11,17 +11,21 @@ public class Main {
     private static Hotel hotel = new Hotel();
     private static Scanner scanner = new Scanner(System.in);
 
+    private static String lerLinha() {
+        return scanner.nextLine().trim();
+    }
+
     private static Titular lerTitular() {
         System.out.print("CPF: ");
-        String cpf = scanner.nextLine();
+        String cpf = lerLinha();
         System.out.print("Nome: ");
-        String nome = scanner.nextLine();
+        String nome = lerLinha();
         System.out.print("Endereço: ");
-        String endereco = scanner.nextLine();
+        String endereco = lerLinha();
         System.out.print("Celular: ");
-        String celular = scanner.nextLine();
+        String celular = lerLinha();
         System.out.print("Email: ");
-        String email = scanner.nextLine();
+        String email = lerLinha();
         return new Titular(cpf, nome, endereco, celular, email);
     }
 
@@ -34,12 +38,12 @@ public class Main {
 
     private static int lerAndar() {
         System.out.print("Andar (0-" + (Hotel.NUM_ANDARES - 1) + "): ");
-        return Integer.parseInt(scanner.nextLine());
+        return Integer.parseInt(lerLinha());
     }
 
     private static int lerNumero() {
         System.out.print("Número (0-" + (Hotel.APTOS_POR_ANDAR - 1) + "): ");
-        return Integer.parseInt(scanner.nextLine());
+        return Integer.parseInt(lerLinha());
     }
 
     /**
@@ -73,7 +77,7 @@ public class Main {
             System.out.print("Opção: ");
 
             try {
-                opcao = Integer.parseInt(scanner.nextLine());
+                opcao = Integer.parseInt(lerLinha());
             } catch (NumberFormatException e) {
                         System.out.println("Opção inválida.");
                 opcao = -1;
@@ -134,9 +138,9 @@ public class Main {
                         break;
                     case 8:
                         System.out.print("Nome do serviço: ");
-                        String nome = scanner.nextLine();
+                        String nome = lerLinha();
                         System.out.print("Preço: ");
-                        float preco = Float.parseFloat(scanner.nextLine());
+                        float preco = Float.parseFloat(lerLinha());
                         hotel.cadastrarServico(nome, preco);
                         System.out.println("Serviço cadastrado.");
                         break;
@@ -149,9 +153,9 @@ public class Main {
                         andar = lerAndar();
                         numero = lerNumero();
                         System.out.print("Índice do serviço (0 a " + (hotel.getServicos().size() - 1) + "): ");
-                        int idx = Integer.parseInt(scanner.nextLine());
+                        int idx = Integer.parseInt(lerLinha());
                         System.out.print("Quantidade: ");
-                        int qtd = Integer.parseInt(scanner.nextLine());
+                        int qtd = Integer.parseInt(lerLinha());
                         if (hotel.registrarConsumo(andar, numero, idx, qtd)) {
                             System.out.println("Consumo registrado.");
                         } else {
