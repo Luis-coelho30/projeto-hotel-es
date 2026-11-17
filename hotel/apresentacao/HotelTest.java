@@ -22,6 +22,12 @@ public class HotelTest {
         testarCadastroTitularEnderecoNull();
         testarCadastroTitularCelularNull();
         testarCadastroTitularEmailNull();
+        testarCadastroTitularCpfVazio();
+        testarCadastroTitularNomeVazio();
+        testarCadastroTitularEnderecoVazio();
+        testarCadastroTitularCelularVazio();
+        testarCadastroTitularEmailVazio();
+        testarCadastroTitularSoEspacosFalha();
         testarEqualsTitularValido();
         testarEqualsTitularDistinto();
         testarEqualsTitularNull();
@@ -308,6 +314,84 @@ public class HotelTest {
             passou++;
         } catch (Exception e) {
             System.out.println("FALHOU: testarCadastroTitularEmailNull - Excecao inesperada " + e.getMessage());
+        }
+    }
+
+    // titular - caso triste: cpf vazio
+    static void testarCadastroTitularCpfVazio() {
+        total++;
+        try {
+            new Titular("", "Joao", "Rua X", "9999", "joao@x");
+            System.out.println("FALHOU: testarCadastroTitularCpfVazio - campo vazio devia lancar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarCadastroTitularCpfVazio - Excecao inesperada " + ex.getMessage());
+        }
+    }
+
+    // titular - caso triste: nome vazio
+    static void testarCadastroTitularNomeVazio() {
+        total++;
+        try {
+            new Titular("123", "", "Rua X", "9999", "joao@x");
+            System.out.println("FALHOU: testarCadastroTitularNomeVazio - campo vazio devia lancar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarCadastroTitularNomeVazio - Excecao inesperada " + ex.getMessage());
+        }
+    }
+
+    // titular - caso triste: endereco vazio
+    static void testarCadastroTitularEnderecoVazio() {
+        total++;
+        try {
+            new Titular("123", "Joao", "", "9999", "joao@x");
+            System.out.println("FALHOU: testarCadastroTitularEnderecoVazio - campo vazio devia lancar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarCadastroTitularEnderecoVazio - Excecao inesperada " + ex.getMessage());
+        }
+    }
+
+    // titular - caso triste: celular vazio
+    static void testarCadastroTitularCelularVazio() {
+        total++;
+        try {
+            new Titular("123", "Joao", "Rua X", "", "joao@x");
+            System.out.println("FALHOU: testarCadastroTitularCelularVazio - campo vazio devia lancar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarCadastroTitularCelularVazio - Excecao inesperada " + ex.getMessage());
+        }
+    }
+
+    // titular - caso triste: email vazio
+    static void testarCadastroTitularEmailVazio() {
+        total++;
+        try {
+            new Titular("123", "Joao", "Rua X", "9999", "");
+            System.out.println("FALHOU: testarCadastroTitularEmailVazio - campo vazio devia lancar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarCadastroTitularEmailVazio - Excecao inesperada " + ex.getMessage());
+        }
+    }
+
+    // titular - caso triste: campo só com espaços conta como vazio
+    static void testarCadastroTitularSoEspacosFalha() {
+        total++;
+        try {
+            new Titular("123", "   ", "Rua X", "9999", "joao@x");
+            System.out.println("FALHOU: testarCadastroTitularSoEspacosFalha - campo so com espacos devia lancar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarCadastroTitularSoEspacosFalha - Excecao inesperada " + ex.getMessage());
         }
     }
 
