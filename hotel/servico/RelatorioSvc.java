@@ -102,7 +102,31 @@ public class RelatorioSvc {
         }
     }
 
+    /**
+     * Imprime o resumo financeiro: o faturamento das estadias encerradas (fatura
+     * final), o das estadias ativas (fatura parcial até hoje) e o total estimado.
+     *
+     * @pre hotel não nulo
+     * @post o resumo é impresso na tela; estado do hotel inalterado
+     */
     public void gerarResumoFinanceiro() {
-        throw new UnsupportedOperationException("Implementar resumo financeiro");
+        List<Estadia> estadias = hotel.getEstadias();
+        float encerradas = 0f;
+        float ativas = 0f;
+
+        for (int i = 0; i < estadias.size(); i++) {
+            Estadia e = estadias.get(i);
+            if (e.estaAtiva()) {
+                ativas += new Fatura(e).getTotalGeral();
+            }
+            else {
+                encerradas += e.getFaturaFinal().getTotalGeral();
+            }
+        }
+
+        System.out.println("\n--- RESUMO FINANCEIRO ---");
+        System.out.println("Estadias encerradas: R$ " + encerradas);
+        System.out.println("Estadias ativas (parcial): R$ " + ativas);
+        System.out.println("Faturamento total estimado: R$ " + (encerradas + ativas));
     }
 }
