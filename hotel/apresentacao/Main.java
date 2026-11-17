@@ -25,6 +25,13 @@ public class Main {
         return new Titular(cpf, nome, endereco, celular, email);
     }
 
+    private static void mostrarCardapio() {
+        System.out.println("--- CARDÁPIO DE SERVIÇOS ---");
+        for (int i = 0; i < hotel.getServicos().size(); i++) {
+            System.out.println(i + " - " + hotel.getServicos().get(i));
+        }
+    }
+
     private static int lerAndar() {
         System.out.print("Andar (0-" + (Hotel.NUM_ANDARES - 1) + "): ");
         return Integer.parseInt(scanner.nextLine());
@@ -134,6 +141,11 @@ public class Main {
                         System.out.println("Serviço cadastrado.");
                         break;
                     case 9:
+                        if (hotel.getServicos().isEmpty()) {
+                            System.out.println("Nenhum serviço cadastrado. Use a opção 8 primeiro.");
+                            break;
+                        }
+                        mostrarCardapio();
                         andar = lerAndar();
                         numero = lerNumero();
                         System.out.print("Índice do serviço (0 a " + (hotel.getServicos().size() - 1) + "): ");
