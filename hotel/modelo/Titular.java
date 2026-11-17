@@ -15,9 +15,9 @@ public class Titular implements java.io.Serializable {
      * @param endereco Endereço do Titular
      * @param celular Número de celular do Titular
      * @param email Endereço de email do Titular
-     * @throws IllegalArgumentException se algum dos campos for null
+     * @throws IllegalArgumentException se algum dos campos for nulo, vazio ou só com espaços
      * 
-     * @pre cpf, nome, endereco, celular e email não nulos
+     * @pre cpf, nome, endereco, celular e email não nulos nem vazios
      * @post Titular criado com os cinco campos preenchidos
      */
     public Titular(String cpf, String nome, String endereco, String celular, String email) {
@@ -128,17 +128,19 @@ public class Titular implements java.io.Serializable {
     }
 
     /**
-     * Valida um campo de texto, verificando se ele não é nulo e retornando seu valor
+     * Valida um campo de texto, verificando se ele não é nulo nem vazio (ou só com espaços) e retornando seu valor
      * 
      * @param valor Valor do campo a ser validado
      * @param campo Nome do campo, utilizado na mensagem de erro
      * @return O valor validado
-     * @throws IllegalArgumentException se o valor for nulo
+     * @throws IllegalArgumentException se o valor for nulo, vazio ou só com espaços
      */
     private String validarCampo(String valor, String campo) {
         if (valor == null)
             throw new IllegalArgumentException(campo + " nao pode ser nulo");
-        
+        if (valor.isBlank())
+            throw new IllegalArgumentException(campo + " nao pode ser vazio");
+
         return valor;
     }
 }
