@@ -36,6 +36,21 @@ public class Fatura implements java.io.Serializable {
         return new Fatura(estadia, false);
     }
 
+    /**
+     * Cria uma fatura a partir de valores já conhecidos, sem depender de Estadia.
+     *
+     * @param dias quantidade de dias, deve ser pelo menos 1
+     * @param valorDiaria valor da diária, não pode ser negativo
+     * @param consumos consumos faturados, não pode ser nulo
+     * @throws IllegalArgumentException se dias for menor que 1, se valorDiaria for negativo ou se consumos for nulo
+     *
+     * @pre (nenhuma)
+     * @post fatura criada com uma cópia da lista de consumos
+     */
+    public Fatura(int dias, float valorDiaria, List<Consumo> consumos) {
+        throw new UnsupportedOperationException("não implementado");
+    }
+
     private Fatura(Estadia estadia, boolean parcial) {
         if (estadia == null) {
             throw new IllegalArgumentException("estadia da fatura não pode ser nula");

@@ -191,6 +191,19 @@ public class Estadia implements java.io.Serializable {
     }
 
     /**
+     * Gera a fatura parcial da estadia ativa, sem alterar o estado da estadia.
+     *
+     * @return fatura com os dias até hoje, a diária e os consumos registrados
+     * @throws IllegalStateException se a estadia já estiver encerrada
+     *
+     * @pre Estadia ativa
+     * @post Estado da estadia inalterado
+     */
+    public Fatura gerarFatura() {
+        throw new UnsupportedOperationException("não implementado");
+    }
+
+    /**
      * Registra um consumo nesta estadia.
      *
      * @param consumo Consumo a ser registrado
