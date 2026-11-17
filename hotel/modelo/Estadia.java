@@ -49,7 +49,8 @@ public class Estadia implements java.io.Serializable {
      * @param andar Andar do apartamento
      * @param numero Número do apartamento
      * @param titular Titular associado à estadia
-     * @throws IllegalArgumentException se titular for nulo
+     * @param valorDiaria valor da diária
+     * @throws IllegalArgumentException se titular for nulo ou se valorDiaria for negativo
      *
      * @pre Titular não nulo; coordenadas já validadas pelo Hotel
      * @post Estadia criada ativa, com dataInicio igual à data atual, sem consumos

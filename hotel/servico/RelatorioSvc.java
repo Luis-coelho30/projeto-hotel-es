@@ -6,7 +6,13 @@ import java.util.*;
 
 public class RelatorioSvc {
     private Hotel hotel;
-
+    
+    /**
+     * Cria uma instância do serviço de relatórios.
+     *
+     * @pre Hotel criado com lista de estadias, reservas e servicos
+     * @post Serviço de relatórios do hotel
+     */
     public RelatorioSvc(Hotel hotel) {
         this.hotel = hotel;
     }

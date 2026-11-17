@@ -34,6 +34,15 @@ public class Main {
         return Integer.parseInt(scanner.nextLine());
     }
 
+    /**
+    * Exibe o menu e trata os erros das operações.
+    *
+    * @param args argumentos de linha de comando (não utilizados)
+    *
+    * @pre nenhuma
+    * @post o programa encerra quando o usuário escolhe sair
+    * 
+    */
     public static void main(String[] args) {
         int opcao;
         do {
