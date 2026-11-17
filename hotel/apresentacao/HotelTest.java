@@ -178,6 +178,8 @@ public class HotelTest {
 
         testarRankingServicosImprime();
 
+        testarResumoFinanceiroImprime();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -2929,6 +2931,24 @@ public class HotelTest {
         hotel.registrarConsumo(0, 1, 0, 1); // Agua x1
 
         new RelatorioSvc(hotel).gerarRankingServicos();
+        passou++; // chegou aqui sem lançar exceção
+    }
+
+
+    // resumo financeiro - imprime o resumo (a saída é conferida visualmente)
+    static void testarResumoFinanceiroImprime() {
+        total++;
+        Hotel hotel = new Hotel();
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        hotel.cadastrarServico("Agua", 5f);
+
+        hotel.realizarCheckin(0, 0, t); // Simples, 150
+        hotel.registrarConsumo(0, 0, 0, 2); // 2 x 5 = 10
+        hotel.realizarCheckout(0, 0); // encerrada: 150 + 10 = 160
+
+        hotel.realizarCheckin(0, 1, t); // ativa, Simples: 1 dia = 150
+
+        new RelatorioSvc(hotel).gerarResumoFinanceiro();
         passou++; // chegou aqui sem lançar exceção
     }
 }
