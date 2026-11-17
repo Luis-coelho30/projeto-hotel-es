@@ -189,6 +189,9 @@ public class HotelTest {
         testarCarregarSemArquivoFalha();
         testarSalvarECarregarMantemEstado();
         testarSalvarECarregarMantemFaturaFinal();
+        testarSalvarECarregarEmArquivoInformado();
+        testarCarregarArquivoInformadoInexistenteFalha();
+        testarSalvarEmCaminhoInvalidoFalha();
 
         testarRelatorioOcupacaoImprime();
 
@@ -3144,6 +3147,70 @@ public class HotelTest {
             System.out.println("FALHOU: testarSalvarECarregarMantemFaturaFinal - " + e);
         } finally {
             new java.io.File("hotel.dat").delete();
+        }
+    }
+
+
+    // persistência em arquivo informado - caso feliz: ida e volta, sem mexer no hotel.dat
+    static void testarSalvarECarregarEmArquivoInformado() {
+        total++;
+        java.io.File padrao = new java.io.File("hotel.dat");
+        boolean existiaAntes = padrao.exists();
+        long tamanhoAntes = padrao.length();
+        java.io.File temp = null;
+        try {
+            temp = java.io.File.createTempFile("hotel-teste", ".dat");
+            Hotel hotel = new Hotel();
+            Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+            hotel.reservarApartamento(0, 1, t);
+
+            HotelRepo.salvar(hotel, temp.getPath());
+            Hotel carregado = HotelRepo.carregar(temp.getPath());
+
+            boolean ok = carregado.getApartamento(0, 1).estaReservado()
+                    && carregado.getReservas().size() == 1
+                    && padrao.exists() == existiaAntes
+                    && padrao.length() == tamanhoAntes;
+            if (ok) {
+                passou++;
+            }
+            else {
+                System.out.println("FALHOU: testarSalvarECarregarEmArquivoInformado - estado diferente ou hotel.dat alterado");
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarSalvarECarregarEmArquivoInformado - exceção inesperada: " + e);
+        } finally {
+            if (temp != null) {
+                temp.delete();
+            }
+        }
+    }
+
+    // persistência em arquivo informado - caso triste: carregar de arquivo inexistente
+    static void testarCarregarArquivoInformadoInexistenteFalha() {
+        total++;
+        java.io.File inexistente = new java.io.File(System.getProperty("java.io.tmpdir"), "hotel-inexistente-" + System.nanoTime() + ".dat");
+        try {
+            HotelRepo.carregar(inexistente.getPath());
+            System.out.println("FALHOU: testarCarregarArquivoInformadoInexistenteFalha - devia lançar IOException");
+        } catch (java.io.IOException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCarregarArquivoInformadoInexistenteFalha - exceção inesperada: " + e);
+        }
+    }
+
+    // persistência em arquivo informado - caso triste: salvar em diretório que não existe
+    static void testarSalvarEmCaminhoInvalidoFalha() {
+        total++;
+        java.io.File invalido = new java.io.File(System.getProperty("java.io.tmpdir"), "pasta-inexistente-" + System.nanoTime() + "/hotel.dat");
+        try {
+            HotelRepo.salvar(new Hotel(), invalido.getPath());
+            System.out.println("FALHOU: testarSalvarEmCaminhoInvalidoFalha - devia lançar IOException");
+        } catch (java.io.IOException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarSalvarEmCaminhoInvalidoFalha - exceção inesperada: " + e);
         }
     }
 
