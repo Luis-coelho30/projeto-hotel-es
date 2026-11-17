@@ -176,6 +176,8 @@ public class HotelTest {
 
         testarRelatorioOcupacaoImprime();
 
+        testarRankingServicosImprime();
+
         System.out.println(passou + "/" + total + " testes passaram");
     }
 
@@ -2903,6 +2905,30 @@ public class HotelTest {
         hotel.realizarCheckout(1, 2);
 
         new RelatorioSvc(hotel).gerarRelatorioOcupacao();
+        passou++; // chegou aqui sem lançar exceção
+    }
+
+
+    // ranking de serviços - imprime o ranking (a saída é conferida visualmente)
+    static void testarRankingServicosImprime() {
+        total++;
+        Hotel hotel = new Hotel();
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        hotel.cadastrarServico("Agua", 5f); // índice 0
+        hotel.cadastrarServico("Jantar", 40f); // índice 1
+        hotel.cadastrarServico("Cafe", 8f); // índice 2
+
+        hotel.realizarCheckin(0, 0, t);
+        hotel.registrarConsumo(0, 0, 0, 2); // Agua x2
+        hotel.registrarConsumo(0, 0, 0, 3); // Agua x3
+        hotel.registrarConsumo(0, 0, 1, 1); // Jantar x1
+        hotel.realizarCheckout(0, 0);
+
+        hotel.realizarCheckin(0, 1, t);
+        hotel.registrarConsumo(0, 1, 2, 4); // Cafe x4
+        hotel.registrarConsumo(0, 1, 0, 1); // Agua x1
+
+        new RelatorioSvc(hotel).gerarRankingServicos();
         passou++; // chegou aqui sem lançar exceção
     }
 }
