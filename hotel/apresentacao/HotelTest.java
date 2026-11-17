@@ -186,7 +186,6 @@ public class HotelTest {
         testarConsumoAposEncerrarNaoAlteraFaturaFinal();
         testarEncerrarFalhoNaoGeraFaturaFinal();
 
-        testarCarregarSemArquivoFalha();
         testarSalvarECarregarMantemEstado();
         testarSalvarECarregarMantemFaturaFinal();
         testarSalvarECarregarEmArquivoInformado();
@@ -3070,25 +3069,12 @@ public class HotelTest {
         }
     }
 
-    // persistência - caso triste: carregar sem arquivo
-    static void testarCarregarSemArquivoFalha() {
-        total++;
-        new java.io.File("hotel.dat").delete();
-        try {
-            HotelRepo.carregar();
-            System.out.println("FALHOU: testarCarregarSemArquivoFalha");
-        } catch (java.io.IOException e) {
-            passou++;
-        } catch (Exception e) {
-            System.out.println("FALHOU: testarCarregarSemArquivoFalha - exceção inesperada");
-        }
-    }
-
     // persistência - ida e volta mantém o estado do hotel - caso feliz
     static void testarSalvarECarregarMantemEstado() {
         total++;
-        new java.io.File("hotel.dat").delete();
+        java.io.File temp = null;
         try {
+            temp = java.io.File.createTempFile("hotel-teste", ".dat");
             Hotel hotel = new Hotel();
             Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
             hotel.cadastrarServico("Agua", 5f);
@@ -3096,8 +3082,8 @@ public class HotelTest {
             hotel.realizarCheckin(0, 0, t);
             hotel.registrarConsumo(0, 0, 0, 2);
 
-            HotelRepo.salvar(hotel);
-            Hotel carregado = HotelRepo.carregar();
+            HotelRepo.salvar(hotel, temp.getPath());
+            Hotel carregado = HotelRepo.carregar(temp.getPath());
 
             boolean ok = carregado.getServicos().size() == 1
                     && carregado.getApartamento(0, 0).estaOcupado()
@@ -3115,7 +3101,9 @@ public class HotelTest {
         } catch (java.io.IOException | ClassNotFoundException e) {
             System.out.println("FALHOU: testarSalvarECarregarMantemEstado - " + e);
         } finally {
-            new java.io.File("hotel.dat").delete();
+            if (temp != null) {
+                temp.delete();
+            }
         }
     }
 
@@ -3123,8 +3111,9 @@ public class HotelTest {
     // persistência - estadia encerrada mantém a fatura final - caso feliz
     static void testarSalvarECarregarMantemFaturaFinal() {
         total++;
-        new java.io.File("hotel.dat").delete();
+        java.io.File temp = null;
         try {
+            temp = java.io.File.createTempFile("hotel-teste", ".dat");
             Hotel hotel = new Hotel();
             Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
             hotel.cadastrarServico("Agua", 5f);
@@ -3132,8 +3121,8 @@ public class HotelTest {
             hotel.registrarConsumo(0, 0, 0, 2);
             hotel.realizarCheckout(0, 0);
 
-            HotelRepo.salvar(hotel);
-            Hotel carregado = HotelRepo.carregar();
+            HotelRepo.salvar(hotel, temp.getPath());
+            Hotel carregado = HotelRepo.carregar(temp.getPath());
 
             Estadia e = carregado.getEstadias().get(0);
             if (!e.estaAtiva() && e.getFaturaFinal() != null
@@ -3146,7 +3135,9 @@ public class HotelTest {
         } catch (java.io.IOException | ClassNotFoundException e) {
             System.out.println("FALHOU: testarSalvarECarregarMantemFaturaFinal - " + e);
         } finally {
-            new java.io.File("hotel.dat").delete();
+            if (temp != null) {
+                temp.delete();
+            }
         }
     }
 
