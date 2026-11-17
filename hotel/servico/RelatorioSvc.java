@@ -44,8 +44,62 @@ public class RelatorioSvc {
         }
     }
 
+    /**
+     * imprime o ranking dos serviços mais consumidos, em ordem decrescente de
+     * quantidade, somando os consumos de todas as estadias (ativas e encerradas).
+     *
+     * @pre hotel não nulo
+     * @post o ranking é impresso na tela; estado do hotel inalterado
+     */
     public void gerarRankingServicos() {
-        throw new UnsupportedOperationException("Implementar ranking de servicos");
+        List<Servico> servicos = hotel.getServicos();
+        List<Estadia> estadias = hotel.getEstadias();
+        int n = servicos.size();
+        int[] quantidades = new int[n];
+
+        // soma as quantidades consumidas de cada serviço do cardápio
+        for (int i = 0; i < estadias.size(); i++) {
+            List<Consumo> consumos = estadias.get(i).getConsumos();
+            for (int j = 0; j < consumos.size(); j++) {
+                Consumo c = consumos.get(j);
+                for (int k = 0; k < n; k++) {
+                    if (servicos.get(k) == c.getServico()) {
+                        quantidades[k] += c.getQuantidade();
+                    }
+                }
+            }
+        }
+
+        // ordena os índices dos serviços por quantidade, do maior para o menor
+        int[] ordem = new int[n];
+        for (int i = 0; i < n; i++) {
+            ordem[i] = i;
+        }
+        for (int i = 0; i < n - 1; i++) {
+            int maior = i;
+            for (int j = i + 1; j < n; j++) {
+                if (quantidades[ordem[j]] > quantidades[ordem[maior]]) {
+                    maior = j;
+                }
+            }
+            int aux = ordem[i];
+            ordem[i] = ordem[maior];
+            ordem[maior] = aux;
+        }
+
+        System.out.println("\n--- RANKING DE SERVICOS ---");
+        int posicao = 0;
+        for (int i = 0; i < n; i++) {
+            int qtd = quantidades[ordem[i]];
+            if (qtd > 0) {
+                posicao++;
+                System.out.println(posicao + ". " + servicos.get(ordem[i]).getNome() + ": "
+                        + qtd + (qtd == 1 ? " unidade" : " unidades"));
+            }
+        }
+        if (posicao == 0) {
+            System.out.println("Nenhum consumo registrado");
+        }
     }
 
     public void gerarResumoFinanceiro() {
