@@ -15,6 +15,12 @@ public class Hotel implements java.io.Serializable {
     private List<Estadia> estadias;
     private List<Reserva> reservas;
 
+    /**
+     * Cria o Hotel.
+     *
+     * @pre nenhuma
+     * @post Hotel criado com lista de estadias, reservas e servicos
+     */
     public Hotel() {
         this.matriz = new Apartamento[NUM_ANDARES][APTOS_POR_ANDAR];
         this.servicos = new ArrayList<>();
@@ -176,6 +182,7 @@ public class Hotel implements java.io.Serializable {
      * @param numero O número do apartamento no andar especificado
      * @return true se o cancelamento foi bem-sucedido, ou false se o quarto não estava reservado (ex: estava livre ou ocupado)
      * @throws IllegalArgumentException Se as coordenadas do andar ou número estiverem fora dos limites do hotel
+     * @throws IllegalStateException se o apartamento estiver reservado sem reserva ativa
      * @pre as coordenadas informadas devem ser válidas e pertencer à matriz do hotel
      * @post se a operação for bem-sucedida, o estado do apartamento passa de RESERVADO para LIVRE e a reserva é removida; caso contrário, o estado é mantido
      */
@@ -392,7 +399,7 @@ public class Hotel implements java.io.Serializable {
         if (estadia == null) {
             throw new IllegalStateException("Apartamento sem estadia ativa");
         }
-        return new Fatura(estadia);
+        return estadia.gerarFatura();
     }
 
     /**
@@ -412,12 +419,36 @@ public class Hotel implements java.io.Serializable {
         return matriz[andar][numero];
     }
 
+    /**
+     * Recupera a lista de servicos do hotel
+     * 
+     * @return A lista de Serviços do hotel.
+     * 
+     * @pre nenhum
+     * @post nenhuma mudança de estado
+     */    
     public List<Servico> getServicos() { return servicos; }
     
+    /**
+     * Recupera a lista de estadias do hotel
+     * 
+     * @return A lista de estadias do hotel.
+     * 
+     * @pre nenhum
+     * @post nenhuma mudança de estado
+     */    
     public List<Estadia> getEstadias() {
         return Collections.unmodifiableList(estadias);
     }
  
+    /**
+     * Recupera a lista de reservas do hotel
+     * 
+     * @return A lista de reservas do hotel.
+     * 
+     * @pre nenhum
+     * @post nenhuma mudança de estado
+     */    
     public List<Reserva> getReservas() {
         return Collections.unmodifiableList(reservas);
     }

@@ -6,7 +6,13 @@ import java.util.*;
 
 public class RelatorioSvc {
     private Hotel hotel;
-
+    
+    /**
+     * Cria uma instância do serviço de relatórios.
+     *
+     * @pre Hotel criado com lista de estadias, reservas e servicos
+     * @post Serviço de relatórios do hotel
+     */
     public RelatorioSvc(Hotel hotel) {
         this.hotel = hotel;
     }
@@ -117,7 +123,7 @@ public class RelatorioSvc {
         for (int i = 0; i < estadias.size(); i++) {
             Estadia e = estadias.get(i);
             if (e.estaAtiva()) {
-                ativas += new Fatura(e).getTotalGeral();
+                ativas += e.gerarFatura().getTotalGeral();
             }
             else {
                 encerradas += e.getFaturaFinal().getTotalGeral();

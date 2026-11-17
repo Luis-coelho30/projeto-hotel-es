@@ -9,43 +9,29 @@ public class Fatura implements java.io.Serializable {
     private List<Consumo> consumos;
 
     /**
-     * Cria a fatura parcial de uma estadia ativa.
+     * Cria uma fatura a partir de valores já conhecidos, sem depender de Estadia.
      *
-     * @param estadia estadia a ser faturada, não pode ser nula
-     * @throws IllegalArgumentException se a estadia for nula
-     * @throws IllegalStateException se a estadia já estiver encerrada
+     * @param dias quantidade de dias, deve ser pelo menos 1
+     * @param valorDiaria valor da diária, não pode ser negativo
+     * @param consumos consumos faturados, não pode ser nulo
+     * @throws IllegalArgumentException se dias for menor que 1, se valorDiaria for negativo ou se consumos for nulo
      *
-     * @pre estadia ativa
-     * @post fatura criada com os dias, a diária e os consumos da estadia
+     * @pre (nenhuma)
+     * @post fatura criada com uma cópia da lista de consumos
      */
-    public Fatura(Estadia estadia) {
-        this(estadia, true);
-    }
-
-    /**
-     * Cria a fatura final de uma estadia. Usada apenas pela própria Estadia, logo depois de definir a data de encerramento.
-     *
-     * @param estadia estadia encerrada, não pode ser nula
-     * @return fatura final da estadia
-     * @throws IllegalArgumentException se a estadia for nula
-     *
-     * @pre dataFim da estadia já definida
-     * @post fatura criada com os dias, a diária e os consumos da estadia
-     */
-    static Fatura finalDe(Estadia estadia) {
-        return new Fatura(estadia, false);
-    }
-
-    private Fatura(Estadia estadia, boolean parcial) {
-        if (estadia == null) {
-            throw new IllegalArgumentException("estadia da fatura não pode ser nula");
+    public Fatura(int dias, float valorDiaria, List<Consumo> consumos) {
+        if (dias < 1) {
+            throw new IllegalArgumentException("dias da fatura deve ser pelo menos 1");
         }
-        if (parcial && !estadia.estaAtiva()) {
-            throw new IllegalStateException("estadia encerrada não pode ser faturada");
+        if (valorDiaria < 0) {
+            throw new IllegalArgumentException("valor da diária não pode ser negativo");
         }
-        this.dias = estadia.getDias();
-        this.valorDiaria = estadia.getValorDiaria();
-        this.consumos = new ArrayList<>(estadia.getConsumos());
+        if (consumos == null) {
+            throw new IllegalArgumentException("consumos da fatura não pode ser nulo");
+        }
+        this.dias = dias;
+        this.valorDiaria = valorDiaria;
+        this.consumos = new ArrayList<>(consumos);
     }
 
     /**

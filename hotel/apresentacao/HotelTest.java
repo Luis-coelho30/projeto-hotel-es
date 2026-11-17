@@ -22,6 +22,12 @@ public class HotelTest {
         testarCadastroTitularEnderecoNull();
         testarCadastroTitularCelularNull();
         testarCadastroTitularEmailNull();
+        testarCadastroTitularCpfVazio();
+        testarCadastroTitularNomeVazio();
+        testarCadastroTitularEnderecoVazio();
+        testarCadastroTitularCelularVazio();
+        testarCadastroTitularEmailVazio();
+        testarCadastroTitularSoEspacosFalha();
         testarEqualsTitularValido();
         testarEqualsTitularDistinto();
         testarEqualsTitularNull();
@@ -158,7 +164,6 @@ public class HotelTest {
         testarEstadiaGuardaValorDiaria();
         testarCheckinGuardaDiariaDoApartamento();
 
-        testarFaturaDeEstadiaNulaFalha();
         testarFaturaDeEstadiaEncerradaFalha();
         testarFaturaDeEstadiaTotalDiarias();
         testarFaturaDeEstadiaComConsumos();
@@ -170,9 +175,22 @@ public class HotelTest {
         testarEncerrarGeraFaturaFinalComDias();
         testarEncerrarComDataGeraFaturaFinalComDias();
 
-        testarCarregarSemArquivoFalha();
+        testarGerarFaturaEstadiaAtiva();
+        testarGerarFaturaEstadiaEncerradaFalha();
+        testarGerarFaturaNaoAlteraEstadia();
+        testarFaturaPorValoresValida();
+        testarFaturaPorValoresDiasMenorQueUmFalha();
+        testarFaturaPorValoresDiariaNegativaFalha();
+        testarFaturaPorValoresConsumosNulosFalha();
+        testarFaturaFinalTemOsConsumosDaEstadia();
+        testarConsumoAposEncerrarNaoAlteraFaturaFinal();
+        testarEncerrarFalhoNaoGeraFaturaFinal();
+
         testarSalvarECarregarMantemEstado();
         testarSalvarECarregarMantemFaturaFinal();
+        testarSalvarECarregarEmArquivoInformado();
+        testarCarregarArquivoInformadoInexistenteFalha();
+        testarSalvarEmCaminhoInvalidoFalha();
 
         testarRelatorioOcupacaoImprime();
 
@@ -298,6 +316,84 @@ public class HotelTest {
             passou++;
         } catch (Exception e) {
             System.out.println("FALHOU: testarCadastroTitularEmailNull - Excecao inesperada " + e.getMessage());
+        }
+    }
+
+    // titular - caso triste: cpf vazio
+    static void testarCadastroTitularCpfVazio() {
+        total++;
+        try {
+            new Titular("", "Joao", "Rua X", "9999", "joao@x");
+            System.out.println("FALHOU: testarCadastroTitularCpfVazio - campo vazio devia lancar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarCadastroTitularCpfVazio - Excecao inesperada " + ex.getMessage());
+        }
+    }
+
+    // titular - caso triste: nome vazio
+    static void testarCadastroTitularNomeVazio() {
+        total++;
+        try {
+            new Titular("123", "", "Rua X", "9999", "joao@x");
+            System.out.println("FALHOU: testarCadastroTitularNomeVazio - campo vazio devia lancar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarCadastroTitularNomeVazio - Excecao inesperada " + ex.getMessage());
+        }
+    }
+
+    // titular - caso triste: endereco vazio
+    static void testarCadastroTitularEnderecoVazio() {
+        total++;
+        try {
+            new Titular("123", "Joao", "", "9999", "joao@x");
+            System.out.println("FALHOU: testarCadastroTitularEnderecoVazio - campo vazio devia lancar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarCadastroTitularEnderecoVazio - Excecao inesperada " + ex.getMessage());
+        }
+    }
+
+    // titular - caso triste: celular vazio
+    static void testarCadastroTitularCelularVazio() {
+        total++;
+        try {
+            new Titular("123", "Joao", "Rua X", "", "joao@x");
+            System.out.println("FALHOU: testarCadastroTitularCelularVazio - campo vazio devia lancar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarCadastroTitularCelularVazio - Excecao inesperada " + ex.getMessage());
+        }
+    }
+
+    // titular - caso triste: email vazio
+    static void testarCadastroTitularEmailVazio() {
+        total++;
+        try {
+            new Titular("123", "Joao", "Rua X", "9999", "");
+            System.out.println("FALHOU: testarCadastroTitularEmailVazio - campo vazio devia lancar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarCadastroTitularEmailVazio - Excecao inesperada " + ex.getMessage());
+        }
+    }
+
+    // titular - caso triste: campo só com espaços conta como vazio
+    static void testarCadastroTitularSoEspacosFalha() {
+        total++;
+        try {
+            new Titular("123", "   ", "Rua X", "9999", "joao@x");
+            System.out.println("FALHOU: testarCadastroTitularSoEspacosFalha - campo so com espacos devia lancar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarCadastroTitularSoEspacosFalha - Excecao inesperada " + ex.getMessage());
         }
     }
 
@@ -2653,19 +2749,6 @@ public class HotelTest {
         }
     }
 
-    // fatura de estadia - caso triste
-    static void testarFaturaDeEstadiaNulaFalha() {
-        total++;
-        try {
-            new Fatura((Estadia) null);
-            System.out.println("FALHOU: testarFaturaDeEstadiaNulaFalha");
-        } catch (IllegalArgumentException e) {
-            passou++;
-        } catch (Exception e) {
-            System.out.println("FALHOU: testarFaturaDeEstadiaNulaFalha - exceção inesperada");
-        }
-    }
-
     // fatura de estadia - caso triste: só estadia ativa pode ser faturada
     static void testarFaturaDeEstadiaEncerradaFalha() {
         total++;
@@ -2673,7 +2756,7 @@ public class HotelTest {
         Estadia e = new Estadia(0, 0, t, 150f);
         e.encerrar();
         try {
-            new Fatura(e);
+            e.gerarFatura();
             System.out.println("FALHOU: testarFaturaDeEstadiaEncerradaFalha");
         } catch (IllegalStateException ex) {
             passou++;
@@ -2687,7 +2770,7 @@ public class HotelTest {
         total++;
         Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
         Estadia e = new Estadia(0, 0, t, LocalDate.now().minusDays(3), 150f);
-        Fatura f = new Fatura(e);
+        Fatura f = e.gerarFatura();
         if (f.getDias() == 3 && f.getTotalDiarias() == 450f) {
             passou++;
         }
@@ -2703,7 +2786,7 @@ public class HotelTest {
         Estadia e = new Estadia(0, 0, t, LocalDate.now().minusDays(3), 150f);
         e.registrarConsumo(new Consumo(new Servico("Agua", 10f), 3));    // 30
         e.registrarConsumo(new Consumo(new Servico("Jantar", 20f), 3));  // 60
-        Fatura f = new Fatura(e);
+        Fatura f = e.gerarFatura();
         if (f.getTotalConsumos() == 90f && f.getTotalGeral() == 540f) {
             passou++;
         }
@@ -2716,7 +2799,7 @@ public class HotelTest {
     static void testarFaturaDeEstadiaSemConsumos() {
         total++;
         Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
-        Fatura f = new Fatura(new Estadia(0, 0, t, 150f));
+        Fatura f = new Estadia(0, 0, t, 150f).gerarFatura();
         if (f.getTotalConsumos() == 0f) {
             passou++;
         }
@@ -2809,25 +2892,189 @@ public class HotelTest {
         }
     }
 
-    // persistência - caso triste: carregar sem arquivo
-    static void testarCarregarSemArquivoFalha() {
+
+    // Estadia.gerarFatura - caso feliz (estadia ativa, 3 dias, 1 consumo)
+    static void testarGerarFaturaEstadiaAtiva() {
         total++;
-        new java.io.File("hotel.dat").delete();
         try {
-            HotelRepo.carregar();
-            System.out.println("FALHOU: testarCarregarSemArquivoFalha");
-        } catch (java.io.IOException e) {
+            Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+            Estadia e = new Estadia(0, 0, t, LocalDate.now().minusDays(3), 150f);
+            e.registrarConsumo(new Consumo(new Servico("Agua", 10f), 3)); // 30
+            Fatura f = e.gerarFatura();
+            if (f != null && f.getDias() == 3 && f.getTotalDiarias() == 450f
+                    && f.getTotalConsumos() == 30f && f.getTotalGeral() == 480f
+                    && f.getConsumos().size() == 1) {
+                passou++;
+            }
+            else {
+                System.out.println("FALHOU: testarGerarFaturaEstadiaAtiva - valores incorretos");
+            }
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarGerarFaturaEstadiaAtiva - exceção inesperada: " + ex);
+        }
+    }
+
+    // Estadia.gerarFatura - caso triste (estadia encerrada)
+    static void testarGerarFaturaEstadiaEncerradaFalha() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, 150f);
+        e.encerrar();
+        try {
+            e.gerarFatura();
+            System.out.println("FALHOU: testarGerarFaturaEstadiaEncerradaFalha - devia lançar IllegalStateException");
+        } catch (IllegalStateException ex) {
             passou++;
-        } catch (Exception e) {
-            System.out.println("FALHOU: testarCarregarSemArquivoFalha - exceção inesperada");
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarGerarFaturaEstadiaEncerradaFalha - exceção inesperada: " + ex);
+        }
+    }
+
+    // Estadia.gerarFatura - fatura parcial não encerra a estadia nem vira fatura final
+    static void testarGerarFaturaNaoAlteraEstadia() {
+        total++;
+        try {
+            Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+            Estadia e = new Estadia(0, 0, t, 150f);
+            e.gerarFatura();
+            if (e.estaAtiva() && e.getFaturaFinal() == null) {
+                passou++;
+            }
+            else {
+                System.out.println("FALHOU: testarGerarFaturaNaoAlteraEstadia");
+            }
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarGerarFaturaNaoAlteraEstadia - exceção inesperada: " + ex);
+        }
+    }
+
+    // Fatura(dias, valorDiaria, consumos) - caso feliz
+    static void testarFaturaPorValoresValida() {
+        total++;
+        try {
+            java.util.List<Consumo> consumos = new ArrayList<>();
+            consumos.add(new Consumo(new Servico("Agua", 10f), 2)); // 20
+            Fatura f = new Fatura(2, 150f, consumos);
+            if (f.getDias() == 2 && f.getTotalDiarias() == 300f
+                    && f.getTotalConsumos() == 20f && f.getTotalGeral() == 320f) {
+                passou++;
+            }
+            else {
+                System.out.println("FALHOU: testarFaturaPorValoresValida - valores incorretos");
+            }
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarFaturaPorValoresValida - exceção inesperada: " + ex);
+        }
+    }
+
+    // Fatura(dias, valorDiaria, consumos) - caso triste (dias menor que 1)
+    static void testarFaturaPorValoresDiasMenorQueUmFalha() {
+        total++;
+        try {
+            new Fatura(0, 150f, new ArrayList<>());
+            System.out.println("FALHOU: testarFaturaPorValoresDiasMenorQueUmFalha - devia lançar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarFaturaPorValoresDiasMenorQueUmFalha - exceção inesperada: " + ex);
+        }
+    }
+
+    // Fatura(dias, valorDiaria, consumos) - caso triste (diária negativa)
+    static void testarFaturaPorValoresDiariaNegativaFalha() {
+        total++;
+        try {
+            new Fatura(1, -1f, new ArrayList<>());
+            System.out.println("FALHOU: testarFaturaPorValoresDiariaNegativaFalha - devia lançar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarFaturaPorValoresDiariaNegativaFalha - exceção inesperada: " + ex);
+        }
+    }
+
+    // Fatura(dias, valorDiaria, consumos) - caso triste (lista de consumos nula)
+    static void testarFaturaPorValoresConsumosNulosFalha() {
+        total++;
+        try {
+            new Fatura(1, 150f, null);
+            System.out.println("FALHOU: testarFaturaPorValoresConsumosNulosFalha - devia lançar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarFaturaPorValoresConsumosNulosFalha - exceção inesperada: " + ex);
+        }
+    }
+
+    // invariante - estadia encerrada: a fatura final contém todos os consumos da estadia
+    static void testarFaturaFinalTemOsConsumosDaEstadia() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, 150f);
+        e.registrarConsumo(new Consumo(new Servico("Agua", 10f), 3));
+        e.registrarConsumo(new Consumo(new Servico("Jantar", 20f), 2));
+        e.encerrar();
+        Fatura f = e.getFaturaFinal();
+        if (f != null && f.getConsumos().size() == e.getConsumos().size()
+                && f.getTotalConsumos() == e.getTotalConsumos()) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarFaturaFinalTemOsConsumosDaEstadia");
+        }
+    }
+
+    // invariante - consumo em estadia encerrada é recusado e a fatura final não muda
+    static void testarConsumoAposEncerrarNaoAlteraFaturaFinal() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, 150f);
+        e.registrarConsumo(new Consumo(new Servico("Agua", 10f), 3));
+        e.encerrar();
+        Fatura f = e.getFaturaFinal();
+        float totalAntes = f.getTotalGeral();
+        try {
+            e.registrarConsumo(new Consumo(new Servico("Jantar", 20f), 1));
+            System.out.println("FALHOU: testarConsumoAposEncerrarNaoAlteraFaturaFinal - devia lançar IllegalStateException");
+        } catch (IllegalStateException ex) {
+            if (e.getFaturaFinal() == f && f.getTotalGeral() == totalAntes
+                    && f.getConsumos().size() == 1) {
+                passou++;
+            }
+            else {
+                System.out.println("FALHOU: testarConsumoAposEncerrarNaoAlteraFaturaFinal - fatura foi alterada");
+            }
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarConsumoAposEncerrarNaoAlteraFaturaFinal - exceção inesperada: " + ex);
+        }
+    }
+
+    // invariante (atomicidade) - encerrar que falha deixa a estadia ativa e sem fatura final
+    static void testarEncerrarFalhoNaoGeraFaturaFinal() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, LocalDate.of(2026, 11, 10), 150f);
+        try {
+            e.encerrar(LocalDate.of(2026, 11, 1)); // anterior ao início
+            System.out.println("FALHOU: testarEncerrarFalhoNaoGeraFaturaFinal - devia lançar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            if (e.estaAtiva() && e.getFaturaFinal() == null && e.getDataFim() == null) {
+                passou++;
+            }
+            else {
+                System.out.println("FALHOU: testarEncerrarFalhoNaoGeraFaturaFinal - estado ficou inconsistente");
+            }
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarEncerrarFalhoNaoGeraFaturaFinal - exceção inesperada: " + ex);
         }
     }
 
     // persistência - ida e volta mantém o estado do hotel - caso feliz
     static void testarSalvarECarregarMantemEstado() {
         total++;
-        new java.io.File("hotel.dat").delete();
+        java.io.File temp = null;
         try {
+            temp = java.io.File.createTempFile("hotel-teste", ".dat");
             Hotel hotel = new Hotel();
             Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
             hotel.cadastrarServico("Agua", 5f);
@@ -2835,8 +3082,8 @@ public class HotelTest {
             hotel.realizarCheckin(0, 0, t);
             hotel.registrarConsumo(0, 0, 0, 2);
 
-            HotelRepo.salvar(hotel);
-            Hotel carregado = HotelRepo.carregar();
+            HotelRepo.salvar(hotel, temp.getPath());
+            Hotel carregado = HotelRepo.carregar(temp.getPath());
 
             boolean ok = carregado.getServicos().size() == 1
                     && carregado.getApartamento(0, 0).estaOcupado()
@@ -2854,7 +3101,9 @@ public class HotelTest {
         } catch (java.io.IOException | ClassNotFoundException e) {
             System.out.println("FALHOU: testarSalvarECarregarMantemEstado - " + e);
         } finally {
-            new java.io.File("hotel.dat").delete();
+            if (temp != null) {
+                temp.delete();
+            }
         }
     }
 
@@ -2862,8 +3111,9 @@ public class HotelTest {
     // persistência - estadia encerrada mantém a fatura final - caso feliz
     static void testarSalvarECarregarMantemFaturaFinal() {
         total++;
-        new java.io.File("hotel.dat").delete();
+        java.io.File temp = null;
         try {
+            temp = java.io.File.createTempFile("hotel-teste", ".dat");
             Hotel hotel = new Hotel();
             Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
             hotel.cadastrarServico("Agua", 5f);
@@ -2871,8 +3121,8 @@ public class HotelTest {
             hotel.registrarConsumo(0, 0, 0, 2);
             hotel.realizarCheckout(0, 0);
 
-            HotelRepo.salvar(hotel);
-            Hotel carregado = HotelRepo.carregar();
+            HotelRepo.salvar(hotel, temp.getPath());
+            Hotel carregado = HotelRepo.carregar(temp.getPath());
 
             Estadia e = carregado.getEstadias().get(0);
             if (!e.estaAtiva() && e.getFaturaFinal() != null
@@ -2885,7 +3135,73 @@ public class HotelTest {
         } catch (java.io.IOException | ClassNotFoundException e) {
             System.out.println("FALHOU: testarSalvarECarregarMantemFaturaFinal - " + e);
         } finally {
-            new java.io.File("hotel.dat").delete();
+            if (temp != null) {
+                temp.delete();
+            }
+        }
+    }
+
+
+    // persistência em arquivo informado - caso feliz: ida e volta, sem mexer no hotel.dat
+    static void testarSalvarECarregarEmArquivoInformado() {
+        total++;
+        java.io.File padrao = new java.io.File("hotel.dat");
+        boolean existiaAntes = padrao.exists();
+        long tamanhoAntes = padrao.length();
+        java.io.File temp = null;
+        try {
+            temp = java.io.File.createTempFile("hotel-teste", ".dat");
+            Hotel hotel = new Hotel();
+            Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+            hotel.reservarApartamento(0, 1, t);
+
+            HotelRepo.salvar(hotel, temp.getPath());
+            Hotel carregado = HotelRepo.carregar(temp.getPath());
+
+            boolean ok = carregado.getApartamento(0, 1).estaReservado()
+                    && carregado.getReservas().size() == 1
+                    && padrao.exists() == existiaAntes
+                    && padrao.length() == tamanhoAntes;
+            if (ok) {
+                passou++;
+            }
+            else {
+                System.out.println("FALHOU: testarSalvarECarregarEmArquivoInformado - estado diferente ou hotel.dat alterado");
+            }
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarSalvarECarregarEmArquivoInformado - exceção inesperada: " + e);
+        } finally {
+            if (temp != null) {
+                temp.delete();
+            }
+        }
+    }
+
+    // persistência em arquivo informado - caso triste: carregar de arquivo inexistente
+    static void testarCarregarArquivoInformadoInexistenteFalha() {
+        total++;
+        java.io.File inexistente = new java.io.File(System.getProperty("java.io.tmpdir"), "hotel-inexistente-" + System.nanoTime() + ".dat");
+        try {
+            HotelRepo.carregar(inexistente.getPath());
+            System.out.println("FALHOU: testarCarregarArquivoInformadoInexistenteFalha - devia lançar IOException");
+        } catch (java.io.IOException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCarregarArquivoInformadoInexistenteFalha - exceção inesperada: " + e);
+        }
+    }
+
+    // persistência em arquivo informado - caso triste: salvar em diretório que não existe
+    static void testarSalvarEmCaminhoInvalidoFalha() {
+        total++;
+        java.io.File invalido = new java.io.File(System.getProperty("java.io.tmpdir"), "pasta-inexistente-" + System.nanoTime() + "/hotel.dat");
+        try {
+            HotelRepo.salvar(new Hotel(), invalido.getPath());
+            System.out.println("FALHOU: testarSalvarEmCaminhoInvalidoFalha - devia lançar IOException");
+        } catch (java.io.IOException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarSalvarEmCaminhoInvalidoFalha - exceção inesperada: " + e);
         }
     }
 

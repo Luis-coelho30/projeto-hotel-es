@@ -15,7 +15,10 @@ public class Titular implements java.io.Serializable {
      * @param endereco Endereço do Titular
      * @param celular Número de celular do Titular
      * @param email Endereço de email do Titular
-     * @throws IllegalArgumentException se algum dos campos for null
+     * @throws IllegalArgumentException se algum dos campos for nulo, vazio ou só com espaços
+     * 
+     * @pre cpf, nome, endereco, celular e email não nulos nem vazios
+     * @post Titular criado com os cinco campos preenchidos
      */
     public Titular(String cpf, String nome, String endereco, String celular, String email) {
         this.cpf = validarCampo(cpf, "CPF");
@@ -29,6 +32,9 @@ public class Titular implements java.io.Serializable {
      * Retorna o CPF do Titular
      * 
      * @return O CPF do Titular
+     * 
+     * @pre Titular criado 
+     * @post Estado do Titular inalterado
      */
     public String getCpf() { return cpf; }
     
@@ -36,6 +42,8 @@ public class Titular implements java.io.Serializable {
      * Retorna o nome do Titular
      * 
      * @return O Nome do Titular
+     * @pre Titular criado
+     * @post Estado do Titular inalterado
      */
     public String getNome() { return nome; }
     
@@ -43,6 +51,9 @@ public class Titular implements java.io.Serializable {
      * Retorna o endereço do Titular
      * 
      * @return O Endereço do Titular
+     * 
+     * @pre Titular criado
+     * @post Estado do Titular inalterado
      */
     public String getEndereco() { return endereco; }
     
@@ -50,6 +61,9 @@ public class Titular implements java.io.Serializable {
      * Retorna o celular do Titular
      * 
      * @return O Celular do Titular
+     * 
+     * @pre Titular criado
+     * @post Estado do Titular inalterado
      */
     public String getCelular() { return celular; }
     
@@ -57,6 +71,9 @@ public class Titular implements java.io.Serializable {
      * Retorna o email do Titular
      * 
      * @return O Email do Titular
+     * 
+     * @pre Titular criado
+     * @post Estado do Titular inalterado
      */
     public String getEmail() { return email; }
 
@@ -64,6 +81,9 @@ public class Titular implements java.io.Serializable {
      * Retorna uma representação em texto do Titular, contendo seu nome e CPF
      * 
      * @return Nome e CPF do Titular
+     * 
+     * @pre Titular criado
+     * @post Estado do Titular inalterado
      */
     @Override
     public String toString() {
@@ -76,6 +96,9 @@ public class Titular implements java.io.Serializable {
      * @param obj Objeto a ser comparado
      * @return true se o objeto for um Titular com o mesmo CPF;
      *         false caso o contrário
+     * 
+     * @pre Titular criado; obj pode ser null
+     * @post Estado do Titular inalterado
      */
     @Override 
     public boolean equals(Object obj) {
@@ -95,6 +118,9 @@ public class Titular implements java.io.Serializable {
      * Retorna o código hash desta instância com base no CPF
      * 
      * @return Código hash baseado no CPF
+     * 
+     * @pre Titular criado
+     * @post Estado do Titular inalterado; titulares com o mesmo CPF têm o mesmo hash
      */
     @Override
     public int hashCode() {
@@ -102,17 +128,19 @@ public class Titular implements java.io.Serializable {
     }
 
     /**
-     * Valida um campo de texto, verificando se ele não é nulo e retornando seu valor
+     * Valida um campo de texto, verificando se ele não é nulo nem vazio (ou só com espaços) e retornando seu valor
      * 
      * @param valor Valor do campo a ser validado
      * @param campo Nome do campo, utilizado na mensagem de erro
      * @return O valor validado
-     * @throws IllegalArgumentException se o valor for nulo
+     * @throws IllegalArgumentException se o valor for nulo, vazio ou só com espaços
      */
     private String validarCampo(String valor, String campo) {
         if (valor == null)
             throw new IllegalArgumentException(campo + " nao pode ser nulo");
-        
+        if (valor.isBlank())
+            throw new IllegalArgumentException(campo + " nao pode ser vazio");
+
         return valor;
     }
 }

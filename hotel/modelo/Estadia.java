@@ -49,7 +49,8 @@ public class Estadia implements java.io.Serializable {
      * @param andar Andar do apartamento
      * @param numero Número do apartamento
      * @param titular Titular associado à estadia
-     * @throws IllegalArgumentException se titular for nulo
+     * @param valorDiaria valor da diária
+     * @throws IllegalArgumentException se titular for nulo ou se valorDiaria for negativo
      *
      * @pre Titular não nulo; coordenadas já validadas pelo Hotel
      * @post Estadia criada ativa, com dataInicio igual à data atual, sem consumos
@@ -185,8 +186,26 @@ public class Estadia implements java.io.Serializable {
         if (dataFim.isBefore(this.dataInicio)) {
             throw new IllegalArgumentException("Data de fim anterior a data de inicio");
         }
+        // monta a fatura antes de alterar o estado: se falhar, a estadia continua ativa
+        Fatura fatura = new Fatura(diasAte(dataFim), this.valorDiaria, this.consumos);
         this.dataFim = dataFim;
-        this.faturaFinal = Fatura.finalDe(this);
+        this.faturaFinal = fatura;
+    }
+
+    /**
+     * Gera a fatura parcial da estadia ativa, sem alterar o estado da estadia.
+     *
+     * @return fatura com os dias até hoje, a diária e os consumos registrados
+     * @throws IllegalStateException se a estadia já estiver encerrada
+     *
+     * @pre Estadia ativa
+     * @post Estado da estadia inalterado
+     */
+    public Fatura gerarFatura() {
+        if (!estaAtiva()) {
+            throw new IllegalStateException("Estadia encerrada nao pode ser faturada");
+        }
+        return new Fatura(getDias(), this.valorDiaria, this.consumos);
     }
 
     /**
@@ -223,6 +242,10 @@ public class Estadia implements java.io.Serializable {
         if (estaAtiva()) {
             fim = LocalDate.now();
         }
+        return diasAte(fim);
+    }
+
+    private int diasAte(LocalDate fim) {
         long dias = ChronoUnit.DAYS.between(this.dataInicio, fim);
         return Math.toIntExact(Math.max(1, dias));
     }
