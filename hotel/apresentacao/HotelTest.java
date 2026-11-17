@@ -4,6 +4,7 @@ import hotel.modelo.*;
 import hotel.negocio.Hotel;
 import java.util.ArrayList;
 import java.time.LocalDate;
+import hotel.repositorio.HotelRepo;
 
 public class HotelTest {
     private static int passou = 0;
@@ -167,6 +168,10 @@ public class HotelTest {
         testarCheckoutGeraFaturaFinal();
         testarEncerrarGeraFaturaFinalComDias();
         testarEncerrarComDataGeraFaturaFinalComDias();
+
+        testarCarregarSemArquivoFalha();
+        testarSalvarECarregarMantemEstado();
+        testarSalvarECarregarMantemFaturaFinal();
 
         System.out.println(passou + "/" + total + " testes passaram");
     }
@@ -2794,6 +2799,85 @@ public class HotelTest {
         }
         else {
             System.out.println("FALHOU: testarEncerrarComDataGeraFaturaFinalComDias");
+        }
+    }
+
+    // persistência - caso triste: carregar sem arquivo
+    static void testarCarregarSemArquivoFalha() {
+        total++;
+        new java.io.File("hotel.dat").delete();
+        try {
+            HotelRepo.carregar();
+            System.out.println("FALHOU: testarCarregarSemArquivoFalha");
+        } catch (java.io.IOException e) {
+            passou++;
+        } catch (Exception e) {
+            System.out.println("FALHOU: testarCarregarSemArquivoFalha - exceção inesperada");
+        }
+    }
+
+    // persistência - ida e volta mantém o estado do hotel - caso feliz
+    static void testarSalvarECarregarMantemEstado() {
+        total++;
+        new java.io.File("hotel.dat").delete();
+        try {
+            Hotel hotel = new Hotel();
+            Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+            hotel.cadastrarServico("Agua", 5f);
+            hotel.reservarApartamento(0, 1, t);
+            hotel.realizarCheckin(0, 0, t);
+            hotel.registrarConsumo(0, 0, 0, 2);
+
+            HotelRepo.salvar(hotel);
+            Hotel carregado = HotelRepo.carregar();
+
+            boolean ok = carregado.getServicos().size() == 1
+                    && carregado.getApartamento(0, 0).estaOcupado()
+                    && carregado.getApartamento(0, 1).estaReservado()
+                    && carregado.getReservas().size() == 1
+                    && carregado.getEstadias().size() == 1
+                    && carregado.getEstadias().get(0).getTitular().equals(t)
+                    && carregado.emitirFatura(0, 0).getTotalConsumos() == 10f;
+            if (ok) {
+                passou++;
+            }
+            else {
+                System.out.println("FALHOU: testarSalvarECarregarMantemEstado - estado diferente");
+            }
+        } catch (java.io.IOException | ClassNotFoundException e) {
+            System.out.println("FALHOU: testarSalvarECarregarMantemEstado - " + e);
+        } finally {
+            new java.io.File("hotel.dat").delete();
+        }
+    }
+
+
+    // persistência - estadia encerrada mantém a fatura final - caso feliz
+    static void testarSalvarECarregarMantemFaturaFinal() {
+        total++;
+        new java.io.File("hotel.dat").delete();
+        try {
+            Hotel hotel = new Hotel();
+            Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+            hotel.cadastrarServico("Agua", 5f);
+            hotel.realizarCheckin(0, 0, t);
+            hotel.registrarConsumo(0, 0, 0, 2);
+            hotel.realizarCheckout(0, 0);
+
+            HotelRepo.salvar(hotel);
+            Hotel carregado = HotelRepo.carregar();
+
+            Estadia e = carregado.getEstadias().get(0);
+            if (!e.estaAtiva() && e.getFaturaFinal() != null
+                    && e.getFaturaFinal().getTotalGeral() == 160f) {
+                passou++;
+            } else {
+                System.out.println("FALHOU: testarSalvarECarregarMantemFaturaFinal");
+            }
+        } catch (java.io.IOException | ClassNotFoundException e) {
+            System.out.println("FALHOU: testarSalvarECarregarMantemFaturaFinal - " + e);
+        } finally {
+            new java.io.File("hotel.dat").delete();
         }
     }
 }
