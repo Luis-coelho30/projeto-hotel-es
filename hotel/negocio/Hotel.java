@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 
-public class Hotel {
+public class Hotel implements java.io.Serializable {
     public static final int NUM_ANDARES = 20;
     public static final int APTOS_POR_ANDAR = 14;
     public static final int SIMPLES_POR_ANDAR = 8;

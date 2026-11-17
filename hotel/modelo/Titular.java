@@ -1,6 +1,6 @@
 package hotel.modelo;
 
-public class Titular {
+public class Titular implements java.io.Serializable {
     private String cpf;
     private String nome;
     private String endereco;

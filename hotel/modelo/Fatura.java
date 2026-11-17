@@ -3,7 +3,7 @@ package hotel.modelo;
 import java.util.List;
 import java.util.ArrayList;
 
-public class Fatura {
+public class Fatura implements java.io.Serializable {
     private float valorDiaria;
     private int dias;
     private List<Consumo> consumos;

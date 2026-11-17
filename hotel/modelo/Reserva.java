@@ -1,6 +1,6 @@
 package hotel.modelo;
 
-public class Reserva {
+public class Reserva implements java.io.Serializable {
     private final int andar;
     private final int numero;
     private final Titular titular;

@@ -1,6 +1,6 @@
 package hotel.modelo;
 
-public class Consumo {
+public class Consumo implements java.io.Serializable {
     private Servico servico;
     private int quantidade;
 

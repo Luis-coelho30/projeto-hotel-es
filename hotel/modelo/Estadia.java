@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Estadia {
+public class Estadia implements java.io.Serializable {
     private final int andar;
     private final int numero;
     private final Titular titular;

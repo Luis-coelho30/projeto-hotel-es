@@ -1,6 +1,6 @@
 package hotel.modelo;
 
-public class Apartamento {
+public class Apartamento implements java.io.Serializable {
     private Status status;
 
     /**
