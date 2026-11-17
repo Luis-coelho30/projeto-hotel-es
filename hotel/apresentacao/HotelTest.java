@@ -170,6 +170,17 @@ public class HotelTest {
         testarEncerrarGeraFaturaFinalComDias();
         testarEncerrarComDataGeraFaturaFinalComDias();
 
+        testarGerarFaturaEstadiaAtiva();
+        testarGerarFaturaEstadiaEncerradaFalha();
+        testarGerarFaturaNaoAlteraEstadia();
+        testarFaturaPorValoresValida();
+        testarFaturaPorValoresDiasMenorQueUmFalha();
+        testarFaturaPorValoresDiariaNegativaFalha();
+        testarFaturaPorValoresConsumosNulosFalha();
+        testarFaturaFinalTemOsConsumosDaEstadia();
+        testarConsumoAposEncerrarNaoAlteraFaturaFinal();
+        testarEncerrarFalhoNaoGeraFaturaFinal();
+
         testarCarregarSemArquivoFalha();
         testarSalvarECarregarMantemEstado();
         testarSalvarECarregarMantemFaturaFinal();
@@ -2806,6 +2817,183 @@ public class HotelTest {
         }
         else {
             System.out.println("FALHOU: testarEncerrarComDataGeraFaturaFinalComDias");
+        }
+    }
+
+
+    // Estadia.gerarFatura - caso feliz (estadia ativa, 3 dias, 1 consumo)
+    static void testarGerarFaturaEstadiaAtiva() {
+        total++;
+        try {
+            Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+            Estadia e = new Estadia(0, 0, t, LocalDate.now().minusDays(3), 150f);
+            e.registrarConsumo(new Consumo(new Servico("Agua", 10f), 3)); // 30
+            Fatura f = e.gerarFatura();
+            if (f != null && f.getDias() == 3 && f.getTotalDiarias() == 450f
+                    && f.getTotalConsumos() == 30f && f.getTotalGeral() == 480f
+                    && f.getConsumos().size() == 1) {
+                passou++;
+            }
+            else {
+                System.out.println("FALHOU: testarGerarFaturaEstadiaAtiva - valores incorretos");
+            }
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarGerarFaturaEstadiaAtiva - exceção inesperada: " + ex);
+        }
+    }
+
+    // Estadia.gerarFatura - caso triste (estadia encerrada)
+    static void testarGerarFaturaEstadiaEncerradaFalha() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, 150f);
+        e.encerrar();
+        try {
+            e.gerarFatura();
+            System.out.println("FALHOU: testarGerarFaturaEstadiaEncerradaFalha - devia lançar IllegalStateException");
+        } catch (IllegalStateException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarGerarFaturaEstadiaEncerradaFalha - exceção inesperada: " + ex);
+        }
+    }
+
+    // Estadia.gerarFatura - fatura parcial não encerra a estadia nem vira fatura final
+    static void testarGerarFaturaNaoAlteraEstadia() {
+        total++;
+        try {
+            Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+            Estadia e = new Estadia(0, 0, t, 150f);
+            e.gerarFatura();
+            if (e.estaAtiva() && e.getFaturaFinal() == null) {
+                passou++;
+            }
+            else {
+                System.out.println("FALHOU: testarGerarFaturaNaoAlteraEstadia");
+            }
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarGerarFaturaNaoAlteraEstadia - exceção inesperada: " + ex);
+        }
+    }
+
+    // Fatura(dias, valorDiaria, consumos) - caso feliz
+    static void testarFaturaPorValoresValida() {
+        total++;
+        try {
+            java.util.List<Consumo> consumos = new ArrayList<>();
+            consumos.add(new Consumo(new Servico("Agua", 10f), 2)); // 20
+            Fatura f = new Fatura(2, 150f, consumos);
+            if (f.getDias() == 2 && f.getTotalDiarias() == 300f
+                    && f.getTotalConsumos() == 20f && f.getTotalGeral() == 320f) {
+                passou++;
+            }
+            else {
+                System.out.println("FALHOU: testarFaturaPorValoresValida - valores incorretos");
+            }
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarFaturaPorValoresValida - exceção inesperada: " + ex);
+        }
+    }
+
+    // Fatura(dias, valorDiaria, consumos) - caso triste (dias menor que 1)
+    static void testarFaturaPorValoresDiasMenorQueUmFalha() {
+        total++;
+        try {
+            new Fatura(0, 150f, new ArrayList<>());
+            System.out.println("FALHOU: testarFaturaPorValoresDiasMenorQueUmFalha - devia lançar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarFaturaPorValoresDiasMenorQueUmFalha - exceção inesperada: " + ex);
+        }
+    }
+
+    // Fatura(dias, valorDiaria, consumos) - caso triste (diária negativa)
+    static void testarFaturaPorValoresDiariaNegativaFalha() {
+        total++;
+        try {
+            new Fatura(1, -1f, new ArrayList<>());
+            System.out.println("FALHOU: testarFaturaPorValoresDiariaNegativaFalha - devia lançar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarFaturaPorValoresDiariaNegativaFalha - exceção inesperada: " + ex);
+        }
+    }
+
+    // Fatura(dias, valorDiaria, consumos) - caso triste (lista de consumos nula)
+    static void testarFaturaPorValoresConsumosNulosFalha() {
+        total++;
+        try {
+            new Fatura(1, 150f, null);
+            System.out.println("FALHOU: testarFaturaPorValoresConsumosNulosFalha - devia lançar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            passou++;
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarFaturaPorValoresConsumosNulosFalha - exceção inesperada: " + ex);
+        }
+    }
+
+    // invariante - estadia encerrada: a fatura final contém todos os consumos da estadia
+    static void testarFaturaFinalTemOsConsumosDaEstadia() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, 150f);
+        e.registrarConsumo(new Consumo(new Servico("Agua", 10f), 3));
+        e.registrarConsumo(new Consumo(new Servico("Jantar", 20f), 2));
+        e.encerrar();
+        Fatura f = e.getFaturaFinal();
+        if (f != null && f.getConsumos().size() == e.getConsumos().size()
+                && f.getTotalConsumos() == e.getTotalConsumos()) {
+            passou++;
+        }
+        else {
+            System.out.println("FALHOU: testarFaturaFinalTemOsConsumosDaEstadia");
+        }
+    }
+
+    // invariante - consumo em estadia encerrada é recusado e a fatura final não muda
+    static void testarConsumoAposEncerrarNaoAlteraFaturaFinal() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, 150f);
+        e.registrarConsumo(new Consumo(new Servico("Agua", 10f), 3));
+        e.encerrar();
+        Fatura f = e.getFaturaFinal();
+        float totalAntes = f.getTotalGeral();
+        try {
+            e.registrarConsumo(new Consumo(new Servico("Jantar", 20f), 1));
+            System.out.println("FALHOU: testarConsumoAposEncerrarNaoAlteraFaturaFinal - devia lançar IllegalStateException");
+        } catch (IllegalStateException ex) {
+            if (e.getFaturaFinal() == f && f.getTotalGeral() == totalAntes
+                    && f.getConsumos().size() == 1) {
+                passou++;
+            }
+            else {
+                System.out.println("FALHOU: testarConsumoAposEncerrarNaoAlteraFaturaFinal - fatura foi alterada");
+            }
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarConsumoAposEncerrarNaoAlteraFaturaFinal - exceção inesperada: " + ex);
+        }
+    }
+
+    // invariante (atomicidade) - encerrar que falha deixa a estadia ativa e sem fatura final
+    static void testarEncerrarFalhoNaoGeraFaturaFinal() {
+        total++;
+        Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
+        Estadia e = new Estadia(0, 0, t, LocalDate.of(2026, 11, 10), 150f);
+        try {
+            e.encerrar(LocalDate.of(2026, 11, 1)); // anterior ao início
+            System.out.println("FALHOU: testarEncerrarFalhoNaoGeraFaturaFinal - devia lançar IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            if (e.estaAtiva() && e.getFaturaFinal() == null && e.getDataFim() == null) {
+                passou++;
+            }
+            else {
+                System.out.println("FALHOU: testarEncerrarFalhoNaoGeraFaturaFinal - estado ficou inconsistente");
+            }
+        } catch (Exception ex) {
+            System.out.println("FALHOU: testarEncerrarFalhoNaoGeraFaturaFinal - exceção inesperada: " + ex);
         }
     }
 
