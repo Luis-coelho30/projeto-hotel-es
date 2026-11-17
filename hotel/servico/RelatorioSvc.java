@@ -123,7 +123,7 @@ public class RelatorioSvc {
         for (int i = 0; i < estadias.size(); i++) {
             Estadia e = estadias.get(i);
             if (e.estaAtiva()) {
-                ativas += new Fatura(e).getTotalGeral();
+                ativas += e.gerarFatura().getTotalGeral();
             }
             else {
                 encerradas += e.getFaturaFinal().getTotalGeral();

@@ -158,7 +158,6 @@ public class HotelTest {
         testarEstadiaGuardaValorDiaria();
         testarCheckinGuardaDiariaDoApartamento();
 
-        testarFaturaDeEstadiaNulaFalha();
         testarFaturaDeEstadiaEncerradaFalha();
         testarFaturaDeEstadiaTotalDiarias();
         testarFaturaDeEstadiaComConsumos();
@@ -2664,19 +2663,6 @@ public class HotelTest {
         }
     }
 
-    // fatura de estadia - caso triste
-    static void testarFaturaDeEstadiaNulaFalha() {
-        total++;
-        try {
-            new Fatura((Estadia) null);
-            System.out.println("FALHOU: testarFaturaDeEstadiaNulaFalha");
-        } catch (IllegalArgumentException e) {
-            passou++;
-        } catch (Exception e) {
-            System.out.println("FALHOU: testarFaturaDeEstadiaNulaFalha - exceção inesperada");
-        }
-    }
-
     // fatura de estadia - caso triste: só estadia ativa pode ser faturada
     static void testarFaturaDeEstadiaEncerradaFalha() {
         total++;
@@ -2684,7 +2670,7 @@ public class HotelTest {
         Estadia e = new Estadia(0, 0, t, 150f);
         e.encerrar();
         try {
-            new Fatura(e);
+            e.gerarFatura();
             System.out.println("FALHOU: testarFaturaDeEstadiaEncerradaFalha");
         } catch (IllegalStateException ex) {
             passou++;
@@ -2698,7 +2684,7 @@ public class HotelTest {
         total++;
         Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
         Estadia e = new Estadia(0, 0, t, LocalDate.now().minusDays(3), 150f);
-        Fatura f = new Fatura(e);
+        Fatura f = e.gerarFatura();
         if (f.getDias() == 3 && f.getTotalDiarias() == 450f) {
             passou++;
         }
@@ -2714,7 +2700,7 @@ public class HotelTest {
         Estadia e = new Estadia(0, 0, t, LocalDate.now().minusDays(3), 150f);
         e.registrarConsumo(new Consumo(new Servico("Agua", 10f), 3));    // 30
         e.registrarConsumo(new Consumo(new Servico("Jantar", 20f), 3));  // 60
-        Fatura f = new Fatura(e);
+        Fatura f = e.gerarFatura();
         if (f.getTotalConsumos() == 90f && f.getTotalGeral() == 540f) {
             passou++;
         }
@@ -2727,7 +2713,7 @@ public class HotelTest {
     static void testarFaturaDeEstadiaSemConsumos() {
         total++;
         Titular t = new Titular("123", "Joao", "Rua X", "9999", "joao@x");
-        Fatura f = new Fatura(new Estadia(0, 0, t, 150f));
+        Fatura f = new Estadia(0, 0, t, 150f).gerarFatura();
         if (f.getTotalConsumos() == 0f) {
             passou++;
         }

@@ -399,7 +399,7 @@ public class Hotel implements java.io.Serializable {
         if (estadia == null) {
             throw new IllegalStateException("Apartamento sem estadia ativa");
         }
-        return new Fatura(estadia);
+        return estadia.gerarFatura();
     }
 
     /**

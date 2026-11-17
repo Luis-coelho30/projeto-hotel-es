@@ -9,34 +9,6 @@ public class Fatura implements java.io.Serializable {
     private List<Consumo> consumos;
 
     /**
-     * Cria a fatura parcial de uma estadia ativa.
-     *
-     * @param estadia estadia a ser faturada, não pode ser nula
-     * @throws IllegalArgumentException se a estadia for nula
-     * @throws IllegalStateException se a estadia já estiver encerrada
-     *
-     * @pre estadia ativa
-     * @post fatura criada com os dias, a diária e os consumos da estadia
-     */
-    public Fatura(Estadia estadia) {
-        this(estadia, true);
-    }
-
-    /**
-     * Cria a fatura final de uma estadia. Usada apenas pela própria Estadia, logo depois de definir a data de encerramento.
-     *
-     * @param estadia estadia encerrada, não pode ser nula
-     * @return fatura final da estadia
-     * @throws IllegalArgumentException se a estadia for nula
-     *
-     * @pre dataFim da estadia já definida
-     * @post fatura criada com os dias, a diária e os consumos da estadia
-     */
-    static Fatura finalDe(Estadia estadia) {
-        return new Fatura(estadia, false);
-    }
-
-    /**
      * Cria uma fatura a partir de valores já conhecidos, sem depender de Estadia.
      *
      * @param dias quantidade de dias, deve ser pelo menos 1
@@ -60,18 +32,6 @@ public class Fatura implements java.io.Serializable {
         this.dias = dias;
         this.valorDiaria = valorDiaria;
         this.consumos = new ArrayList<>(consumos);
-    }
-
-    private Fatura(Estadia estadia, boolean parcial) {
-        if (estadia == null) {
-            throw new IllegalArgumentException("estadia da fatura não pode ser nula");
-        }
-        if (parcial && !estadia.estaAtiva()) {
-            throw new IllegalStateException("estadia encerrada não pode ser faturada");
-        }
-        this.dias = estadia.getDias();
-        this.valorDiaria = estadia.getValorDiaria();
-        this.consumos = new ArrayList<>(estadia.getConsumos());
     }
 
     /**

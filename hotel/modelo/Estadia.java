@@ -186,8 +186,10 @@ public class Estadia implements java.io.Serializable {
         if (dataFim.isBefore(this.dataInicio)) {
             throw new IllegalArgumentException("Data de fim anterior a data de inicio");
         }
+        // monta a fatura antes de alterar o estado: se falhar, a estadia continua ativa
+        Fatura fatura = new Fatura(diasAte(dataFim), this.valorDiaria, this.consumos);
         this.dataFim = dataFim;
-        this.faturaFinal = Fatura.finalDe(this);
+        this.faturaFinal = fatura;
     }
 
     /**
@@ -240,6 +242,10 @@ public class Estadia implements java.io.Serializable {
         if (estaAtiva()) {
             fim = LocalDate.now();
         }
+        return diasAte(fim);
+    }
+
+    private int diasAte(LocalDate fim) {
         long dias = ChronoUnit.DAYS.between(this.dataInicio, fim);
         return Math.toIntExact(Math.max(1, dias));
     }
