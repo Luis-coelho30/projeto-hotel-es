@@ -3,34 +3,34 @@ package hotel.modelo;
 import java.util.List;
 import java.util.ArrayList;
 
-public class Fatura {
-    private Apartamento apartamento;
+public class Fatura implements java.io.Serializable {
+    private float valorDiaria;
     private int dias;
     private List<Consumo> consumos;
 
     /**
-     * Cria uma fatura de hospedagem
+     * Cria uma fatura a partir de valores já conhecidos, sem depender de Estadia.
      *
-     * @param apto apartamento faturado, não pode ser nulo
-     * @param dias número de diárias, deve ser pelo menos 1
-     * @param consumos consumos a cobrar, não pode ser nulo (pode ser vazio)
-     * @throws IllegalArgumentException se o apartamento ou a lista forem nulos, ou se os dias forem menores que 1
+     * @param dias quantidade de dias, deve ser pelo menos 1
+     * @param valorDiaria valor da diária, não pode ser negativo
+     * @param consumos consumos faturados, não pode ser nulo
+     * @throws IllegalArgumentException se dias for menor que 1, se valorDiaria for negativo ou se consumos for nulo
      *
      * @pre (nenhuma)
-     * @post instância de Fatura criada com o apartamento, os dias e os consumos informados
+     * @post fatura criada com uma cópia da lista de consumos
      */
-    public Fatura(Apartamento apto, int dias, List<Consumo> consumos) {
-        if (apto == null) {
-            throw new IllegalArgumentException("apartamento da fatura não pode ser nulo");
-        }
+    public Fatura(int dias, float valorDiaria, List<Consumo> consumos) {
         if (dias < 1) {
             throw new IllegalArgumentException("dias da fatura deve ser pelo menos 1");
         }
-        if (consumos == null) {
-            throw new IllegalArgumentException("lista de consumos da fatura não pode ser nula");
+        if (valorDiaria < 0) {
+            throw new IllegalArgumentException("valor da diária não pode ser negativo");
         }
-        this.apartamento = apto;
+        if (consumos == null) {
+            throw new IllegalArgumentException("consumos da fatura não pode ser nulo");
+        }
         this.dias = dias;
+        this.valorDiaria = valorDiaria;
         this.consumos = new ArrayList<>(consumos);
     }
 
@@ -45,16 +45,6 @@ public class Fatura {
     public float getTotalGeral() {
         return getTotalDiarias() + getTotalConsumos();
     }
-
-    /**
-     * Retorna o apartamento
-     *
-     * @return o apartamento do qual a fatura pertence
-     *
-     * @pre (nenhuma)
-     * @post nenhuma alteração de estado
-     */
-    public Apartamento getApartamento() { return apartamento; }
 
     /**
      * Retorna a quantidade de dias da fatura
@@ -85,7 +75,7 @@ public class Fatura {
      * @post nenhuma alteração de estado
      */
     public float getTotalDiarias() {
-        return dias * apartamento.getPrecoDiaria();
+        return dias * valorDiaria;
     }
 
     /**

@@ -1,9 +1,9 @@
 package hotel.modelo;
 
-public class Reserva {
+public class Reserva implements java.io.Serializable {
     private final int andar;
     private final int numero;
-    private final Hospede hospede;
+    private final Titular titular;
     private StatusReserva status;
 
     /**
@@ -11,19 +11,19 @@ public class Reserva {
      *
      * @param andar Andar do apartamento
      * @param numero Número do apartamento
-     * @param hospede Hóspede que fez a reserva
-     * @throws IllegalArgumentException se hospede for nulo
+     * @param titular Titular que fez a reserva
+     * @throws IllegalArgumentException se titular for nulo
      *
-     * @pre Hóspede não nulo; coordenadas já validadas pelo Hotel
+     * @pre Titular não nulo; coordenadas já validadas pelo Hotel
      * @post Reserva criada com status ATIVA
      */
-    public Reserva(int andar, int numero, Hospede hospede) {
-        if (hospede == null) {
-            throw new IllegalArgumentException("Hospede nao pode ser nulo");
+    public Reserva(int andar, int numero, Titular titular) {
+        if (titular == null) {
+            throw new IllegalArgumentException("Titular nao pode ser nulo");
         }
         this.andar = andar;
         this.numero = numero;
-        this.hospede = hospede;
+        this.titular = titular;
         this.status = StatusReserva.ATIVA;
     }
 
@@ -52,15 +52,15 @@ public class Reserva {
     }
 
     /**
-     * Retorna o hóspede que fez a reserva.
+     * Retorna o titular que fez a reserva.
      *
-     * @return Hóspede da reserva 
+     * @return Titular da reserva
      *
      * @pre Reserva criada
      * @post Estado da reserva inalterado
      */
-    public Hospede getHospede() {
-        return this.hospede;
+    public Titular getTitular() {
+        return this.titular;
     }
 
     /**

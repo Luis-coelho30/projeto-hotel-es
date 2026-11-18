@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 
-public class Hotel {
+public class Hotel implements java.io.Serializable {
     public static final int NUM_ANDARES = 20;
     public static final int APTOS_POR_ANDAR = 14;
     public static final int SIMPLES_POR_ANDAR = 8;
@@ -15,6 +15,12 @@ public class Hotel {
     private List<Estadia> estadias;
     private List<Reserva> reservas;
 
+    /**
+     * Cria o Hotel.
+     *
+     * @pre nenhuma
+     * @post Hotel criado com lista de estadias, reservas e servicos
+     */
     public Hotel() {
         this.matriz = new Apartamento[NUM_ANDARES][APTOS_POR_ANDAR];
         this.servicos = new ArrayList<>();
@@ -83,16 +89,16 @@ public class Hotel {
      *
      * @param andar número do andar, de 0 a 19
      * @param numero número do apartamento no andar, de 0 a 13
-     * @param hospede hóspede que fará a reserva
+     * @param titular hóspede que fará a reserva
      * @return true se a reserva foi realizada com sucesso, ou false se o 
      *         apartamento não estiver livre (o hóspede só é validado se estiver livre)
      * @throws IllegalArgumentException se andar ou número forem inválidos, 
-     *         ou se hospede for nulo e o apartamento estiver livre
+     *         ou se titular for nulo e o apartamento estiver livre
      *
      * @pre hotel inicializado
      * @post se bem-sucedido, o apartamento fica RESERVADO e o hóspede é guardado
      */
-    public boolean reservarApartamento(int andar, int numero, Hospede hospede) {
+    public boolean reservarApartamento(int andar, int numero, Titular titular) {
         if (!aptoValido(andar, numero)) {
             throw new IllegalArgumentException("Andar ou numero invalido");
         }
@@ -100,8 +106,8 @@ public class Hotel {
         if (!apto.estaLivre()) {
             return false;
         }
-        // cria a reserva antes de mudar o estado, impede inconsistencia se falhar por hospede nulo 
-        Reserva nova = new Reserva(andar, numero, hospede);
+        // cria a reserva antes de mudar o estado, impede inconsistencia se falhar por titular nulo
+        Reserva nova = new Reserva(andar, numero, titular);
         apto.reservar();
         reservas.add(nova);
         return true;
@@ -114,16 +120,16 @@ public class Hotel {
      *
      * @param andar número do andar, de 0 a 19
      * @param numero número do apartamento no andar, de 0 a 13
-     * @param hospede hóspede da estadia
+     * @param titular hóspede titular da estadia
      * @return true se o check-in foi realizado, ou false se o apartamento já
      *         estiver ocupado
      * @throws IllegalArgumentException se andar ou número forem inválidos,
-     *         ou se hospede for nulo
+     *         ou se titular for nulo
      *
      * @pre hotel inicializado
      * @post se bem-sucedido, o apartamento fica OCUPADO e existe uma estadia ativa
      */
-    public boolean realizarCheckin(int andar, int numero, Hospede hospede) {
+    public boolean realizarCheckin(int andar, int numero, Titular titular) {
         if (!aptoValido(andar, numero)) {
             throw new IllegalArgumentException("Andar ou numero invalido");
         }
@@ -131,8 +137,8 @@ public class Hotel {
         if (apto.estaOcupado()) {
             return false;
         }
-        // cria a estadia antes de mudar o estado: hospede nulo falha sem deixar o hotel inconsistente
-        Estadia nova = new Estadia(andar, numero, hospede);
+        // cria a estadia antes de mudar o estado: titular nulo falha sem deixar o hotel inconsistente
+        Estadia nova = new Estadia(andar, numero, titular, apto.getPrecoDiaria());
         Reserva reserva = buscarReservaAtiva(andar, numero);
         apto.checkin();
         if (reserva != null) {
@@ -149,12 +155,11 @@ public class Hotel {
      * @param numero número do apartamento no andar, de 0 a 13
      * @return true se o check-out foi realizado, ou false se o apartamento
      *         não estiver ocupado
-     * @throws IllegalArgumentException se andar/número forem inválidos, ou se
-     *         dataFim for nula ou anterior ao início da estadia
+     * @throws IllegalArgumentException se andar ou número forem inválidos
      * @throws IllegalStateException se o apartamento estiver ocupado sem estadia ativa
      *
      * @pre hotel inicializado
-     * @post se bem-sucedido, o apartamento fica LIVRE e a estadia fica encerrada em dataFim
+     * @post se bem-sucedido, o apartamento fica LIVRE e a estadia fica encerrada na data atual
      */
     public boolean realizarCheckout(int andar, int numero) {
         Apartamento apto = getApartamento(andar, numero);
@@ -177,6 +182,7 @@ public class Hotel {
      * @param numero O número do apartamento no andar especificado
      * @return true se o cancelamento foi bem-sucedido, ou false se o quarto não estava reservado (ex: estava livre ou ocupado)
      * @throws IllegalArgumentException Se as coordenadas do andar ou número estiverem fora dos limites do hotel
+     * @throws IllegalStateException se o apartamento estiver reservado sem reserva ativa
      * @pre as coordenadas informadas devem ser válidas e pertencer à matriz do hotel
      * @post se a operação for bem-sucedida, o estado do apartamento passa de RESERVADO para LIVRE e a reserva é removida; caso contrário, o estado é mantido
      */
@@ -201,10 +207,7 @@ public class Hotel {
     /**
      * Exibe no terminal o mapa visual de ocupação do hotel
      * Utiliza '.' para livre, 'R' para reservado e 'O' para ocupado
-     * 
-     * @param N/A Não recebe parâmetros
-     * @return (void)
-     * @throws (nenhuma)
+     *
      * @pre a matriz do hotel deve estar inicializada
      * @post o mapa é impresso na tela
      */
@@ -245,12 +248,12 @@ public class Hotel {
         if (apto.estaReservado()) {
             Reserva r = buscarReservaAtiva(andar, numero);
             if (r != null) {
-                System.out.println("Reservado para: " + r.getHospede());
+                System.out.println("Reservado para: " + r.getTitular());
             }
         } else if (apto.estaOcupado()) {
             Estadia e = buscarEstadiaAtiva(andar, numero);
             if (e != null) {
-                System.out.println("Hospede: " + e.getHospede());
+                System.out.println("Titular: " + e.getTitular());
             }
         }
     }
@@ -396,7 +399,7 @@ public class Hotel {
         if (estadia == null) {
             throw new IllegalStateException("Apartamento sem estadia ativa");
         }
-        return new Fatura(matriz[andar][numero], estadia.getDias(), estadia.getConsumos());
+        return estadia.gerarFatura();
     }
 
     /**
@@ -416,12 +419,36 @@ public class Hotel {
         return matriz[andar][numero];
     }
 
+    /**
+     * Recupera a lista de servicos do hotel
+     * 
+     * @return A lista de Serviços do hotel.
+     * 
+     * @pre nenhum
+     * @post nenhuma mudança de estado
+     */    
     public List<Servico> getServicos() { return servicos; }
     
+    /**
+     * Recupera a lista de estadias do hotel
+     * 
+     * @return A lista de estadias do hotel.
+     * 
+     * @pre nenhum
+     * @post nenhuma mudança de estado
+     */    
     public List<Estadia> getEstadias() {
         return Collections.unmodifiableList(estadias);
     }
  
+    /**
+     * Recupera a lista de reservas do hotel
+     * 
+     * @return A lista de reservas do hotel.
+     * 
+     * @pre nenhum
+     * @post nenhuma mudança de estado
+     */    
     public List<Reserva> getReservas() {
         return Collections.unmodifiableList(reservas);
     }

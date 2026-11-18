@@ -6,33 +6,39 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Estadia {
+public class Estadia implements java.io.Serializable {
     private final int andar;
     private final int numero;
-    private final Hospede hospede;
+    private final Titular titular;
     private final LocalDate dataInicio;
     private LocalDate dataFim;
     private final List<Consumo> consumos;
+    private final float valorDiaria;
+    private Fatura faturaFinal;
 
     /**
      * Cria uma nova Estadia com data de início informada.
      *
-     * @param andar Andar do apartamento
-     * @param numero Número do apartamento
-     * @param hospede Hóspede associado à estadia
-     * @param dataInicio Início do período de estadia
-     * @throws IllegalArgumentException se hospede ou dataInicio forem nulos
-     *
-     * @pre Hóspede e data de início não nulos; coordenadas já validadas pelo Hotel
+     * @param andar       Andar do apartamento
+     * @param numero      Número do apartamento
+     * @param titular     Titular associado à estadia
+     * @param dataInicio  Início do período de estadia
+     * @param valorDiaria valor da diária
+     * @throws IllegalArgumentException se titular ou dataInicio forem nulos, ou se valorDiaria for negativo
+     * @pre Titular e data de início não nulos; coordenadas já validadas pelo Hotel
      * @post Estadia criada ativa (dataFim nula) e sem consumos
      */
-    public Estadia(int andar, int numero, Hospede hospede, LocalDate dataInicio) {
-        if (hospede == null || dataInicio == null) {
-            throw new IllegalArgumentException("Hospede nao pode ser nulo");
+    public Estadia(int andar, int numero, Titular titular, LocalDate dataInicio, float valorDiaria) {
+        if (titular == null || dataInicio == null) {
+            throw new IllegalArgumentException("Titular nao pode ser nulo");
         }
+        if (valorDiaria < 0) {
+            throw new IllegalArgumentException("Valor da diaria nao pode ser negativo");
+        }
+        this.valorDiaria = valorDiaria;
         this.andar = andar;
         this.numero = numero;
-        this.hospede = hospede;
+        this.titular = titular;
         this.dataInicio = dataInicio;
         this.consumos = new ArrayList<>();
     }
@@ -42,19 +48,24 @@ public class Estadia {
      *
      * @param andar Andar do apartamento
      * @param numero Número do apartamento
-     * @param hospede Hóspede associado à estadia
-     * @throws IllegalArgumentException se hospede for nulo
+     * @param titular Titular associado à estadia
+     * @param valorDiaria valor da diária
+     * @throws IllegalArgumentException se titular for nulo ou se valorDiaria for negativo
      *
-     * @pre Hóspede não nulo; coordenadas já validadas pelo Hotel
+     * @pre Titular não nulo; coordenadas já validadas pelo Hotel
      * @post Estadia criada ativa, com dataInicio igual à data atual, sem consumos
      */
-    public Estadia(int andar, int numero, Hospede hospede) {
-        if (hospede == null) {
-            throw new IllegalArgumentException("Hospede nao pode ser nulo");
+    public Estadia(int andar, int numero, Titular titular, float valorDiaria) {
+        if (titular == null) {
+            throw new IllegalArgumentException("Titular nao pode ser nulo");
         }
+        if (valorDiaria < 0) {
+            throw new IllegalArgumentException("Valor da diaria nao pode ser negativo");
+        }
+        this.valorDiaria = valorDiaria;
         this.andar = andar;
         this.numero = numero;
-        this.hospede = hospede;
+        this.titular = titular;
         this.dataInicio = LocalDate.now();
         this.consumos = new ArrayList<>();
     }
@@ -84,15 +95,15 @@ public class Estadia {
     }
 
     /**
-     * Retorna o hóspede associado à estadia.
+     * Retorna o titular associado à estadia.
      *
-     * @return Hóspede da estadia (nunca nulo)
+     * @return Titular da estadia (nunca nulo)
      *
      * @pre Estadia criada
      * @post Estado da estadia inalterado
      */
-    public Hospede getHospede() {
-        return this.hospede;
+    public Titular getTitular() {
+        return this.titular;
     }
 
     /**
@@ -163,7 +174,7 @@ public class Estadia {
      * @throws IllegalStateException se a estadia já estiver encerrada
      *
      * @pre Estadia ativa
-     * @post dataFim igual ao valor informado; estaAtiva() retorna false
+     * @post dataFim igual ao valor informado; estaAtiva() retorna false; a fatura final é gerada
      */
     public void encerrar(LocalDate dataFim) {
         if (dataFim == null) {
@@ -175,7 +186,26 @@ public class Estadia {
         if (dataFim.isBefore(this.dataInicio)) {
             throw new IllegalArgumentException("Data de fim anterior a data de inicio");
         }
+        // monta a fatura antes de alterar o estado: se falhar, a estadia continua ativa
+        Fatura fatura = new Fatura(diasAte(dataFim), this.valorDiaria, this.consumos);
         this.dataFim = dataFim;
+        this.faturaFinal = fatura;
+    }
+
+    /**
+     * Gera a fatura parcial da estadia ativa, sem alterar o estado da estadia.
+     *
+     * @return fatura com os dias até hoje, a diária e os consumos registrados
+     * @throws IllegalStateException se a estadia já estiver encerrada
+     *
+     * @pre Estadia ativa
+     * @post Estado da estadia inalterado
+     */
+    public Fatura gerarFatura() {
+        if (!estaAtiva()) {
+            throw new IllegalStateException("Estadia encerrada nao pode ser faturada");
+        }
+        return new Fatura(getDias(), this.valorDiaria, this.consumos);
     }
 
     /**
@@ -212,6 +242,10 @@ public class Estadia {
         if (estaAtiva()) {
             fim = LocalDate.now();
         }
+        return diasAte(fim);
+    }
+
+    private int diasAte(LocalDate fim) {
         long dias = ChronoUnit.DAYS.between(this.dataInicio, fim);
         return Math.toIntExact(Math.max(1, dias));
     }
@@ -230,5 +264,29 @@ public class Estadia {
             total += c.getTotal();
         }
         return total;
+    }
+
+    /**
+     * Retorna o valor da diária contratada na estadia.
+     *
+     * @return Valor da diária
+     *
+     * @pre Estadia criada
+     * @post Estado da estadia inalterado
+     */
+    public float getValorDiaria() {
+        return this.valorDiaria;
+    }
+
+    /**
+     * Retorna a fatura final gerada no encerramento da estadia.
+     *
+     * @return Fatura final, ou null se a estadia ainda estiver ativa
+     *
+     * @pre Estadia criada
+     * @post Estado da estadia inalterado
+     */
+    public Fatura getFaturaFinal() {
+        return this.faturaFinal;
     }
 }

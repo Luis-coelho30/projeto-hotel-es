@@ -1,6 +1,6 @@
 package hotel.modelo;
 
-public class Servico {
+public class Servico implements java.io.Serializable {
     private String nome;
     private float preco;
 
@@ -45,6 +45,14 @@ public class Servico {
      */
     public float getPreco() { return preco; }
 
+    /**
+     * Retorna o serviço como String
+     *
+     * @return uma representação do serviço como string
+     *
+     * @pre (nenhuma)
+     * @post nenhuma alteração de estado
+     */
     @Override
     public String toString() {
         return nome + " (R$ " + preco + ")";
